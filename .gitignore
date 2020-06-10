@@ -1,0 +1,17 @@
+bin
+obj
+packages
+.vs
+*.csproj.user
+*.suo
+/logs
+/Installer/installers
+*/*Secrets.config
+*.ncrunch*
+/test
+Thumbs.db
+#Visual Studio 2015r2+ IntelliSense SQLite db and lockfile
+/EDDiscovery.VC.db
+/EDDiscovery.VC.VC.opendb
+*/Properties/ExtraVersion.cs
+/EDDiscovery/GlobalSuppressions.cs
