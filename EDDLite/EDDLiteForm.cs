@@ -99,7 +99,9 @@ namespace EDDLite
         public void HistoryEvent(HistoryEntry he, bool stored)
         {
             lasthe = he;
-            LogLine(he.EventTimeUTC + " " + he.journalEntry.EventTypeStr + Environment.NewLine);
+            he.journalEntry.FillInformation(out string info, out string detailed);
+
+            LogLine(he.EventTimeUTC + " " + he.journalEntry.EventTypeStr + " " + info + Environment.NewLine);
             extButtonEDSM.Enabled = true;
             extButtonEDSY.Enabled = extButtonCoriolis.Enabled = he.ShipInformation != null;
             extButtonInaraStation.Enabled = he.IsDocked;
@@ -108,6 +110,9 @@ namespace EDDLite
             labelSystem.Text = he.System.Name;
             labelLocation.Text = he.WhereAmI;
             labelShip.Text = he.ShipInformation?.Name ?? "Unknown";
+            labelData.Text = he.MaterialCommodity.DataCount.ToString();
+            labelCargo.Text = he.MaterialCommodity.CargoCount.ToString();
+            labelMaterials.Text = he.MaterialCommodity.MaterialsCount.ToString();
 
             if (!stored)
             {
@@ -124,7 +129,7 @@ namespace EDDLite
                 if (EliteDangerousCore.EDDN.EDDNClass.IsEDDNMessage(he.EntryType, he.EventTimeUTC) && he.AgeOfEntry() < TimeSpan.FromDays(1.0) &&
                         he.Commander.SyncToEddn == true)
                 {
-                 //   EliteDangerousCore.EDDN.EDDNSync.SendEDDNEvents(LogLine, he);
+                    EliteDangerousCore.EDDN.EDDNSync.SendEDDNEvents(LogLine, he);
                 }
 
                 if ( he.Commander.SyncToInara)
