@@ -4,11 +4,11 @@ EDDLite is a application which monitors your EDD journal and can send it to Inar
 
 It provides integration with Coriolis and ED Shipyard.
 
-Find more information in the [EDDLite wiki](https://github.com/EDDLite/EDDLite/wiki).
+Find more information in the [EDDLite wiki](https://github.com/EDDiscovery/EDDLite/wiki).
 
-For the current release [Release Notes](https://github.com/EDDLite/EDDLite/releases)
+For the current release [Release Notes](https://github.com/EDDiscovery/EDDLite/releases)
 
-and to [Download the latest version](https://github.com/EDDLite/EDDLite/releases/latest)
+and to [Download the latest version](https://github.com/EDDiscovery/EDDLite/releases/latest)
 
 [Get help and advice on our Discord](https://discord.gg/uBq3UHq)
 
