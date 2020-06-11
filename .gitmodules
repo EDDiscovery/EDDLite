@@ -1,3 +1,9 @@
 [submodule "BaseUtilities"]
 	path = BaseUtilities
 	url = https://github.com/EDDiscovery/BaseUtilities.git
+[submodule "ExtendedControls"]
+	path = ExtendedControls
+	url = https://github.com/EDDiscovery/ExtendedControls.git
+[submodule "EliteDangerousCore"]
+	path = EliteDangerousCore
+	url = https://github.com/EDDiscovery/EliteDangerousCore.git
