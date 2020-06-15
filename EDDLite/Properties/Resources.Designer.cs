@@ -61,6 +61,42 @@ namespace EDDLite.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Program Concept by:
+        ///Cmdr Robby
+        ///
+        ///Developers for this release series:
+        ///Robby (Releaser)
+        ///
+        ///Underlying codebase from the EDDiscovery Team
+        ///.
+        /// </summary>
+        internal static string Credits {
+            get {
+                return ResourceManager.GetString("Credits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EDCD {
+            get {
+                object obj = ResourceManager.GetObject("EDCD", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {\rtf1\adeflang1025\ansi\ansicpg1252\uc1\adeff0\deff0\stshfdbch0\stshfloch31506\stshfhich31506\stshfbi31506\deflang2057\deflangfe2057\themelang2057\themelangfe0\themelangcs0{\fonttbl{\f0\fbidi \froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\f34\fbidi \froman\fcharset0\fprq2{\*\panose 02040503050406030204}Cambria Math;}
+        ///{\f37\fbidi \fswiss\fcharset0\fprq2{\*\panose 020f0502020204030204}Calibri;}{\flomajor\f31500\fbidi \froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string EDD_License {
+            get {
+                return ResourceManager.GetString("EDD_License", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon edlogo_3mo_icon {
@@ -130,11 +166,56 @@ namespace EDDLite.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to https://edcd.github.io/.
+        /// </summary>
+        internal static string URLEDCD {
+            get {
+                return ResourceManager.GetString("URLEDCD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://eddb.io/.
+        /// </summary>
+        internal static string URLeddb {
+            get {
+                return ResourceManager.GetString("URLeddb", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://www.elitedangerous.com/.
+        /// </summary>
+        internal static string URLEDHomepage {
+            get {
+                return ResourceManager.GetString("URLEDHomepage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to http://www.edshipyard.com/.
         /// </summary>
         internal static string URLEDShipyard {
             get {
                 return ResourceManager.GetString("URLEDShipyard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://www.edsm.net/.
+        /// </summary>
+        internal static string URLedsm {
+            get {
+                return ResourceManager.GetString("URLedsm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://api.github.com/repos/EDDiscovery/EDDLite/.
+        /// </summary>
+        internal static string URLGithubDownload {
+            get {
+                return ResourceManager.GetString("URLGithubDownload", resourceCulture);
             }
         }
         
@@ -153,6 +234,69 @@ namespace EDDLite.Properties {
         internal static string URLInaraStation {
             get {
                 return ResourceManager.GetString("URLInaraStation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://discordapp.com/invite/0qIqfCQbziTWzsQu.
+        /// </summary>
+        internal static string URLProjectDiscord {
+            get {
+                return ResourceManager.GetString("URLProjectDiscord", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string URLProjectEDForumPost {
+            get {
+                return ResourceManager.GetString("URLProjectEDForumPost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://github.com/EDDiscovery/EDDLite/issues.
+        /// </summary>
+        internal static string URLProjectFeedback {
+            get {
+                return ResourceManager.GetString("URLProjectFeedback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://github.com/EDDiscovery/EDDLite.
+        /// </summary>
+        internal static string URLProjectGithub {
+            get {
+                return ResourceManager.GetString("URLProjectGithub", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://github.com/EDDiscovery/EDDLite/blob/master/LICENSE.
+        /// </summary>
+        internal static string URLProjectLicense {
+            get {
+                return ResourceManager.GetString("URLProjectLicense", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://github.com/EDDiscovery/EDDLite/releases.
+        /// </summary>
+        internal static string URLProjectReleases {
+            get {
+                return ResourceManager.GetString("URLProjectReleases", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://github.com/EDDiscovery/EDDLite/wiki.
+        /// </summary>
+        internal static string URLProjectWiki {
+            get {
+                return ResourceManager.GetString("URLProjectWiki", resourceCulture);
             }
         }
     }

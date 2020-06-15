@@ -18,7 +18,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace EDDLite
+namespace EDDLite.Forms
 {
     // inherit and it will save the form position for you. You supply the RestoreFormPositionRegKey in your constructor.
     public partial class DraggableFormPos : ExtendedControls.DraggableForm

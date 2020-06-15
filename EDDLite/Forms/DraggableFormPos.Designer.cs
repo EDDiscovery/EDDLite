@@ -1,4 +1,4 @@
-﻿namespace EDDLite
+﻿namespace EDDLite.Forms
 {
     partial class DraggableFormPos
     {

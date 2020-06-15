@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -61,16 +62,26 @@
     </Compile>
     <Compile Include="EDDLiteTheme.cs" />
     <Compile Include="EDDOptions.cs" />
+    <Compile Include="Forms\AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AboutForm.designer.cs">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\DraggableFormPos.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\DraggableFormPos.Designer.cs">
       <DependentUpon>DraggableFormPos.cs</DependentUpon>
     </Compile>
+    <Compile Include="Installer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="EDDLiteForm.resx">
       <DependentUpon>EDDLiteForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AboutForm.resx">
+      <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\DraggableFormPos.resx">
       <DependentUpon>DraggableFormPos.cs</DependentUpon>
@@ -118,6 +129,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\EDD License.rtf" />
     <None Include="Resources\edlogo_3mo_icon.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +146,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Inara.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EDCD.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Credits.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

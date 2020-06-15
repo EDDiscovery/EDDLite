@@ -1,23 +1,39 @@
-﻿using EliteDangerousCore;
+﻿/*
+ * Copyright © 2020 EDDiscovery development team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
+ * ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ * 
+ * EDDiscovery is not affiliated with Frontier Developments plc.
+ */
+
+using EliteDangerousCore;
 using EliteDangerousCore.DB;
+using EliteDangerousCore.DLL;
 using EliteDangerousCore.EDSM;
+using EliteDangerousCore.ScreenShots;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Web;
+using System.Windows.Forms;
 
 namespace EDDLite
 {
-    public partial class EDDLiteForm : EDDLite.DraggableFormPos
+    public partial class EDDLiteForm : EDDLite.Forms.DraggableFormPos
     {
         EDDLiteController controller;
         Timer datetimetimer;
+        ScreenShotConverter screenshot;
+        EDDDLLManager DLLManager;
+        EDDDLLIF.EDDCallBacks DLLCallBacks;
 
         public EDDLiteForm()
         {
@@ -33,11 +49,13 @@ namespace EDDLite
 
             EDDConfig.Instance.Update();
 
-            EDDLiteTheme.Instance.ApplyStd(this);
+            EDDLiteTheme.Init();
+            EDDLiteTheme.Instance.SetThemeByName(UserDatabase.Instance.GetSettingString("Theme", "EDSM"));
+            ApplyTheme();
 
             RestoreFormPositionRegKey = "MainForm";
 
-            extStatusStrip.Font =  this.Font;
+            extStatusStrip.Font = this.Font;
             label_version.Text = EDDOptions.Instance.VersionDisplayString;
             labelGameDateTime.Text = "";
             labelInfoBoxTop.Text = "";
@@ -45,8 +63,12 @@ namespace EDDLite
             dataGridViewCommanders.RowsDefaultCellStyle.SelectionBackColor = EDDLiteTheme.Instance.GridCellBack;    // hide selection
             dataGridViewCommanders.RowsDefaultCellStyle.SelectionForeColor = EDDLiteTheme.Instance.GridCellText;
 
+            screenshot = new ScreenShotConverter();
+            screenshotenableToolStripMenuItem.Checked = screenshot.AutoConvert;
+            screenshotenableToolStripMenuItem.CheckedChanged += new System.EventHandler(this.enableToolStripMenuItem_CheckedChanged);
+
             controller = new EDDLiteController();
-            controller.Start(this,a => BeginInvoke(a));
+            controller.Start(this, a => BeginInvoke(a));
 
             if (!EDDOptions.Instance.DisableTimeDisplay)
             {
@@ -67,16 +89,96 @@ namespace EDDLite
 
             EliteDangerousCore.IGAU.IGAUClass.SoftwareName =
             EliteDangerousCore.EDDN.EDDNClass.SoftwareName =
-            EliteDangerousCore.Inara.InaraClass.SoftwareName = 
+            EliteDangerousCore.Inara.InaraClass.SoftwareName =
             EDSMClass.SoftwareName = "EDDLite";
+
+            DLLManager = new EDDDLLManager();
+            DLLCallBacks = new EDDDLLIF.EDDCallBacks(1, DLLRequestHistory, (s1, s2) => { return false; }, null);
+        }
+
+
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+
+            screenshot.Start((a) => Invoke(a),
+                             (b) => LogLine(b),
+                             () =>
+                             {
+                                 if (lasthe != null)        // lasthe should have name and whereami, and an indication of commander
+                                 {
+                                     return new Tuple<string, string, string>(lasthe.System.Name, lasthe.WhereAmI, lasthe.Commander?.Name ?? "Unknown");
+                                 }
+                                 else
+                                 {
+                                     return new Tuple<string, string, string>("Unknown", "Unknown", "Unknown");
+                                 }
+                             }
+                             );
+
+            string alloweddlls = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString("DLLAllowed", "");
+
+            string verstring = EDDOptions.Instance.Version + ";EDLITE";
+
+            Tuple<string, string, string> res = DLLManager.Load(EDDOptions.Instance.DLLAppDirectory(), verstring, EDDOptions.Instance.DLLAppDirectory(),
+                                DLLCallBacks, alloweddlls);
+
+            if (res.Item3.HasChars())
+            {
+                if (ExtendedControls.MessageBoxTheme.Show(this,
+                                string.Format(("The following application extension DLLs have been found" + Environment.NewLine +
+                                "Do you wish to allow these to be used?" + Environment.NewLine +
+                                "{0} " + Environment.NewLine +
+                                "If you do not, either remove the DLLs from the DLL folder in EDDLite Appdata"
+                                ).T(EDTx.EDDiscoveryForm_DLLW), res.Item3),
+                                "Warning".T(EDTx.Warning),
+                                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    EliteDangerousCore.DB.UserDatabase.Instance.PutSettingString("DLLAllowed", alloweddlls.AppendPrePad(res.Item3, ","));
+                    DLLManager.UnLoad();
+                    res = DLLManager.Load(EDDOptions.Instance.DLLAppDirectory(), verstring, EDDOptions.Instance.DLLAppDirectory(), DLLCallBacks, alloweddlls);
+                }
+            }
+
+            if (res.Item1.HasChars())
+                LogLine(string.Format("DLLs loaded: {0}".T(EDTx.EDDiscoveryForm_DLLL), res.Item1));
+            if (res.Item2.HasChars())
+                LogLine(string.Format("DLLs failed to load: {0}".T(EDTx.EDDiscoveryForm_DLLF), res.Item2));
+
+            // EDDOptions.Instance.CheckRelease = true; // use this to force check for debugging
+
+            Installer.CheckForNewInstallerAsync((rel) =>  // in thread
+            {
+                BeginInvoke((MethodInvoker)delegate
+                {
+                    LogLine(string.Format("New EDDLite installer available: {0}".T(EDTx.EDDiscoveryForm_NI), rel.ReleaseName));
+                    labelInfoBoxTop.Text = "New Release Available!".T(EDTx.EDDiscoveryForm_NRA);
+                    if ( ExtendedControls.MessageBoxTheme.Show("New EDDLite Available, please upgrade!", "Warning".T(EDTx.Warning), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK )
+                    {
+                        System.Diagnostics.Process.Start(Properties.Resources.URLProjectReleases);
+                    }
+                });
+            });
+
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
             controller.Stop();
             EDSMJournalSync.StopSync();
-            base.OnClosing(e);
             UserDatabase.Instance.PutSettingDouble("DataLogSplitter", splitContainerDataLogs.GetSplitterDistance());
+            screenshot.Stop();
+            screenshot.SaveSettings();
+            DLLManager.UnLoad();
+            base.OnClosing(e);
+        }
+
+
+        public bool DLLRequestHistory(long index, bool isjid, out EDDDLLIF.JournalEntry f)
+        {
+            f = new EDDDLLIF.JournalEntry();
+            return false;
         }
 
         #region Controller feedback
@@ -88,31 +190,46 @@ namespace EDDLite
 
         public void ReadJournals()
         {
-            LogLine("Journals fully read" + Environment.NewLine);
+            LogLine("Journals fully read");
 
             dataGridViewCommanders.AutoGenerateColumns = false;             // BEFORE assigned to list..
             dataGridViewCommanders.DataSource = EDCommander.GetListCommanders();
+            refreshed = true;
         }
 
         HistoryEntry lasthe = null;
+        bool refreshed = true;
 
         public void HistoryEvent(HistoryEntry he, bool stored)
         {
             lasthe = he;
             he.journalEntry.FillInformation(out string info, out string detailed);
 
-            LogLine(he.EventTimeUTC + " " + he.journalEntry.EventTypeStr + " " + info + Environment.NewLine);
+            LogLine(he.EventTimeUTC + " " + he.journalEntry.EventTypeStr + " " + info);
             extButtonEDSM.Enabled = true;
             extButtonEDSY.Enabled = extButtonCoriolis.Enabled = he.ShipInformation != null;
             extButtonInaraStation.Enabled = he.IsDocked;
             extButtonInaraSystem.Enabled = true;
-            labelCmdr.Text = he.Commander.Name + "/" + EDCommander.Current.Name;
+            labelCmdr.Text = he.Commander.Name;
+            if (EDCommander.Current.Name != he.Commander.Name)
+                labelCmdr.Text += " Report clash " + EDCommander.Current.Name;
+
             labelSystem.Text = he.System.Name;
             labelLocation.Text = he.WhereAmI;
             labelShip.Text = he.ShipInformation?.Name ?? "Unknown";
             labelData.Text = he.MaterialCommodity.DataCount.ToString();
             labelCargo.Text = he.MaterialCommodity.CargoCount.ToString();
             labelMaterials.Text = he.MaterialCommodity.MaterialsCount.ToString();
+            labelCredits.Text = he.Credits.ToString("N0");
+            labelMissionCount.Text = he.MissionList.Missions.Count.ToString();
+            if (he.MissionList.Missions.Count > 0)
+            {
+                var last = he.MissionList.GetAllCurrentMissions(DateTime.Now)[0];
+                labelLatestMission.Text = BaseUtils.FieldBuilder.Build("", last.Mission.LocalisedName, "", last.Mission.Expiry, "", last.Mission.DestinationSystem, "", last.Mission.DestinationStation);
+            }
+            else
+                labelLatestMission.Text = "";
+
 
             if (!stored)
             {
@@ -123,7 +240,7 @@ namespace EDDLite
 
                 if (he.Commander.SyncToIGAU)
                 {
-                   // EliteDangerousCore.IGAU.IGAUSync.NewEvent(LogLine, he);
+                    EliteDangerousCore.IGAU.IGAUSync.NewEvent(LogLine, he);
                 }
 
                 if (EliteDangerousCore.EDDN.EDDNClass.IsEDDNMessage(he.EntryType, he.EventTimeUTC) && he.AgeOfEntry() < TimeSpan.FromDays(1.0) &&
@@ -134,9 +251,25 @@ namespace EDDLite
 
                 if ( he.Commander.SyncToInara)
                 {
-                    EliteDangerousCore.Inara.InaraSync.NewEvent(LogLine,he);
+                    if (refreshed)
+                    {
+                        EliteDangerousCore.Inara.InaraSync.Refresh(LogLine, he, he.Commander);
+                    }
+
+                    EliteDangerousCore.Inara.InaraSync.NewEvent(LogLine, he);
                 }
 
+                if ( refreshed )
+                {
+                    DLLManager.Refresh(EDCommander.Current.Name, EDDDLLCallerHE.CreateFromHistoryEntry(he));
+                }
+
+                if ( DLLManager.Count>0 )       // if worth calling..
+                    DLLManager.NewJournalEntry(EDDDLLCallerHE.CreateFromHistoryEntry(he));
+
+                screenshot.NewJournalEntry(he.journalEntry);
+
+                refreshed = false;
             }
 
         }
@@ -146,10 +279,10 @@ namespace EDDLite
            // extRichTextBoxLog.AppendText( u.EventTimeUTC + " " + u.EventTypeStr + Environment.NewLine);
         }
 
-        public void LogLine(string s)
+        public void LogLine(string s)       // can be called from other thread
         {
             if (Application.MessageLoop)
-                extRichTextBoxLog.AppendText(s);
+                extRichTextBoxLog.AppendText(s + Environment.NewLine);
             else
                 BeginInvoke((MethodInvoker) delegate { LogLine(s); });
         }
@@ -180,7 +313,13 @@ namespace EDDLite
 
         private void panel_eddiscovery_MouseClick(object sender, MouseEventArgs e)
         {
+            var frm = new Forms.AboutForm();
+            frm.ShowDialog(this);
+        }
 
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            panel_eddiscovery_MouseClick(sender, null);
         }
 
         #endregion
@@ -212,6 +351,7 @@ namespace EDDLite
                 List<EDCommander> edcommanders = (List<EDCommander>)dataGridViewCommanders.DataSource;
                 EDCommander.Update(edcommanders, false);
                 dataGridViewCommanders.Refresh();
+                controller.RequestRescan = true;
             }
         }
 
@@ -252,6 +392,7 @@ namespace EDDLite
                     cf.Update(cmdr);
                     EDCommander.Create(cmdr);
                     UpdateCommandersListBox();
+                    controller.RequestRescan = true;
                 }
                 else
                     ExtendedControls.MessageBoxTheme.Show(FindForm(), "Commander name is not valid or duplicate".T(EDTx.UserControlSettings_AddC), "Cannot create Commander".T(EDTx.UserControlSettings_AddT), MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
@@ -355,6 +496,7 @@ namespace EDDLite
         }
         #endregion
 
+        #region Menu UI
         private void cmdrViewToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
         {
             panelCmdrs.Visible = cmdrViewToolStripMenuItem.Checked;
@@ -366,5 +508,33 @@ namespace EDDLite
             labelGameDateTime.Visible = timeToolStripMenuItem.Checked;
             UserDatabase.Instance.PutSettingBool("TimeDisplay", timeToolStripMenuItem.Checked);
         }
+
+        #endregion
+
+        private void enableToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            screenshot.AutoConvert = screenshotenableToolStripMenuItem.Checked;
+        }
+
+        private void configureToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            screenshot.Configure(this);
+        }
+
+        private void themeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var s = sender as ToolStripMenuItem;
+            EDDLiteTheme.Instance.SetThemeByName(s.Text);
+            UserDatabase.Instance.PutSettingString("Theme", s.Text);
+            ApplyTheme();
+        }
+
+        private void ApplyTheme()
+        {
+            EDDLiteTheme.Instance.ApplyStd(this);
+            dataGridViewCommanders.RowsDefaultCellStyle.SelectionBackColor = EDDLiteTheme.Instance.GridCellBack;    // hide selection
+            dataGridViewCommanders.RowsDefaultCellStyle.SelectionForeColor = EDDLiteTheme.Instance.GridCellText;
+        }
+
     }
 }

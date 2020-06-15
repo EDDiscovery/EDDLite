@@ -33,9 +33,17 @@
             this.menuMain = new System.Windows.Forms.MenuStrip();
             this.configToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.screenShotCaptureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.screenshotenableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.configureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmdrViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.themeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eDSMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eliteVerdanaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eliteEurocapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extPanelDataGridViewScrollCmdrs = new ExtendedControls.ExtPanelDataGridViewScroll();
             this.dataGridViewCommanders = new System.Windows.Forms.DataGridView();
             this.ColumnCommander = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -59,9 +67,15 @@
             this.labelSystem = new System.Windows.Forms.Label();
             this.labelCmdr = new System.Windows.Forms.Label();
             this.labelShip = new System.Windows.Forms.Label();
+            this.labelMaterials = new System.Windows.Forms.Label();
             this.labelData = new System.Windows.Forms.Label();
-            this.labelCargo = new System.Windows.Forms.Label();
+            this.labelCredits = new System.Windows.Forms.Label();
+            this.labelMissionCount = new System.Windows.Forms.Label();
+            this.labelLatestMission = new System.Windows.Forms.Label();
+            this.labelMatH = new System.Windows.Forms.Label();
             this.labelDataH = new System.Windows.Forms.Label();
+            this.labelCashHr = new System.Windows.Forms.Label();
+            this.labelMissionH = new System.Windows.Forms.Label();
             this.labelCargoH = new System.Windows.Forms.Label();
             this.labelShipH = new System.Windows.Forms.Label();
             this.labelLocation = new System.Windows.Forms.Label();
@@ -81,8 +95,7 @@
             this.panelCmdrs = new System.Windows.Forms.Panel();
             this.tableLayoutPanelTop = new System.Windows.Forms.TableLayoutPanel();
             this.flowLayoutPanelRight = new System.Windows.Forms.FlowLayoutPanel();
-            this.labelMatH = new System.Windows.Forms.Label();
-            this.labelMaterials = new System.Windows.Forms.Label();
+            this.labelCargo = new System.Windows.Forms.Label();
             this.menuMain.SuspendLayout();
             this.extPanelDataGridViewScrollCmdrs.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewCommanders)).BeginInit();
@@ -103,10 +116,11 @@
             // 
             this.menuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.configToolStripMenuItem,
-            this.viewToolStripMenuItem});
+            this.viewToolStripMenuItem,
+            this.helpToolStripMenuItem});
             this.menuMain.Location = new System.Drawing.Point(0, 0);
             this.menuMain.Name = "menuMain";
-            this.menuMain.Size = new System.Drawing.Size(107, 24);
+            this.menuMain.Size = new System.Drawing.Size(151, 24);
             this.menuMain.TabIndex = 0;
             this.menuMain.Text = "menuStrip1";
             // 
@@ -120,15 +134,35 @@
             // 
             // screenShotCaptureToolStripMenuItem
             // 
+            this.screenShotCaptureToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.screenshotenableToolStripMenuItem,
+            this.configureToolStripMenuItem});
             this.screenShotCaptureToolStripMenuItem.Name = "screenShotCaptureToolStripMenuItem";
             this.screenShotCaptureToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.screenShotCaptureToolStripMenuItem.Text = "Screen Shot Capture";
+            // 
+            // screenshotenableToolStripMenuItem
+            // 
+            this.screenshotenableToolStripMenuItem.Checked = true;
+            this.screenshotenableToolStripMenuItem.CheckOnClick = true;
+            this.screenshotenableToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.screenshotenableToolStripMenuItem.Name = "screenshotenableToolStripMenuItem";
+            this.screenshotenableToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.screenshotenableToolStripMenuItem.Text = "Enable";
+            // 
+            // configureToolStripMenuItem
+            // 
+            this.configureToolStripMenuItem.Name = "configureToolStripMenuItem";
+            this.configureToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.configureToolStripMenuItem.Text = "Configure";
+            this.configureToolStripMenuItem.Click += new System.EventHandler(this.configureToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cmdrViewToolStripMenuItem,
-            this.timeToolStripMenuItem});
+            this.timeToolStripMenuItem,
+            this.themeToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
@@ -150,6 +184,52 @@
             this.timeToolStripMenuItem.Name = "timeToolStripMenuItem";
             this.timeToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.timeToolStripMenuItem.Text = "Time";
+            // 
+            // themeToolStripMenuItem
+            // 
+            this.themeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.eDSMToolStripMenuItem,
+            this.eliteVerdanaToolStripMenuItem,
+            this.eliteEurocapsToolStripMenuItem});
+            this.themeToolStripMenuItem.Name = "themeToolStripMenuItem";
+            this.themeToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.themeToolStripMenuItem.Text = "Theme";
+            // 
+            // eDSMToolStripMenuItem
+            // 
+            this.eDSMToolStripMenuItem.Name = "eDSMToolStripMenuItem";
+            this.eDSMToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.eDSMToolStripMenuItem.Text = "EDSM";
+            this.eDSMToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            // 
+            // eliteVerdanaToolStripMenuItem
+            // 
+            this.eliteVerdanaToolStripMenuItem.Name = "eliteVerdanaToolStripMenuItem";
+            this.eliteVerdanaToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.eliteVerdanaToolStripMenuItem.Text = "Elite Verdana";
+            this.eliteVerdanaToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            // 
+            // eliteEurocapsToolStripMenuItem
+            // 
+            this.eliteEurocapsToolStripMenuItem.Name = "eliteEurocapsToolStripMenuItem";
+            this.eliteEurocapsToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.eliteEurocapsToolStripMenuItem.Text = "Elite EuroCaps";
+            this.eliteEurocapsToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // extPanelDataGridViewScrollCmdrs
             // 
@@ -294,7 +374,7 @@
             this.extStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel,
             this.toolStripStatus});
-            this.extStatusStrip.Location = new System.Drawing.Point(3, 425);
+            this.extStatusStrip.Location = new System.Drawing.Point(3, 577);
             this.extStatusStrip.Name = "extStatusStrip";
             this.extStatusStrip.Size = new System.Drawing.Size(794, 22);
             this.extStatusStrip.TabIndex = 4;
@@ -323,9 +403,14 @@
             this.extPanelScrollStatus.Controls.Add(this.labelShip);
             this.extPanelScrollStatus.Controls.Add(this.labelMaterials);
             this.extPanelScrollStatus.Controls.Add(this.labelData);
+            this.extPanelScrollStatus.Controls.Add(this.labelCredits);
             this.extPanelScrollStatus.Controls.Add(this.labelCargo);
+            this.extPanelScrollStatus.Controls.Add(this.labelMissionCount);
+            this.extPanelScrollStatus.Controls.Add(this.labelLatestMission);
             this.extPanelScrollStatus.Controls.Add(this.labelMatH);
             this.extPanelScrollStatus.Controls.Add(this.labelDataH);
+            this.extPanelScrollStatus.Controls.Add(this.labelCashHr);
+            this.extPanelScrollStatus.Controls.Add(this.labelMissionH);
             this.extPanelScrollStatus.Controls.Add(this.labelCargoH);
             this.extPanelScrollStatus.Controls.Add(this.labelShipH);
             this.extPanelScrollStatus.Controls.Add(this.labelLocation);
@@ -337,14 +422,14 @@
             this.extPanelScrollStatus.FlowControlsLeftToRight = false;
             this.extPanelScrollStatus.Location = new System.Drawing.Point(0, 0);
             this.extPanelScrollStatus.Name = "extPanelScrollStatus";
-            this.extPanelScrollStatus.Size = new System.Drawing.Size(794, 212);
+            this.extPanelScrollStatus.Size = new System.Drawing.Size(794, 319);
             this.extPanelScrollStatus.TabIndex = 5;
             this.extPanelScrollStatus.VerticalScrollBarDockRight = true;
             // 
             // extButtonEDSY
             // 
             this.extButtonEDSY.Image = global::EDDLite.Properties.Resources.EDShipYard;
-            this.extButtonEDSY.Location = new System.Drawing.Point(262, 112);
+            this.extButtonEDSY.Location = new System.Drawing.Point(263, 110);
             this.extButtonEDSY.Name = "extButtonEDSY";
             this.extButtonEDSY.Size = new System.Drawing.Size(42, 33);
             this.extButtonEDSY.TabIndex = 6;
@@ -354,7 +439,7 @@
             // extButtonCoriolis
             // 
             this.extButtonCoriolis.Image = global::EDDLite.Properties.Resources.ShowOnCoriolis;
-            this.extButtonCoriolis.Location = new System.Drawing.Point(214, 112);
+            this.extButtonCoriolis.Location = new System.Drawing.Point(215, 110);
             this.extButtonCoriolis.Name = "extButtonCoriolis";
             this.extButtonCoriolis.Size = new System.Drawing.Size(42, 33);
             this.extButtonCoriolis.TabIndex = 6;
@@ -374,9 +459,9 @@
             // extButtonInaraSystem
             // 
             this.extButtonInaraSystem.Image = global::EDDLite.Properties.Resources.Inara;
-            this.extButtonInaraSystem.Location = new System.Drawing.Point(263, 37);
+            this.extButtonInaraSystem.Location = new System.Drawing.Point(263, 41);
             this.extButtonInaraSystem.Name = "extButtonInaraSystem";
-            this.extButtonInaraSystem.Size = new System.Drawing.Size(42, 33);
+            this.extButtonInaraSystem.Size = new System.Drawing.Size(42, 32);
             this.extButtonInaraSystem.TabIndex = 6;
             this.extButtonInaraSystem.UseVisualStyleBackColor = true;
             this.extButtonInaraSystem.Click += new System.EventHandler(this.extButtonInaraSystem_Click);
@@ -384,9 +469,9 @@
             // extButtonEDSM
             // 
             this.extButtonEDSM.Image = global::EDDLite.Properties.Resources.EDSM;
-            this.extButtonEDSM.Location = new System.Drawing.Point(215, 37);
+            this.extButtonEDSM.Location = new System.Drawing.Point(215, 40);
             this.extButtonEDSM.Name = "extButtonEDSM";
-            this.extButtonEDSM.Size = new System.Drawing.Size(42, 33);
+            this.extButtonEDSM.Size = new System.Drawing.Size(42, 32);
             this.extButtonEDSM.TabIndex = 6;
             this.extButtonEDSM.UseVisualStyleBackColor = true;
             this.extButtonEDSM.Click += new System.EventHandler(this.extButtonEDSM_Click);
@@ -394,7 +479,7 @@
             // labelSystem
             // 
             this.labelSystem.AutoSize = true;
-            this.labelSystem.Location = new System.Drawing.Point(60, 47);
+            this.labelSystem.Location = new System.Drawing.Point(60, 50);
             this.labelSystem.Name = "labelSystem";
             this.labelSystem.Size = new System.Drawing.Size(13, 13);
             this.labelSystem.TabIndex = 5;
@@ -403,7 +488,7 @@
             // labelCmdr
             // 
             this.labelCmdr.AutoSize = true;
-            this.labelCmdr.Location = new System.Drawing.Point(60, 16);
+            this.labelCmdr.Location = new System.Drawing.Point(60, 10);
             this.labelCmdr.Name = "labelCmdr";
             this.labelCmdr.Size = new System.Drawing.Size(13, 13);
             this.labelCmdr.TabIndex = 4;
@@ -412,43 +497,96 @@
             // labelShip
             // 
             this.labelShip.AutoSize = true;
-            this.labelShip.Location = new System.Drawing.Point(59, 122);
+            this.labelShip.Location = new System.Drawing.Point(60, 120);
             this.labelShip.Name = "labelShip";
             this.labelShip.Size = new System.Drawing.Size(13, 13);
             this.labelShip.TabIndex = 3;
             this.labelShip.Text = "?";
             // 
+            // labelMaterials
+            // 
+            this.labelMaterials.Location = new System.Drawing.Point(297, 150);
+            this.labelMaterials.Name = "labelMaterials";
+            this.labelMaterials.Size = new System.Drawing.Size(13, 13);
+            this.labelMaterials.TabIndex = 3;
+            this.labelMaterials.Text = "?";
+            // 
             // labelData
             // 
             this.labelData.AutoSize = true;
-            this.labelData.Location = new System.Drawing.Point(183, 156);
+            this.labelData.Location = new System.Drawing.Point(184, 150);
             this.labelData.Name = "labelData";
             this.labelData.Size = new System.Drawing.Size(13, 13);
             this.labelData.TabIndex = 3;
             this.labelData.Text = "?";
             // 
-            // labelCargo
+            // labelCredits
             // 
-            this.labelCargo.AutoSize = true;
-            this.labelCargo.Location = new System.Drawing.Point(60, 156);
-            this.labelCargo.Name = "labelCargo";
-            this.labelCargo.Size = new System.Drawing.Size(13, 13);
-            this.labelCargo.TabIndex = 3;
-            this.labelCargo.Text = "?";
+            this.labelCredits.AutoSize = true;
+            this.labelCredits.Location = new System.Drawing.Point(60, 30);
+            this.labelCredits.Name = "labelCredits";
+            this.labelCredits.Size = new System.Drawing.Size(13, 13);
+            this.labelCredits.TabIndex = 3;
+            this.labelCredits.Text = "?";
+            // 
+            // labelMissionCount
+            // 
+            this.labelMissionCount.AutoSize = true;
+            this.labelMissionCount.Location = new System.Drawing.Point(60, 170);
+            this.labelMissionCount.Name = "labelMissionCount";
+            this.labelMissionCount.Size = new System.Drawing.Size(13, 13);
+            this.labelMissionCount.TabIndex = 3;
+            this.labelMissionCount.Text = "?";
+            // 
+            // labelLatestMission
+            // 
+            this.labelLatestMission.AutoSize = true;
+            this.labelLatestMission.Location = new System.Drawing.Point(127, 170);
+            this.labelLatestMission.Name = "labelLatestMission";
+            this.labelLatestMission.Size = new System.Drawing.Size(13, 13);
+            this.labelLatestMission.TabIndex = 3;
+            this.labelLatestMission.Text = "?";
+            // 
+            // labelMatH
+            // 
+            this.labelMatH.AutoSize = true;
+            this.labelMatH.Location = new System.Drawing.Point(240, 150);
+            this.labelMatH.Name = "labelMatH";
+            this.labelMatH.Size = new System.Drawing.Size(49, 13);
+            this.labelMatH.TabIndex = 3;
+            this.labelMatH.Text = "Materials";
             // 
             // labelDataH
             // 
             this.labelDataH.AutoSize = true;
-            this.labelDataH.Location = new System.Drawing.Point(126, 156);
+            this.labelDataH.Location = new System.Drawing.Point(127, 150);
             this.labelDataH.Name = "labelDataH";
             this.labelDataH.Size = new System.Drawing.Size(30, 13);
             this.labelDataH.TabIndex = 3;
             this.labelDataH.Text = "Data";
             // 
+            // labelCashHr
+            // 
+            this.labelCashHr.AutoSize = true;
+            this.labelCashHr.Location = new System.Drawing.Point(4, 30);
+            this.labelCashHr.Name = "labelCashHr";
+            this.labelCashHr.Size = new System.Drawing.Size(39, 13);
+            this.labelCashHr.TabIndex = 3;
+            this.labelCashHr.Text = "Credits";
+            // 
+            // labelMissionH
+            // 
+            this.labelMissionH.AutoSize = true;
+            this.labelMissionH.Location = new System.Drawing.Point(4, 170);
+            this.labelMissionH.Name = "labelMissionH";
+            this.labelMissionH.Size = new System.Drawing.Size(47, 13);
+            this.labelMissionH.TabIndex = 3;
+            this.labelMissionH.Text = "Missions";
+            // 
             // labelCargoH
             // 
             this.labelCargoH.AutoSize = true;
-            this.labelCargoH.Location = new System.Drawing.Point(3, 156);
+            this.labelCargoH.Location = new System.Drawing.Point(4, 150);
             this.labelCargoH.Name = "labelCargoH";
             this.labelCargoH.Size = new System.Drawing.Size(35, 13);
             this.labelCargoH.TabIndex = 3;
@@ -457,7 +595,7 @@
             // labelShipH
             // 
             this.labelShipH.AutoSize = true;
-            this.labelShipH.Location = new System.Drawing.Point(3, 122);
+            this.labelShipH.Location = new System.Drawing.Point(4, 120);
             this.labelShipH.Name = "labelShipH";
             this.labelShipH.Size = new System.Drawing.Size(28, 13);
             this.labelShipH.TabIndex = 3;
@@ -484,7 +622,7 @@
             // labelSysH
             // 
             this.labelSysH.AutoSize = true;
-            this.labelSysH.Location = new System.Drawing.Point(4, 47);
+            this.labelSysH.Location = new System.Drawing.Point(4, 50);
             this.labelSysH.Name = "labelSysH";
             this.labelSysH.Size = new System.Drawing.Size(41, 13);
             this.labelSysH.TabIndex = 2;
@@ -493,7 +631,7 @@
             // labelCmdrH
             // 
             this.labelCmdrH.AutoSize = true;
-            this.labelCmdrH.Location = new System.Drawing.Point(4, 16);
+            this.labelCmdrH.Location = new System.Drawing.Point(4, 10);
             this.labelCmdrH.Name = "labelCmdrH";
             this.labelCmdrH.Size = new System.Drawing.Size(31, 13);
             this.labelCmdrH.TabIndex = 1;
@@ -511,12 +649,12 @@
             this.extScrollBar2.HideScrollBar = true;
             this.extScrollBar2.LargeChange = 10;
             this.extScrollBar2.Location = new System.Drawing.Point(778, 0);
-            this.extScrollBar2.Maximum = -34;
+            this.extScrollBar2.Maximum = -127;
             this.extScrollBar2.Minimum = 0;
             this.extScrollBar2.MouseOverButtonColor = System.Drawing.Color.Green;
             this.extScrollBar2.MousePressedButtonColor = System.Drawing.Color.Red;
             this.extScrollBar2.Name = "extScrollBar2";
-            this.extScrollBar2.Size = new System.Drawing.Size(16, 212);
+            this.extScrollBar2.Size = new System.Drawing.Size(16, 319);
             this.extScrollBar2.SliderColor = System.Drawing.Color.DarkGray;
             this.extScrollBar2.SmallChange = 1;
             this.extScrollBar2.TabIndex = 0;
@@ -525,8 +663,8 @@
             this.extScrollBar2.ThumbButtonColor = System.Drawing.Color.DarkBlue;
             this.extScrollBar2.ThumbColorScaling = 0.5F;
             this.extScrollBar2.ThumbDrawAngle = 0F;
-            this.extScrollBar2.Value = -34;
-            this.extScrollBar2.ValueLimited = -34;
+            this.extScrollBar2.Value = -127;
+            this.extScrollBar2.ValueLimited = -127;
             // 
             // flowLayoutPanelTop
             // 
@@ -547,7 +685,7 @@
             // 
             this.label_version.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label_version.AutoSize = true;
-            this.label_version.Location = new System.Drawing.Point(115, 6);
+            this.label_version.Location = new System.Drawing.Point(159, 6);
             this.label_version.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.label_version.Name = "label_version";
             this.label_version.Size = new System.Drawing.Size(43, 13);
@@ -559,7 +697,7 @@
             // 
             this.labelInfoBoxTop.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.labelInfoBoxTop.AutoSize = true;
-            this.labelInfoBoxTop.Location = new System.Drawing.Point(169, 6);
+            this.labelInfoBoxTop.Location = new System.Drawing.Point(213, 6);
             this.labelInfoBoxTop.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.labelInfoBoxTop.Name = "labelInfoBoxTop";
             this.labelInfoBoxTop.Size = new System.Drawing.Size(43, 13);
@@ -570,7 +708,7 @@
             // 
             this.labelGameDateTime.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.labelGameDateTime.AutoSize = true;
-            this.labelGameDateTime.Location = new System.Drawing.Point(223, 6);
+            this.labelGameDateTime.Location = new System.Drawing.Point(267, 6);
             this.labelGameDateTime.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.labelGameDateTime.Name = "labelGameDateTime";
             this.labelGameDateTime.Size = new System.Drawing.Size(43, 13);
@@ -650,8 +788,8 @@
             // splitContainerDataLogs.Panel2
             // 
             this.splitContainerDataLogs.Panel2.Controls.Add(this.extRichTextBoxLog);
-            this.splitContainerDataLogs.Size = new System.Drawing.Size(794, 300);
-            this.splitContainerDataLogs.SplitterDistance = 212;
+            this.splitContainerDataLogs.Size = new System.Drawing.Size(794, 452);
+            this.splitContainerDataLogs.SplitterDistance = 319;
             this.splitContainerDataLogs.TabIndex = 1;
             // 
             // extRichTextBoxLog
@@ -677,7 +815,7 @@
             this.extRichTextBoxLog.ScrollBarThumbBorderColor = System.Drawing.Color.Yellow;
             this.extRichTextBoxLog.ScrollBarThumbButtonColor = System.Drawing.Color.DarkBlue;
             this.extRichTextBoxLog.ShowLineCount = false;
-            this.extRichTextBoxLog.Size = new System.Drawing.Size(794, 84);
+            this.extRichTextBoxLog.Size = new System.Drawing.Size(794, 129);
             this.extRichTextBoxLog.TabIndex = 0;
             this.extRichTextBoxLog.TextBoxBackColor = System.Drawing.SystemColors.Control;
             this.extRichTextBoxLog.TextBoxForeColor = System.Drawing.SystemColors.ControlText;
@@ -717,28 +855,20 @@
             this.flowLayoutPanelRight.Size = new System.Drawing.Size(86, 24);
             this.flowLayoutPanelRight.TabIndex = 7;
             // 
-            // labelMatH
+            // labelCargo
             // 
-            this.labelMatH.AutoSize = true;
-            this.labelMatH.Location = new System.Drawing.Point(239, 156);
-            this.labelMatH.Name = "labelMatH";
-            this.labelMatH.Size = new System.Drawing.Size(49, 13);
-            this.labelMatH.TabIndex = 3;
-            this.labelMatH.Text = "Materials";
-            // 
-            // labelMaterials
-            // 
-            this.labelMaterials.Location = new System.Drawing.Point(296, 156);
-            this.labelMaterials.Name = "labelMaterials";
-            this.labelMaterials.Size = new System.Drawing.Size(13, 13);
-            this.labelMaterials.TabIndex = 3;
-            this.labelMaterials.Text = "?";
+            this.labelCargo.AutoSize = true;
+            this.labelCargo.Location = new System.Drawing.Point(60, 150);
+            this.labelCargo.Name = "labelCargo";
+            this.labelCargo.Size = new System.Drawing.Size(13, 13);
+            this.labelCargo.TabIndex = 3;
+            this.labelCargo.Text = "?";
             // 
             // EDDLiteForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(800, 602);
             this.Controls.Add(this.splitContainerDataLogs);
             this.Controls.Add(this.panelCmdrs);
             this.Controls.Add(this.tableLayoutPanelTop);
@@ -817,16 +947,29 @@
         private System.Windows.Forms.Label labelLocationH;
         private ExtendedControls.ExtButton extButtonInaraStation;
         private ExtendedControls.ExtButton extButtonInaraSystem;
-        private System.Windows.Forms.ToolStripMenuItem screenShotCaptureToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cmdrViewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem timeToolStripMenuItem;
         private System.Windows.Forms.Label labelData;
-        private System.Windows.Forms.Label labelCargo;
+        private System.Windows.Forms.Label labelLatestMission;
         private System.Windows.Forms.Label labelDataH;
         private System.Windows.Forms.Label labelCargoH;
         private System.Windows.Forms.Label labelMaterials;
         private System.Windows.Forms.Label labelMatH;
+        private System.Windows.Forms.ToolStripMenuItem screenShotCaptureToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem screenshotenableToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem configureToolStripMenuItem;
+        private System.Windows.Forms.Label labelCredits;
+        private System.Windows.Forms.Label labelCashHr;
+        private System.Windows.Forms.ToolStripMenuItem themeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eDSMToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eliteVerdanaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eliteEurocapsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.Label labelMissionH;
+        private System.Windows.Forms.Label labelMissionCount;
+        private System.Windows.Forms.Label labelCargo;
     }
 }
 

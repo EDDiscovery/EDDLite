@@ -1,22 +1,33 @@
-﻿using EliteDangerousCore;
-using EliteDangerousCore.DB;
-using EliteDangerousCore.JournalEvents;
+﻿/*
+ * Copyright © 2020 EDDiscovery development team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
+ * ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ * 
+ * EDDiscovery is not affiliated with Frontier Developments plc.
+ */
+
+using EliteDangerousCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace EDDLite
 {
     public class EDDLiteController
     {
+        public bool RequestRescan { get; set; } = false;
+
         private Thread controllerthread;
         private EDJournalClass journalmonitor;
         private Action<Action> InvokeAsyncOnUiThread;
-        EDDLiteForm UIForm;
+        private EDDLiteForm UIForm;
 
         public void Start(EDDLiteForm frm, Action<Action> invokeAsyncOnUiThread)
         {
@@ -41,7 +52,7 @@ namespace EDDLite
             journalmonitor.OnNewUIEvent += NewUIEvent;
 
             journalmonitor.SetupWatchers(true);
-            journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, false, forceLastReload: true, firebacknostore: (a) => InvokeAsyncOnUiThread(()=> { Entry(a,true); }));
+            journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, false, forceLastReload: true, firebacknostore: (a) => InvokeAsyncOnUiThread(() => { Entry(a, true); }));
 
             InvokeAsyncOnUiThread(() => { UIForm.ReadJournals(); });
 
@@ -49,6 +60,17 @@ namespace EDDLite
 
             while (!stopit)
             {
+                if ( RequestRescan )
+                {
+                    RequestRescan = false;
+
+                    journalmonitor.StopMonitor();
+                    journalmonitor.SetupWatchers(true);
+                    journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, false, forceLastReload: true, firebacknostore: (a) => InvokeAsyncOnUiThread(() => { Entry(a, true); }));
+                    journalmonitor.StartMonitor();
+                    InvokeAsyncOnUiThread(() => { UIForm.ReadJournals(); });
+                }
+
                 Thread.Sleep(100);
             }
 
@@ -67,6 +89,9 @@ namespace EDDLite
         OutfittingList outfitting = new OutfittingList();
         ShipInformationList shipinformationlist = new ShipInformationList();
         MaterialCommoditiesList matlist = new MaterialCommoditiesList();
+        MissionListAccumulator missionlistaccumulator = new MissionListAccumulator(); // and mission list..
+        Ledger cashledger = new Ledger();
+
         int currentcmdrnr = -1;
 
         public void Entry(JournalEntry je, bool stored)        // on UI thread. hooked into journal monitor and receives new entries.. Also call if you programatically add an entry
@@ -81,6 +106,8 @@ namespace EDDLite
                     outfitting = new OutfittingList();          // different commander, reset.
                     shipinformationlist = new ShipInformationList();
                     matlist = new MaterialCommoditiesList();
+                    missionlistaccumulator = new MissionListAccumulator(); // and mission list..
+                    cashledger = new Ledger();
                     currenthe = null;
                     currentcmdrnr = je.CommanderId;
                     EDCommander.CurrentCmdrID = currentcmdrnr;
@@ -88,6 +115,11 @@ namespace EDDLite
 
                 HistoryEntry he = HistoryEntry.FromJournalEntry(je, currenthe, false, out bool unusedjournalupdate);
                 he.UpdateMaterials( je, currenthe);
+
+                cashledger.Process(je);
+                he.Credits = cashledger.CashTotal;
+
+                he.MissionList = missionlistaccumulator.Process(je, he.System, he.WhereAmI);
 
                 currenthe = he;
                 lastutc = je.EventTimeUTC;

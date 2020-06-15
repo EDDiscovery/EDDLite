@@ -20,20 +20,13 @@ namespace EDDLite
     {
         private static EDDLiteTheme instance;
 
-        public static EDDLiteTheme Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new EDDLiteTheme();
-                    instance.LoadBaseThemes();
-                    instance.SetThemeByName("EDSM");
-                    ExtendedControls.ThemeableFormsInstance.Instance = instance;
-                }
+        public static EDDLiteTheme Instance { get { return instance; }  }
 
-                return instance;
-            }
+        public static void Init()
+        {
+            instance = new EDDLiteTheme();
+            instance.LoadBaseThemes();
+            ExtendedControls.ThemeableFormsInstance.Instance = instance;
         }
 
         private EDDLiteTheme()

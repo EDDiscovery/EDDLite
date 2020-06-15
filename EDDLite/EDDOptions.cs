@@ -143,6 +143,7 @@ namespace EDDLite
         // only for EDD compatibility
         public string SystemDatabasePath { get; private set; }
 
+        public string Version { get; private set; }
         public string VersionDisplayString { get; private set; }
         public string AppDataDirectory { get; private set; }
         public string UserDatabasePath { get; private set; }
@@ -152,7 +153,7 @@ namespace EDDLite
         public string OptionsFile { get; private set; }
         public bool DisableBetaCommanderCheck { get; private set; }
         public bool ForceBetaOnCommander { get; private set; }
-        public bool CheckRelease { get; private set; }
+        public bool CheckRelease { get; set; }
         public bool ResetLanguage { get; set; }
         public string SelectLanguage { get; set; }
         public bool SafeMode { get; set; }
@@ -247,7 +248,8 @@ namespace EDDLite
 
         private void SetVersionDisplayString()
         {
-            StringBuilder sb = new StringBuilder("Version " + Assembly.GetExecutingAssembly().FullName.Split(',')[1].Split('=')[1]);
+            Version = Assembly.GetExecutingAssembly().FullName.Split(',')[1].Split('=')[1];
+            StringBuilder sb = new StringBuilder("Version " + Version);
 
             if (AppFolder != null)
             {
