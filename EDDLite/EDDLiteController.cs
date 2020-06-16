@@ -23,16 +23,14 @@ namespace EDDLite
     public class EDDLiteController
     {
         public bool RequestRescan { get; set; } = false;
+        public Action<HistoryEntry> Refresh { get; set; } = null;
+        public Action<HistoryEntry,bool> NewEntry { get; set; } = null;
+        public Action<UIEvent> NewUI { get; set; } = null;
+        public Action<string> ProgressEvent { get; set; } = null;
 
-        private Thread controllerthread;
-        private EDJournalClass journalmonitor;
-        private Action<Action> InvokeAsyncOnUiThread;
-        private EDDLiteForm UIForm;
-
-        public void Start(EDDLiteForm frm, Action<Action> invokeAsyncOnUiThread)
+        public void Start(Action<Action> invokeAsyncOnUiThread)
         {
             InvokeAsyncOnUiThread = invokeAsyncOnUiThread;
-            UIForm = frm;
             controllerthread = new Thread(Controller);
             controllerthread.Start();
         }
@@ -47,14 +45,16 @@ namespace EDDLite
 
         private void Controller()
         {
-            journalmonitor = new EDJournalClass(InvokeAsyncOnUiThread);
-            journalmonitor.OnNewJournalEntry += NewEntry;
-            journalmonitor.OnNewUIEvent += NewUIEvent;
+            journalmonitor = new EDJournalUIScanner(InvokeAsyncOnUiThread);
+            journalmonitor.OnNewJournalEntry += (je) => { Entry(je, false); };
+            journalmonitor.OnNewUIEvent += (ui) => { InvokeAsyncOnUiThread(()=>NewUI?.Invoke(ui)); };
 
-            journalmonitor.SetupWatchers(true);
-            journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, false, forceLastReload: true, firebacknostore: (a) => InvokeAsyncOnUiThread(() => { Entry(a, true); }));
+            Reset();
+            journalmonitor.SetupWatchers();
+            // order the reading of last 2 files (in case continue) and fire back the last two
+            journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 2, (a) => InvokeAsyncOnUiThread(() => { Entry(a, true); }), 2);
 
-            InvokeAsyncOnUiThread(() => { UIForm.ReadJournals(); });
+            InvokeAsyncOnUiThread(() => { Refresh?.Invoke(currenthe); });
 
             journalmonitor.StartMonitor();
 
@@ -65,10 +65,11 @@ namespace EDDLite
                     RequestRescan = false;
 
                     journalmonitor.StopMonitor();
-                    journalmonitor.SetupWatchers(true);
-                    journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, false, forceLastReload: true, firebacknostore: (a) => InvokeAsyncOnUiThread(() => { Entry(a, true); }));
+                    Reset();
+                    journalmonitor.SetupWatchers();
+                    journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 2, (a) => InvokeAsyncOnUiThread(() => { Entry(a, true); }), 2);
                     journalmonitor.StartMonitor();
-                    InvokeAsyncOnUiThread(() => { UIForm.ReadJournals(); });
+                    InvokeAsyncOnUiThread(() => { Refresh?.Invoke(currenthe); });
                 }
 
                 Thread.Sleep(100);
@@ -79,20 +80,27 @@ namespace EDDLite
 
         private void UpdateWatcher(int p, string s) // in thread
         {
-            InvokeAsyncOnUiThread(() => { UIForm.JournalReadProgress(s); });
+            InvokeAsyncOnUiThread(() => { ProgressEvent?.Invoke(s); });
             System.Diagnostics.Debug.WriteLine("Update " + p + " " + s);
         }
 
-        DateTime lastutc = DateTime.Now.AddYears(-100);
+        DateTime lastutc;
 
-        HistoryEntry currenthe;
-        OutfittingList outfitting = new OutfittingList();
-        ShipInformationList shipinformationlist = new ShipInformationList();
-        MaterialCommoditiesList matlist = new MaterialCommoditiesList();
-        MissionListAccumulator missionlistaccumulator = new MissionListAccumulator(); // and mission list..
-        Ledger cashledger = new Ledger();
+        private void Reset(bool full = true)
+        {
+            currenthe = null;
+            outfitting = new OutfittingList();
+            shipinformationlist = new ShipInformationList();
+            matlist = new MaterialCommoditiesList();
+            missionlistaccumulator = new MissionListAccumulator(); // and mission list..
+            cashledger = new Ledger();
 
-        int currentcmdrnr = -1;
+            if (full)
+            {
+                lastutc = DateTime.Now.AddYears(-100);
+                currentcmdrnr = -1;
+            }
+        }
 
         public void Entry(JournalEntry je, bool stored)        // on UI thread. hooked into journal monitor and receives new entries.. Also call if you programatically add an entry
         {
@@ -103,12 +111,7 @@ namespace EDDLite
             {
                 if (je.CommanderId != currentcmdrnr)
                 {
-                    outfitting = new OutfittingList();          // different commander, reset.
-                    shipinformationlist = new ShipInformationList();
-                    matlist = new MaterialCommoditiesList();
-                    missionlistaccumulator = new MissionListAccumulator(); // and mission list..
-                    cashledger = new Ledger();
-                    currenthe = null;
+                    Reset(false);
                     currentcmdrnr = je.CommanderId;
                     EDCommander.CurrentCmdrID = currentcmdrnr;
                 }
@@ -129,22 +132,23 @@ namespace EDDLite
                 he.ShipInformation = ret.Item1;
                 he.StoredModules = ret.Item2;
 
-                UIForm.HistoryEvent(he,stored);
+                NewEntry?.Invoke(he, stored);
             }
             else
                 System.Diagnostics.Debug.WriteLine("Reject due to older");
         }
 
-        public void NewEntry(JournalEntry je)        // on UI thread. hooked into journal monitor and receives new entries.. Also call if you programatically add an entry
-        {
-            Entry(je, false);
-        }
+        private HistoryEntry currenthe;
+        private OutfittingList outfitting;
+        private ShipInformationList shipinformationlist;
+        private MaterialCommoditiesList matlist;
+        private MissionListAccumulator missionlistaccumulator;
+        private Ledger cashledger;
+        private int currentcmdrnr;
+        private Thread controllerthread;
+        private EDJournalUIScanner journalmonitor;
+        private Action<Action> InvokeAsyncOnUiThread;
 
-        void NewUIEvent(UIEvent u)                  // UI thread new event
-        {
-            System.Diagnostics.Debug.Assert(System.Windows.Forms.Application.MessageLoop);
-            System.Diagnostics.Debug.WriteLine("UI on UI thread " + u.EventTypeStr);
-            UIForm.UIEvent(u);
-        }
+
     }
 }

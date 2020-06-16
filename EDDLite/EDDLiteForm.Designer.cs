@@ -36,7 +36,6 @@
             this.screenshotenableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cmdrViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.themeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eDSMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,6 +69,7 @@
             this.labelMaterials = new System.Windows.Forms.Label();
             this.labelData = new System.Windows.Forms.Label();
             this.labelCredits = new System.Windows.Forms.Label();
+            this.labelCargo = new System.Windows.Forms.Label();
             this.labelMissionCount = new System.Windows.Forms.Label();
             this.labelLatestMission = new System.Windows.Forms.Label();
             this.labelMatH = new System.Windows.Forms.Label();
@@ -92,10 +92,9 @@
             this.panel_eddiscovery = new System.Windows.Forms.Panel();
             this.splitContainerDataLogs = new System.Windows.Forms.SplitContainer();
             this.extRichTextBoxLog = new ExtendedControls.ExtRichTextBox();
-            this.panelCmdrs = new System.Windows.Forms.Panel();
             this.tableLayoutPanelTop = new System.Windows.Forms.TableLayoutPanel();
             this.flowLayoutPanelRight = new System.Windows.Forms.FlowLayoutPanel();
-            this.labelCargo = new System.Windows.Forms.Label();
+            this.splitContainerCmdrDataLogs = new System.Windows.Forms.SplitContainer();
             this.menuMain.SuspendLayout();
             this.extPanelDataGridViewScrollCmdrs.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewCommanders)).BeginInit();
@@ -107,9 +106,12 @@
             this.splitContainerDataLogs.Panel1.SuspendLayout();
             this.splitContainerDataLogs.Panel2.SuspendLayout();
             this.splitContainerDataLogs.SuspendLayout();
-            this.panelCmdrs.SuspendLayout();
             this.tableLayoutPanelTop.SuspendLayout();
             this.flowLayoutPanelRight.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerCmdrDataLogs)).BeginInit();
+            this.splitContainerCmdrDataLogs.Panel1.SuspendLayout();
+            this.splitContainerCmdrDataLogs.Panel2.SuspendLayout();
+            this.splitContainerCmdrDataLogs.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuMain
@@ -160,21 +162,11 @@
             // viewToolStripMenuItem
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cmdrViewToolStripMenuItem,
             this.timeToolStripMenuItem,
             this.themeToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
-            // 
-            // cmdrViewToolStripMenuItem
-            // 
-            this.cmdrViewToolStripMenuItem.Checked = true;
-            this.cmdrViewToolStripMenuItem.CheckOnClick = true;
-            this.cmdrViewToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cmdrViewToolStripMenuItem.Name = "cmdrViewToolStripMenuItem";
-            this.cmdrViewToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.cmdrViewToolStripMenuItem.Text = "Commanders";
             // 
             // timeToolStripMenuItem
             // 
@@ -182,7 +174,7 @@
             this.timeToolStripMenuItem.CheckOnClick = true;
             this.timeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.timeToolStripMenuItem.Name = "timeToolStripMenuItem";
-            this.timeToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.timeToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.timeToolStripMenuItem.Text = "Time";
             // 
             // themeToolStripMenuItem
@@ -192,7 +184,7 @@
             this.eliteVerdanaToolStripMenuItem,
             this.eliteEurocapsToolStripMenuItem});
             this.themeToolStripMenuItem.Name = "themeToolStripMenuItem";
-            this.themeToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.themeToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.themeToolStripMenuItem.Text = "Theme";
             // 
             // eDSMToolStripMenuItem
@@ -240,7 +232,7 @@
             this.extPanelDataGridViewScrollCmdrs.LimitLargeChange = 2147483647;
             this.extPanelDataGridViewScrollCmdrs.Location = new System.Drawing.Point(0, 0);
             this.extPanelDataGridViewScrollCmdrs.Name = "extPanelDataGridViewScrollCmdrs";
-            this.extPanelDataGridViewScrollCmdrs.Size = new System.Drawing.Size(794, 92);
+            this.extPanelDataGridViewScrollCmdrs.Size = new System.Drawing.Size(794, 85);
             this.extPanelDataGridViewScrollCmdrs.TabIndex = 1;
             this.extPanelDataGridViewScrollCmdrs.VerticalScrollBarDockRight = true;
             // 
@@ -268,7 +260,7 @@
             this.dataGridViewCommanders.RowHeadersWidth = 20;
             this.dataGridViewCommanders.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.dataGridViewCommanders.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewCommanders.Size = new System.Drawing.Size(778, 92);
+            this.dataGridViewCommanders.Size = new System.Drawing.Size(778, 85);
             this.dataGridViewCommanders.TabIndex = 3;
             this.dataGridViewCommanders.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewCommanders_CellDoubleClick);
             this.dataGridViewCommanders.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewCommanders_MouseDown);
@@ -357,7 +349,7 @@
             this.extScrollBar1.MouseOverButtonColor = System.Drawing.Color.Green;
             this.extScrollBar1.MousePressedButtonColor = System.Drawing.Color.Red;
             this.extScrollBar1.Name = "extScrollBar1";
-            this.extScrollBar1.Size = new System.Drawing.Size(16, 92);
+            this.extScrollBar1.Size = new System.Drawing.Size(16, 85);
             this.extScrollBar1.SliderColor = System.Drawing.Color.DarkGray;
             this.extScrollBar1.SmallChange = 1;
             this.extScrollBar1.TabIndex = 0;
@@ -422,7 +414,7 @@
             this.extPanelScrollStatus.FlowControlsLeftToRight = false;
             this.extPanelScrollStatus.Location = new System.Drawing.Point(0, 0);
             this.extPanelScrollStatus.Name = "extPanelScrollStatus";
-            this.extPanelScrollStatus.Size = new System.Drawing.Size(794, 319);
+            this.extPanelScrollStatus.Size = new System.Drawing.Size(794, 321);
             this.extPanelScrollStatus.TabIndex = 5;
             this.extPanelScrollStatus.VerticalScrollBarDockRight = true;
             // 
@@ -528,6 +520,15 @@
             this.labelCredits.Size = new System.Drawing.Size(13, 13);
             this.labelCredits.TabIndex = 3;
             this.labelCredits.Text = "?";
+            // 
+            // labelCargo
+            // 
+            this.labelCargo.AutoSize = true;
+            this.labelCargo.Location = new System.Drawing.Point(60, 150);
+            this.labelCargo.Name = "labelCargo";
+            this.labelCargo.Size = new System.Drawing.Size(13, 13);
+            this.labelCargo.TabIndex = 3;
+            this.labelCargo.Text = "?";
             // 
             // labelMissionCount
             // 
@@ -649,12 +650,12 @@
             this.extScrollBar2.HideScrollBar = true;
             this.extScrollBar2.LargeChange = 10;
             this.extScrollBar2.Location = new System.Drawing.Point(778, 0);
-            this.extScrollBar2.Maximum = -127;
+            this.extScrollBar2.Maximum = -129;
             this.extScrollBar2.Minimum = 0;
             this.extScrollBar2.MouseOverButtonColor = System.Drawing.Color.Green;
             this.extScrollBar2.MousePressedButtonColor = System.Drawing.Color.Red;
             this.extScrollBar2.Name = "extScrollBar2";
-            this.extScrollBar2.Size = new System.Drawing.Size(16, 319);
+            this.extScrollBar2.Size = new System.Drawing.Size(16, 321);
             this.extScrollBar2.SliderColor = System.Drawing.Color.DarkGray;
             this.extScrollBar2.SmallChange = 1;
             this.extScrollBar2.TabIndex = 0;
@@ -663,8 +664,8 @@
             this.extScrollBar2.ThumbButtonColor = System.Drawing.Color.DarkBlue;
             this.extScrollBar2.ThumbColorScaling = 0.5F;
             this.extScrollBar2.ThumbDrawAngle = 0F;
-            this.extScrollBar2.Value = -127;
-            this.extScrollBar2.ValueLimited = -127;
+            this.extScrollBar2.Value = -129;
+            this.extScrollBar2.ValueLimited = -129;
             // 
             // flowLayoutPanelTop
             // 
@@ -676,7 +677,7 @@
             this.flowLayoutPanelTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.flowLayoutPanelTop.Location = new System.Drawing.Point(3, 3);
             this.flowLayoutPanelTop.Name = "flowLayoutPanelTop";
-            this.flowLayoutPanelTop.Size = new System.Drawing.Size(696, 24);
+            this.flowLayoutPanelTop.Size = new System.Drawing.Size(702, 24);
             this.flowLayoutPanelTop.TabIndex = 6;
             this.flowLayoutPanelTop.MouseDown += new System.Windows.Forms.MouseEventHandler(this.flowLayoutPanel1_MouseDown);
             this.flowLayoutPanelTop.MouseUp += new System.Windows.Forms.MouseEventHandler(this.flowLayoutPanel1_MouseUp);
@@ -777,7 +778,7 @@
             // splitContainerDataLogs
             // 
             this.splitContainerDataLogs.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainerDataLogs.Location = new System.Drawing.Point(3, 125);
+            this.splitContainerDataLogs.Location = new System.Drawing.Point(0, 0);
             this.splitContainerDataLogs.Name = "splitContainerDataLogs";
             this.splitContainerDataLogs.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -788,8 +789,8 @@
             // splitContainerDataLogs.Panel2
             // 
             this.splitContainerDataLogs.Panel2.Controls.Add(this.extRichTextBoxLog);
-            this.splitContainerDataLogs.Size = new System.Drawing.Size(794, 452);
-            this.splitContainerDataLogs.SplitterDistance = 319;
+            this.splitContainerDataLogs.Size = new System.Drawing.Size(794, 455);
+            this.splitContainerDataLogs.SplitterDistance = 321;
             this.splitContainerDataLogs.TabIndex = 1;
             // 
             // extRichTextBoxLog
@@ -815,19 +816,10 @@
             this.extRichTextBoxLog.ScrollBarThumbBorderColor = System.Drawing.Color.Yellow;
             this.extRichTextBoxLog.ScrollBarThumbButtonColor = System.Drawing.Color.DarkBlue;
             this.extRichTextBoxLog.ShowLineCount = false;
-            this.extRichTextBoxLog.Size = new System.Drawing.Size(794, 129);
+            this.extRichTextBoxLog.Size = new System.Drawing.Size(794, 130);
             this.extRichTextBoxLog.TabIndex = 0;
             this.extRichTextBoxLog.TextBoxBackColor = System.Drawing.SystemColors.Control;
             this.extRichTextBoxLog.TextBoxForeColor = System.Drawing.SystemColors.ControlText;
-            // 
-            // panelCmdrs
-            // 
-            this.panelCmdrs.Controls.Add(this.extPanelDataGridViewScrollCmdrs);
-            this.panelCmdrs.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelCmdrs.Location = new System.Drawing.Point(3, 33);
-            this.panelCmdrs.Name = "panelCmdrs";
-            this.panelCmdrs.Size = new System.Drawing.Size(794, 92);
-            this.panelCmdrs.TabIndex = 1;
             // 
             // tableLayoutPanelTop
             // 
@@ -850,27 +842,36 @@
             this.flowLayoutPanelRight.Controls.Add(this.panel_eddiscovery);
             this.flowLayoutPanelRight.Controls.Add(this.panel_minimize);
             this.flowLayoutPanelRight.Controls.Add(this.panel_close);
-            this.flowLayoutPanelRight.Location = new System.Drawing.Point(705, 3);
+            this.flowLayoutPanelRight.Location = new System.Drawing.Point(711, 3);
             this.flowLayoutPanelRight.Name = "flowLayoutPanelRight";
-            this.flowLayoutPanelRight.Size = new System.Drawing.Size(86, 24);
+            this.flowLayoutPanelRight.Size = new System.Drawing.Size(80, 24);
             this.flowLayoutPanelRight.TabIndex = 7;
             // 
-            // labelCargo
+            // splitContainerCmdrDataLogs
             // 
-            this.labelCargo.AutoSize = true;
-            this.labelCargo.Location = new System.Drawing.Point(60, 150);
-            this.labelCargo.Name = "labelCargo";
-            this.labelCargo.Size = new System.Drawing.Size(13, 13);
-            this.labelCargo.TabIndex = 3;
-            this.labelCargo.Text = "?";
+            this.splitContainerCmdrDataLogs.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainerCmdrDataLogs.Location = new System.Drawing.Point(3, 33);
+            this.splitContainerCmdrDataLogs.Name = "splitContainerCmdrDataLogs";
+            this.splitContainerCmdrDataLogs.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainerCmdrDataLogs.Panel1
+            // 
+            this.splitContainerCmdrDataLogs.Panel1.Controls.Add(this.extPanelDataGridViewScrollCmdrs);
+            this.splitContainerCmdrDataLogs.Panel1MinSize = 2;
+            // 
+            // splitContainerCmdrDataLogs.Panel2
+            // 
+            this.splitContainerCmdrDataLogs.Panel2.Controls.Add(this.splitContainerDataLogs);
+            this.splitContainerCmdrDataLogs.Size = new System.Drawing.Size(794, 544);
+            this.splitContainerCmdrDataLogs.SplitterDistance = 85;
+            this.splitContainerCmdrDataLogs.TabIndex = 7;
             // 
             // EDDLiteForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 602);
-            this.Controls.Add(this.splitContainerDataLogs);
-            this.Controls.Add(this.panelCmdrs);
+            this.Controls.Add(this.splitContainerCmdrDataLogs);
             this.Controls.Add(this.tableLayoutPanelTop);
             this.Controls.Add(this.extStatusStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -893,10 +894,13 @@
             this.splitContainerDataLogs.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerDataLogs)).EndInit();
             this.splitContainerDataLogs.ResumeLayout(false);
-            this.panelCmdrs.ResumeLayout(false);
             this.tableLayoutPanelTop.ResumeLayout(false);
             this.tableLayoutPanelTop.PerformLayout();
             this.flowLayoutPanelRight.ResumeLayout(false);
+            this.splitContainerCmdrDataLogs.Panel1.ResumeLayout(false);
+            this.splitContainerCmdrDataLogs.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerCmdrDataLogs)).EndInit();
+            this.splitContainerCmdrDataLogs.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -916,7 +920,6 @@
         private ExtendedControls.ExtRichTextBox extRichTextBoxLog;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatus;
-        private System.Windows.Forms.Panel panelCmdrs;
         private System.Windows.Forms.DataGridView dataGridViewCommanders;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnCommander;
         private System.Windows.Forms.DataGridViewTextBoxColumn EdsmName;
@@ -948,7 +951,6 @@
         private ExtendedControls.ExtButton extButtonInaraStation;
         private ExtendedControls.ExtButton extButtonInaraSystem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem cmdrViewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem timeToolStripMenuItem;
         private System.Windows.Forms.Label labelData;
         private System.Windows.Forms.Label labelLatestMission;
@@ -970,6 +972,7 @@
         private System.Windows.Forms.Label labelMissionH;
         private System.Windows.Forms.Label labelMissionCount;
         private System.Windows.Forms.Label labelCargo;
+        private System.Windows.Forms.SplitContainer splitContainerCmdrDataLogs;
     }
 }
 

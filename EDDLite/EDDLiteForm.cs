@@ -68,7 +68,11 @@ namespace EDDLite
             screenshotenableToolStripMenuItem.CheckedChanged += new System.EventHandler(this.enableToolStripMenuItem_CheckedChanged);
 
             controller = new EDDLiteController();
-            controller.Start(this, a => BeginInvoke(a));
+            controller.ProgressEvent += (s) => { toolStripStatus.Text = s; };
+            controller.Refresh += ReadJournals;
+            controller.NewEntry += HistoryEvent;
+
+            controller.Start(a => BeginInvoke(a));
 
             if (!EDDOptions.Instance.DisableTimeDisplay)
             {
@@ -82,9 +86,7 @@ namespace EDDLite
                 this.timeToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.timeToolStripMenuItem_CheckStateChanged);
             }
 
-            this.cmdrViewToolStripMenuItem.Checked = panelCmdrs.Visible = UserDatabase.Instance.GetSettingBool("CmdrView", true);
-            this.cmdrViewToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.cmdrViewToolStripMenuItem_CheckStateChanged);
-
+            splitContainerCmdrDataLogs.SplitterDistance(UserDatabase.Instance.GetSettingDouble("CmdrDataLogSplitter", 0.1));
             splitContainerDataLogs.SplitterDistance(UserDatabase.Instance.GetSettingDouble("DataLogSplitter", 0.8));
 
             EliteDangerousCore.IGAU.IGAUClass.SoftwareName =
@@ -135,7 +137,8 @@ namespace EDDLite
                                 "Warning".T(EDTx.Warning),
                                 MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                 {
-                    EliteDangerousCore.DB.UserDatabase.Instance.PutSettingString("DLLAllowed", alloweddlls.AppendPrePad(res.Item3, ","));
+                    alloweddlls = alloweddlls.AppendPrePad(res.Item3, ",");
+                    EliteDangerousCore.DB.UserDatabase.Instance.PutSettingString("DLLAllowed", alloweddlls);
                     DLLManager.UnLoad();
                     res = DLLManager.Load(EDDOptions.Instance.DLLAppDirectory(), verstring, EDDOptions.Instance.DLLAppDirectory(), DLLCallBacks, alloweddlls);
                 }
@@ -146,7 +149,7 @@ namespace EDDLite
             if (res.Item2.HasChars())
                 LogLine(string.Format("DLLs failed to load: {0}".T(EDTx.EDDiscoveryForm_DLLF), res.Item2));
 
-            // EDDOptions.Instance.CheckRelease = true; // use this to force check for debugging
+            //EDDOptions.Instance.CheckRelease = true; // use this to force check for debugging
 
             Installer.CheckForNewInstallerAsync((rel) =>  // in thread
             {
@@ -168,12 +171,12 @@ namespace EDDLite
             controller.Stop();
             EDSMJournalSync.StopSync();
             UserDatabase.Instance.PutSettingDouble("DataLogSplitter", splitContainerDataLogs.GetSplitterDistance());
+            UserDatabase.Instance.PutSettingDouble("CmdrDataLogSplitter", splitContainerCmdrDataLogs.GetSplitterDistance());
             screenshot.Stop();
             screenshot.SaveSettings();
             DLLManager.UnLoad();
             base.OnClosing(e);
         }
-
 
         public bool DLLRequestHistory(long index, bool isjid, out EDDDLLIF.JournalEntry f)
         {
@@ -183,53 +186,89 @@ namespace EDDLite
 
         #region Controller feedback
 
-        public void JournalReadProgress(string s )
-        {
-            toolStripStatus.Text = s;
-        }
-
-        public void ReadJournals()
+        public void ReadJournals(HistoryEntry currenthe)
         {
             LogLine("Journals fully read");
 
             dataGridViewCommanders.AutoGenerateColumns = false;             // BEFORE assigned to list..
             dataGridViewCommanders.DataSource = EDCommander.GetListCommanders();
-            refreshed = true;
+
+            if (currenthe != null)
+            {
+                DLLManager.Refresh(EDCommander.Current.Name, EDDDLLCallerHE.CreateFromHistoryEntry(currenthe));
+                if (currenthe.Commander.SyncToInara)
+                {
+                    EliteDangerousCore.Inara.InaraSync.Refresh(LogLine, currenthe, currenthe.Commander);
+                }
+            }
         }
 
         HistoryEntry lasthe = null;
-        bool refreshed = true;
 
         public void HistoryEvent(HistoryEntry he, bool stored)
         {
-            lasthe = he;
-            he.journalEntry.FillInformation(out string info, out string detailed);
-
-            LogLine(he.EventTimeUTC + " " + he.journalEntry.EventTypeStr + " " + info);
-            extButtonEDSM.Enabled = true;
-            extButtonEDSY.Enabled = extButtonCoriolis.Enabled = he.ShipInformation != null;
-            extButtonInaraStation.Enabled = he.IsDocked;
-            extButtonInaraSystem.Enabled = true;
-            labelCmdr.Text = he.Commander.Name;
-            if (EDCommander.Current.Name != he.Commander.Name)
-                labelCmdr.Text += " Report clash " + EDCommander.Current.Name;
-
-            labelSystem.Text = he.System.Name;
-            labelLocation.Text = he.WhereAmI;
-            labelShip.Text = he.ShipInformation?.Name ?? "Unknown";
-            labelData.Text = he.MaterialCommodity.DataCount.ToString();
-            labelCargo.Text = he.MaterialCommodity.CargoCount.ToString();
-            labelMaterials.Text = he.MaterialCommodity.MaterialsCount.ToString();
-            labelCredits.Text = he.Credits.ToString("N0");
-            labelMissionCount.Text = he.MissionList.Missions.Count.ToString();
-            if (he.MissionList.Missions.Count > 0)
+            if ( lasthe == null || he.Commander.Name != lasthe.Commander.Name )
             {
-                var last = he.MissionList.GetAllCurrentMissions(DateTime.Now)[0];
-                labelLatestMission.Text = BaseUtils.FieldBuilder.Build("", last.Mission.LocalisedName, "", last.Mission.Expiry, "", last.Mission.DestinationSystem, "", last.Mission.DestinationStation);
+                labelCmdr.Text = he.Commander.Name;
+                if (EDCommander.Current.Name != he.Commander.Name)
+                    labelCmdr.Text += " Report clash " + EDCommander.Current.Name;
             }
-            else
-                labelLatestMission.Text = "";
 
+            if (lasthe == null || he.System.Name != lasthe.System.Name)
+            {
+                extButtonEDSM.Enabled = true;
+                extButtonInaraSystem.Enabled = true;
+                labelSystem.Text = he.System.Name;
+            }
+
+            if (lasthe == null || he.WhereAmI != lasthe.WhereAmI)
+            {
+                labelLocation.Text = he.WhereAmI;
+            }
+
+            extButtonEDSY.Enabled = extButtonCoriolis.Enabled = he.ShipInformation != null;
+
+            if (he.ShipInformation != null && (lasthe == null || lasthe.ShipInformation == null || he.ShipInformation.ShipNameIdentType != lasthe.ShipInformation.ShipNameIdentType ))
+            {
+                labelShip.Text = he.ShipInformation.ShipNameIdentType ?? "Unknown";
+            }
+
+            if (lasthe == null || he.MaterialCommodity.DataCount != lasthe.MaterialCommodity.DataCount || he.MaterialCommodity.CargoCount != lasthe.MaterialCommodity.CargoCount
+                                    || he.MaterialCommodity.MaterialsCount != lasthe.MaterialCommodity.MaterialsCount)
+            {
+                labelData.Text = he.MaterialCommodity.DataCount.ToString();
+                labelCargo.Text = he.MaterialCommodity.CargoCount.ToString();
+                labelMaterials.Text = he.MaterialCommodity.MaterialsCount.ToString();
+            }
+
+            if (lasthe == null || he.Credits != lasthe.Credits)
+            {
+                labelCredits.Text = he.Credits.ToString("N0");
+            }
+
+            he.journalEntry.FillInformation(out string info, out string detailed);
+            LogLine(he.EventTimeUTC + " " + he.journalEntry.EventTypeStr + " " + info);
+
+            extButtonInaraStation.Enabled = he.IsDocked;
+
+            if (he.MissionList != null )
+            {
+                labelMissionCount.Text = he.MissionList.Missions.Count.ToString();
+                string mtext = "";
+                if (he.MissionList.Missions.Count > 0)
+                {
+                    var list = he.MissionList.GetAllCurrentMissions(DateTime.Now);
+                    if (list.Count > 0)
+                    {
+                        var last = list[0];
+                        mtext = BaseUtils.FieldBuilder.Build("", last.Mission.LocalisedName, "", last.Mission.Expiry, "", last.Mission.DestinationSystem, "", last.Mission.DestinationStation);
+                    }
+                }
+
+                labelLatestMission.Text = mtext;
+            }
+
+            lasthe = he;
 
             if (!stored)
             {
@@ -246,32 +285,19 @@ namespace EDDLite
                 if (EliteDangerousCore.EDDN.EDDNClass.IsEDDNMessage(he.EntryType, he.EventTimeUTC) && he.AgeOfEntry() < TimeSpan.FromDays(1.0) &&
                         he.Commander.SyncToEddn == true)
                 {
-                    EliteDangerousCore.EDDN.EDDNSync.SendEDDNEvents(LogLine, he);
+                  //  EliteDangerousCore.EDDN.EDDNSync.SendEDDNEvents(LogLine, he);
                 }
 
-                if ( he.Commander.SyncToInara)
+                if (he.Commander.SyncToInara)
                 {
-                    if (refreshed)
-                    {
-                        EliteDangerousCore.Inara.InaraSync.Refresh(LogLine, he, he.Commander);
-                    }
-
                     EliteDangerousCore.Inara.InaraSync.NewEvent(LogLine, he);
                 }
 
-                if ( refreshed )
-                {
-                    DLLManager.Refresh(EDCommander.Current.Name, EDDDLLCallerHE.CreateFromHistoryEntry(he));
-                }
-
-                if ( DLLManager.Count>0 )       // if worth calling..
+                if (DLLManager.Count > 0)       // if worth calling..
                     DLLManager.NewJournalEntry(EDDDLLCallerHE.CreateFromHistoryEntry(he));
 
                 screenshot.NewJournalEntry(he.journalEntry);
-
-                refreshed = false;
             }
-
         }
 
         public void UIEvent(UIEvent u)
@@ -497,11 +523,6 @@ namespace EDDLite
         #endregion
 
         #region Menu UI
-        private void cmdrViewToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
-        {
-            panelCmdrs.Visible = cmdrViewToolStripMenuItem.Checked;
-            UserDatabase.Instance.PutSettingBool("CmdrView", cmdrViewToolStripMenuItem.Checked);
-        }
 
         private void timeToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
         {
