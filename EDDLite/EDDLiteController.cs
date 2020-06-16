@@ -27,6 +27,7 @@ namespace EDDLite
         public Action<HistoryEntry,bool> NewEntry { get; set; } = null;
         public Action<UIEvent> NewUI { get; set; } = null;
         public Action<string> ProgressEvent { get; set; } = null;
+        public Action<string> LogLine { get; set; } = null;
 
         public void Start(Action<Action> invokeAsyncOnUiThread)
         {
@@ -49,12 +50,15 @@ namespace EDDLite
             journalmonitor.OnNewJournalEntry += (je) => { Entry(je, false); };
             journalmonitor.OnNewUIEvent += (ui) => { InvokeAsyncOnUiThread(()=>NewUI?.Invoke(ui)); };
 
+            LogLine?.Invoke("Reading Journals");
             Reset();
             journalmonitor.SetupWatchers();
             // order the reading of last 2 files (in case continue) and fire back the last two
             journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 2, (a) => InvokeAsyncOnUiThread(() => { Entry(a, true); }), 2);
 
             InvokeAsyncOnUiThread(() => { Refresh?.Invoke(currenthe); });
+
+            LogLine?.Invoke("Finished reading Journals");
 
             journalmonitor.StartMonitor();
 
@@ -64,12 +68,14 @@ namespace EDDLite
                 {
                     RequestRescan = false;
 
+                    LogLine?.Invoke("Re-reading Journals");
                     journalmonitor.StopMonitor();
                     Reset();
                     journalmonitor.SetupWatchers();
                     journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 2, (a) => InvokeAsyncOnUiThread(() => { Entry(a, true); }), 2);
                     journalmonitor.StartMonitor();
                     InvokeAsyncOnUiThread(() => { Refresh?.Invoke(currenthe); });
+                    LogLine?.Invoke("Finished reading Journals");
                 }
 
                 Thread.Sleep(100);

@@ -39,7 +39,8 @@ namespace EDDLite
         {
             InitializeComponent();
 
-            System.Diagnostics.Debug.WriteLine("App data " + EDDOptions.Instance.AppDataDirectory);
+            var appdata = EDDOptions.Instance.AppDataDirectory;     // FORCE ED options to Instance - do not remove.
+            System.Diagnostics.Debug.WriteLine("App data " + appdata);
 
             UserDatabase.Instance.Start("UserDB");
             UserDatabase.Instance.Initialize();
@@ -71,8 +72,7 @@ namespace EDDLite
             controller.ProgressEvent += (s) => { toolStripStatus.Text = s; };
             controller.Refresh += ReadJournals;
             controller.NewEntry += HistoryEvent;
-
-            controller.Start(a => BeginInvoke(a));
+            controller.LogLine += LogLine;
 
             if (!EDDOptions.Instance.DisableTimeDisplay)
             {
@@ -157,13 +157,14 @@ namespace EDDLite
                 {
                     LogLine(string.Format("New EDDLite installer available: {0}".T(EDTx.EDDiscoveryForm_NI), rel.ReleaseName));
                     labelInfoBoxTop.Text = "New Release Available!".T(EDTx.EDDiscoveryForm_NRA);
-                    if ( ExtendedControls.MessageBoxTheme.Show("New EDDLite Available, please upgrade!", "Warning".T(EDTx.Warning), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK )
+                    if (ExtendedControls.MessageBoxTheme.Show("New EDDLite Available, please upgrade!", "Warning".T(EDTx.Warning), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
                     {
                         System.Diagnostics.Process.Start(Properties.Resources.URLProjectReleases);
                     }
                 });
             });
 
+            controller.Start(a => BeginInvoke(a));
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -188,8 +189,6 @@ namespace EDDLite
 
         public void ReadJournals(HistoryEntry currenthe)
         {
-            LogLine("Journals fully read");
-
             dataGridViewCommanders.AutoGenerateColumns = false;             // BEFORE assigned to list..
             dataGridViewCommanders.DataSource = EDCommander.GetListCommanders();
 
@@ -285,7 +284,7 @@ namespace EDDLite
                 if (EliteDangerousCore.EDDN.EDDNClass.IsEDDNMessage(he.EntryType, he.EventTimeUTC) && he.AgeOfEntry() < TimeSpan.FromDays(1.0) &&
                         he.Commander.SyncToEddn == true)
                 {
-                  //  EliteDangerousCore.EDDN.EDDNSync.SendEDDNEvents(LogLine, he);
+                    EliteDangerousCore.EDDN.EDDNSync.SendEDDNEvents(LogLine, he);
                 }
 
                 if (he.Commander.SyncToInara)
