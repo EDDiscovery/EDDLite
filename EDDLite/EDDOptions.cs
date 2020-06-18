@@ -319,6 +319,16 @@ namespace EDDLite
             }
         }
 
+        private void ProcessConfigVariables()
+        {
+            var appsettings = System.Configuration.ConfigurationManager.AppSettings;
+
+            if (appsettings["StoreDataInProgramDirectory"] == "true")
+                StoreDataInProgramDirectory = true;
+
+            UserDatabasePath = appsettings["UserDatabasePath"];
+        }
+
 
         private void Init()
         {
@@ -326,6 +336,7 @@ namespace EDDLite
             CheckRelease = true;
 #endif
 
+            ProcessConfigVariables();
             ProcessCommandLineForOptionsFile(ExeDirectory(), ProcessOption);     // go thru the command line looking for -optionfile, use relative base dir
 
             string optval = Path.Combine(ExeDirectory(), "options.txt");      // options in the exe folder.
