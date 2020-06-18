@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="Version">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -92,11 +92,13 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <Compile Include="Properties\ExtraVersion.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="App.Portable.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -154,5 +156,137 @@
   <ItemGroup>
     <None Include="Resources\Credits.txt" />
   </ItemGroup>
+  <UsingTask TaskName="Zip" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <OutputFilename ParameterType="System.String" Required="true" />
+      <BaseDirectory ParameterType="System.String" Required="true" />
+      <Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.IO.Compression" />
+      <Using Namespace="System.IO.Compression" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+            try
+            {
+                var zipnames = new HashSet<string>();
+                Log.LogMessage("Zip root '" + BaseDirectory + "'", MessageImportance.High);
+
+                using (Stream zipStream = new FileStream(Path.GetFullPath(OutputFilename), FileMode.Create, FileAccess.Write))
+                {
+                    using (ZipArchive archive = new ZipArchive(zipStream, ZipArchiveMode.Create))
+                    {
+                        foreach (ITaskItem fileItem in Files)
+                        {
+                            string filename = fileItem.ItemSpec;
+
+                            if (File.Exists(filename))
+                            {
+                                string name = fileItem.GetMetadata("Name");
+                                string metaname = name;
+
+                                if (String.IsNullOrEmpty(name))
+                                {
+                                    if (filename.StartsWith(BaseDirectory))
+                                    {
+                                        name = filename.Substring(BaseDirectory.Length);
+                                    }
+                                    else
+                                    {
+                                        name = Path.GetFileName(filename);
+                                    }
+                                }
+
+                                Log.LogMessage(".. zip up '" + filename + "' m:'" + metaname + "' -> '" + name + "'", MessageImportance.High);
+
+                                if (!zipnames.Contains(name))
+                                {
+                                    using (Stream fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read))
+                                    {
+                                        using (Stream fileStreamInZip = archive.CreateEntry(name).Open())
+                                        {
+                                            fileStream.CopyTo(fileStreamInZip);
+                                            zipnames.Add(name);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.LogErrorFromException(ex);
+                return false;
+            }
+      ]]></Code>
+    </Task>
+  </UsingTask>
+  <Target Name="MakeZip" Condition=" '$(OS)' != 'Unix' and '$(OutDir)' != '' and Exists('$(TargetPath)') " AfterTargets="Build">
+    <ItemGroup>
+      <ZipFiles Include="$(TargetPath)" />
+      <ZipFiles Include="$(OutDir)*.dll" />
+      <ZipFiles Include="$(OutDir)*.pdb" />
+      <ZipFiles Include="$(ProjectDir)\Translations\*.tlf" />
+      <ZipFiles Include="$(ProjectDir)\UserControls\*.tlp" />
+      <ZipFiles Include="$(SolutionDir)\EliteDangerousCore\EliteDangerous\EliteDangerous\*.tlp" />
+      <ZipFiles Include="$(SolutionDir)\EliteDangerousCore\EliteDangerous\JournalEvents\*.tlp" />
+      <ZipFiles Include="$(ProjectDir)App.Portable.config">
+        <Name>EDDiscovery.exe.config</Name>
+      </ZipFiles>
+      <Zipfiles Include="$(OutDir)x64\SQLite.Interop.dll">
+        <Name>x64\SQLite.Interop.dll</Name>
+      </Zipfiles>
+      <Zipfiles Include="$(OutDir)x86\SQLite.Interop.dll">
+        <Name>x86\SQLite.Interop.dll</Name>
+      </Zipfiles>
+    </ItemGroup>
+    <Message Text="Portable build Zip up '@(ZipFiles)' -&gt; '$(OutDir)EDDLite.Portable.zip'" />
+    <Zip OutputFilename="$(OutDir)EDDLite.Portable.zip" BaseDirectory="$(OutDir)" Files="@(ZipFiles)" />
+    <Error Condition="!Exists('$(OutDir)EDDLite.Portable.zip')" Text="Unknown error in BuildPortableZip." />
+  </Target>
+  <Target Name="Version" BeforeTargets="Build">
+    <PropertyGroup Condition=" '$(OS)' != 'Unix' ">
+      <GitPath>$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\GitForWindows@InstallPath)</GitPath>
+      <GitPath Condition=" '$(GitPath)' == '' Or !Exists('$(GitPath)\bin\git.exe') ">$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\GitForWindows', 'InstallPath', null, RegistryView.Registry64))</GitPath>
+      <GitPath Condition=" '$(GitPath)' != '' ">$(GitPath)\bin\git.exe</GitPath>
+      <GitPath Condition=" !Exists('$(GitPath)') ">git.exe</GitPath>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(OS)' == 'Unix' ">
+      <GitPath Condition=" Exists('/usr/bin/git') ">/usr/bin/git</GitPath>
+      <GitPath Condition=" '$(GitPath)' == '' ">git</GitPath>
+    </PropertyGroup>
+    <PropertyGroup>
+      <MSBuildCommunityTasksPath>$(SolutionDir)\packages\MSBuildTasks.1.5.0.235\tools</MSBuildCommunityTasksPath>
+    </PropertyGroup>
+    <PropertyGroup>
+      <In>$([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)/Properties/AssemblyInfo.cs'))</In>
+      <Pattern>^\s*\[assembly: AssemblyVersion\(\D*(\d+)\.(\d+(\.\d+)*)</Pattern>
+      <AssemblyVersionMajor>$([System.Text.RegularExpressions.Regex]::Match($(In), $(Pattern), System.Text.RegularExpressions.RegexOptions.Multiline).Groups[1].Value)</AssemblyVersionMajor>
+      <AssemblyVersionMinor>$([System.Text.RegularExpressions.Regex]::Match($(In), $(Pattern), System.Text.RegularExpressions.RegexOptions.Multiline).Groups[2].Value)</AssemblyVersionMinor>
+    </PropertyGroup>
+    <Exec Command="&quot;$(GitPath)&quot; describe --always --dirty" ConsoleToMsBuild="true" EchoOff="true" StandardOutputImportance="low" StandardErrorImportance="low" IgnoreExitCode="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitHash" />
+      <Output TaskParameter="ExitCode" PropertyName="GitExitCode" />
+    </Exec>
+    <PropertyGroup Condition="$(GitExitCode) != 0">
+      <GitCommitHash>
+      </GitCommitHash>
+      <GitCommitHash Condition="Exists('$(SolutionDir)/.git/HEAD')">$([System.IO.File]::ReadAllText('$(SolutionDir)/.git/HEAD'))</GitCommitHash>
+      <Pattern>^ref: (.*)$</Pattern>
+      <GitCommitRef Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(GitCommitHash), $(Pattern)))">$([System.Text.RegularExpressions.Regex]::Match($(GitCommitHash), $(Pattern)).Groups[1].Value)</GitCommitRef>
+      <GitCommitHash Condition="'$(GitCommitRef)' != '' And Exists('$(SolutionDir)/.git/$(GitCommitRef)')">$([System.IO.File]::ReadAllText('$(SolutionDir)/.git/$(GitCommitRef)'))</GitCommitHash>
+      <Pattern>^([0-9a-f]{7})[0-9a-f]*$</Pattern>
+      <GitCommitHash Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(GitCommitHash), $(Pattern)))">$(GitCommitHash.SubString(0,7))</GitCommitHash>
+    </PropertyGroup>
+    <Message Importance="high" Text="Version: $(AssemblyVersionMajor).$(AssemblyVersionMinor), Commit: $(GitCommitHash)" />
+    <ItemGroup>
+      <AssemblyAttribute Include="System.Reflection.AssemblyInformationalVersionAttribute">
+        <_Parameter1>$(AssemblyVersionMajor).$(AssemblyVersionMinor)+$(GitCommitHash)</_Parameter1>
+      </AssemblyAttribute>
+    </ItemGroup>
+    <WriteCodeFragment AssemblyAttributes="@(AssemblyAttribute)" Language="C#" OutputFile="Properties\ExtraVersion.cs" />
+  </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
