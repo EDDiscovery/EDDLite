@@ -1,0 +1,8 @@
+language: csharp
+solution: EDDLite.sln
+mono:
+  - latest
+install:
+  - nuget restore EDDLite.sln
+script:
+  - msbuild /p:Configuration=Release EDDLite.sln /p:DefineConstants=NO_SYSTEM_SPEECH

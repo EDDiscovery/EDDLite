@@ -1,0 +1,15 @@
+version: 0.5.0.{build}
+image: Visual Studio 2017
+configuration: Release
+install:
+  - git submodule update --init
+before_build:
+  - nuget restore
+build:
+  project: EDDLite.sln
+after_build:
+  - cmd: copy EDDLite\bin\Release\EDDLite.Portable.zip EDDLite.Portable.zip
+artifacts:
+  - path: EDDLite.Portable.zip
+cache:
+  - packages -> **\packages.config
