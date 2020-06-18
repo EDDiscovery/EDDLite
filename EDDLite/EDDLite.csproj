@@ -233,7 +233,7 @@
       <ZipFiles Include="$(SolutionDir)\EliteDangerousCore\EliteDangerous\EliteDangerous\*.tlp" />
       <ZipFiles Include="$(SolutionDir)\EliteDangerousCore\EliteDangerous\JournalEvents\*.tlp" />
       <ZipFiles Include="$(ProjectDir)App.Portable.config">
-        <Name>EDDiscovery.exe.config</Name>
+        <Name>EDDLite.exe.config</Name>
       </ZipFiles>
       <Zipfiles Include="$(OutDir)x64\SQLite.Interop.dll">
         <Name>x64\SQLite.Interop.dll</Name>
