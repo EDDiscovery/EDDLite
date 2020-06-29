@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDDLite", "EDDLite\EDDLite.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EliteDangerous", "EliteDangerousCore\EliteDangerous\EliteDangerous.csproj", "{019917A4-7342-4F67-8AAF-9E20C016A935}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDDDLLInterfaces", "EliteDangerousCore\EDDDLLInterfaces\EDDDLLInterfaces.csproj", "{829041B1-D4A5-48D9-8260-B5EEFF28BCD8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{019917A4-7342-4F67-8AAF-9E20C016A935}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{019917A4-7342-4F67-8AAF-9E20C016A935}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{019917A4-7342-4F67-8AAF-9E20C016A935}.Release|Any CPU.Build.0 = Release|Any CPU
+		{829041B1-D4A5-48D9-8260-B5EEFF28BCD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{829041B1-D4A5-48D9-8260-B5EEFF28BCD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{829041B1-D4A5-48D9-8260-B5EEFF28BCD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{829041B1-D4A5-48D9-8260-B5EEFF28BCD8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

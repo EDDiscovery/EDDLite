@@ -97,6 +97,16 @@ namespace EDDLite.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EDDB {
+            get {
+                object obj = ResourceManager.GetObject("EDDB", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon edlogo_3mo_icon {
@@ -180,6 +190,24 @@ namespace EDDLite.Properties {
         internal static string URLeddb {
             get {
                 return ResourceManager.GetString("URLeddb", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://eddb.io/station/market-id/.
+        /// </summary>
+        internal static string URLEDDBStationMarketId {
+            get {
+                return ResourceManager.GetString("URLEDDBStationMarketId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://eddb.io/system/name/.
+        /// </summary>
+        internal static string URLEDDBSystemName {
+            get {
+                return ResourceManager.GetString("URLEDDBSystemName", resourceCulture);
             }
         }
         

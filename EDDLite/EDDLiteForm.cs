@@ -19,9 +19,11 @@ using EliteDangerousCore.DB;
 using EliteDangerousCore.DLL;
 using EliteDangerousCore.EDSM;
 using EliteDangerousCore.ScreenShots;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Web;
 using System.Windows.Forms;
 
@@ -33,11 +35,14 @@ namespace EDDLite
         Timer datetimetimer;
         ScreenShotConverter screenshot;
         EDDDLLManager DLLManager;
-        EDDDLLIF.EDDCallBacks DLLCallBacks;
+        EDDDLLInterfaces.EDDDLLIF.EDDCallBacks DLLCallBacks;
 
         public EDDLiteForm()
         {
             InitializeComponent();
+
+            // verify its first so its on top
+            System.Diagnostics.Debug.Assert(extPanelScrollStatus.Controls[0] is ExtendedControls.ExtScrollBar);
 
             var appdata = EDDOptions.Instance.AppDataDirectory;     // FORCE ED options to Instance - do not remove.
             System.Diagnostics.Debug.WriteLine("App data " + appdata);
@@ -60,19 +65,23 @@ namespace EDDLite
             label_version.Text = EDDOptions.Instance.VersionDisplayString;
             labelGameDateTime.Text = "";
             labelInfoBoxTop.Text = "";
-            extButtonEDSM.Enabled = extButtonEDSY.Enabled = extButtonCoriolis.Enabled = false;
+
+            extButtonEDSMSystem.Enabled = extButtonInaraSystem.Enabled = extButtonEDDBSystem.Enabled = false;
+            extButtonInaraStation.Enabled = extButtonEDDBStation.Enabled = false;
+            extButtonEDSY.Enabled = extButtonCoriolis.Enabled = false;
+
             dataGridViewCommanders.RowsDefaultCellStyle.SelectionBackColor = EDDLiteTheme.Instance.GridCellBack;    // hide selection
             dataGridViewCommanders.RowsDefaultCellStyle.SelectionForeColor = EDDLiteTheme.Instance.GridCellText;
 
             screenshot = new ScreenShotConverter();
-            screenshotenableToolStripMenuItem.Checked = screenshot.AutoConvert;
-            screenshotenableToolStripMenuItem.CheckedChanged += new System.EventHandler(this.enableToolStripMenuItem_CheckedChanged);
 
             controller = new EDDLiteController();
             controller.ProgressEvent += (s) => { toolStripStatus.Text = s; };
-            controller.Refresh += ReadJournals;
+            controller.RefreshFinished += RefreshFinished;
             controller.NewEntry += HistoryEvent;
             controller.LogLine += LogLine;
+            controller.NewUI += UIEvent;
+
 
             if (!EDDOptions.Instance.DisableTimeDisplay)
             {
@@ -88,17 +97,14 @@ namespace EDDLite
 
             splitContainerCmdrDataLogs.SplitterDistance(UserDatabase.Instance.GetSettingDouble("CmdrDataLogSplitter", 0.1));
             splitContainerDataLogs.SplitterDistance(UserDatabase.Instance.GetSettingDouble("DataLogSplitter", 0.8));
-
+            splitContainerNamesButtonsScreenshot.SplitterDistance(UserDatabase.Instance.GetSettingDouble("NamesButtonsScreenshotSplitter", 0.8));
             EliteDangerousCore.IGAU.IGAUClass.SoftwareName =
             EliteDangerousCore.EDDN.EDDNClass.SoftwareName =
             EliteDangerousCore.Inara.InaraClass.SoftwareName =
             EDSMClass.SoftwareName = "EDDLite";
 
-            DLLManager = new EDDDLLManager();
-            DLLCallBacks = new EDDDLLIF.EDDCallBacks(1, DLLRequestHistory, (s1, s2) => { return false; }, null);
+            splitContainerNamesButtonsScreenshot.Panel2.Resize += SplitContainerNamesButtonsScreenshot_Resize;
         }
-
-
 
         protected override void OnShown(EventArgs e)
         {
@@ -119,11 +125,29 @@ namespace EDDLite
                              }
                              );
 
+            screenshot.OnScreenshot += DisplayScreenshot;
+
             string alloweddlls = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString("DLLAllowed", "");
 
-            string verstring = EDDOptions.Instance.Version + ";EDLITE";
+            EDDDLLAssemblyFinder.AssemblyFindPath = EDDOptions.Instance.DLLAppDirectory();      // any needed assemblies from here
+            AppDomain.CurrentDomain.AssemblyResolve += EDDDLLAssemblyFinder.AssemblyResolve;
 
-            Tuple<string, string, string> res = DLLManager.Load(EDDOptions.Instance.DLLAppDirectory(), verstring, EDDOptions.Instance.DLLAppDirectory(),
+            DLLManager = new EDDDLLManager();
+
+            DLLCallBacks = new EDDDLLInterfaces.EDDDLLIF.EDDCallBacks();
+            DLLCallBacks.ver = 2;
+            DLLCallBacks.RequestHistory = DLLRequestHistory;
+            DLLCallBacks.RunAction = (s1, s2) => { return false; };
+            DLLCallBacks.GetShipLoadout = (s) => { return null; };
+
+            string verstring = EDDOptions.Instance.Version;
+            string[] options = new string[] { EDDDLLInterfaces.EDDDLLIF.FLAG_HOSTNAME + "EDLITE",
+                                              EDDDLLInterfaces.EDDDLLIF.FLAG_JOURNALVERSION + "2",
+                                              EDDDLLInterfaces.EDDDLLIF.FLAG_CALLBACKVERSION + "2",
+                                            };
+
+            Tuple<string, string, string> res = DLLManager.Load(EDDOptions.Instance.DLLAppDirectory(), 
+                                verstring,  options,
                                 DLLCallBacks, alloweddlls);
 
             if (res.Item3.HasChars())
@@ -140,7 +164,7 @@ namespace EDDLite
                     alloweddlls = alloweddlls.AppendPrePad(res.Item3, ",");
                     EliteDangerousCore.DB.UserDatabase.Instance.PutSettingString("DLLAllowed", alloweddlls);
                     DLLManager.UnLoad();
-                    res = DLLManager.Load(EDDOptions.Instance.DLLAppDirectory(), verstring, EDDOptions.Instance.DLLAppDirectory(), DLLCallBacks, alloweddlls);
+                    res = DLLManager.Load(EDDOptions.Instance.DLLAppDirectory(), verstring, options, DLLCallBacks, alloweddlls);
                 }
             }
 
@@ -173,21 +197,22 @@ namespace EDDLite
             EDSMJournalSync.StopSync();
             UserDatabase.Instance.PutSettingDouble("DataLogSplitter", splitContainerDataLogs.GetSplitterDistance());
             UserDatabase.Instance.PutSettingDouble("CmdrDataLogSplitter", splitContainerCmdrDataLogs.GetSplitterDistance());
+            UserDatabase.Instance.PutSettingDouble("NamesButtonsScreenshotSplitter", splitContainerNamesButtonsScreenshot.GetSplitterDistance());
             screenshot.Stop();
             screenshot.SaveSettings();
             DLLManager.UnLoad();
             base.OnClosing(e);
         }
 
-        public bool DLLRequestHistory(long index, bool isjid, out EDDDLLIF.JournalEntry f)
+        public bool DLLRequestHistory(long index, bool isjid, out EDDDLLInterfaces.EDDDLLIF.JournalEntry f)
         {
-            f = new EDDDLLIF.JournalEntry();
+            f = new EDDDLLInterfaces.EDDDLLIF.JournalEntry();
             return false;
         }
 
         #region Controller feedback
 
-        public void ReadJournals(HistoryEntry currenthe)
+        public void RefreshFinished(HistoryEntry currenthe)
         {
             dataGridViewCommanders.AutoGenerateColumns = false;             // BEFORE assigned to list..
             dataGridViewCommanders.DataSource = EDCommander.GetListCommanders();
@@ -195,6 +220,7 @@ namespace EDDLite
             if (currenthe != null)
             {
                 DLLManager.Refresh(EDCommander.Current.Name, EDDDLLCallerHE.CreateFromHistoryEntry(currenthe));
+
                 if (currenthe.Commander.SyncToInara)
                 {
                     EliteDangerousCore.Inara.InaraSync.Refresh(LogLine, currenthe, currenthe.Commander);
@@ -206,30 +232,56 @@ namespace EDDLite
 
         public void HistoryEvent(HistoryEntry he, bool stored)
         {
-            if ( lasthe == null || he.Commander.Name != lasthe.Commander.Name )
+            bool reposbut = false;
+
+            if (lasthe == null || he.Commander.Name != lasthe.Commander.Name)
             {
                 labelCmdr.Text = he.Commander.Name;
                 if (EDCommander.Current.Name != he.Commander.Name)
                     labelCmdr.Text += " Report clash " + EDCommander.Current.Name;
             }
 
+            if (lasthe == null || he.Credits != lasthe.Credits)
+            {
+                labelCredits.Text = he.Credits.ToString("N0");
+            }
+
             if (lasthe == null || he.System.Name != lasthe.System.Name)
             {
-                extButtonEDSM.Enabled = true;
-                extButtonInaraSystem.Enabled = true;
+                extButtonEDSMSystem.Enabled = extButtonInaraSystem.Enabled = extButtonEDDBSystem.Enabled = true;
                 labelSystem.Text = he.System.Name;
+                reposbut = true;
             }
+
 
             if (lasthe == null || he.WhereAmI != lasthe.WhereAmI)
             {
                 labelLocation.Text = he.WhereAmI;
+                reposbut = true;
+                extButtonInaraStation.Enabled = extButtonEDDBStation.Enabled = he?.MarketID.HasValue ?? false;
             }
 
-            extButtonEDSY.Enabled = extButtonCoriolis.Enabled = he.ShipInformation != null;
+            if ((he.ShipInformation != null) != extButtonEDSY.Enabled)      // enabled/visible causes effort, only do it if different
+            {
+                extButtonEDSY.Enabled = extButtonCoriolis.Enabled = he.ShipInformation != null;
+            }
 
             if (he.ShipInformation != null && (lasthe == null || lasthe.ShipInformation == null || he.ShipInformation.ShipNameIdentType != lasthe.ShipInformation.ShipNameIdentType ))
             {
                 labelShip.Text = he.ShipInformation.ShipNameIdentType ?? "Unknown";
+                reposbut = true;
+            }
+
+            if ( reposbut )
+            {
+                int maxx = Math.Max(labelSystem.Right, labelLocation.Right) + 4;
+                extButtonInaraStation.Left = extButtonEDSMSystem.Left = maxx;
+                extButtonInaraSystem.Left = extButtonInaraStation.Right + 4;
+                extButtonEDDBSystem.Left = extButtonInaraSystem.Right + 4;
+                extButtonEDDBStation.Left = extButtonInaraStation.Right + 4;
+
+                extButtonCoriolis.Left = labelShip.Right + 4;
+                extButtonEDSY.Left = extButtonCoriolis.Right + 4;
             }
 
             if (lasthe == null || he.MaterialCommodity.DataCount != lasthe.MaterialCommodity.DataCount || he.MaterialCommodity.CargoCount != lasthe.MaterialCommodity.CargoCount
@@ -240,13 +292,8 @@ namespace EDDLite
                 labelMaterials.Text = he.MaterialCommodity.MaterialsCount.ToString();
             }
 
-            if (lasthe == null || he.Credits != lasthe.Credits)
-            {
-                labelCredits.Text = he.Credits.ToString("N0");
-            }
-
             he.journalEntry.FillInformation(out string info, out string detailed);
-            LogLine(he.EventTimeUTC + " " + he.journalEntry.EventTypeStr + " " + info);
+            LogLine(he.EventTimeUTC + " " + he.journalEntry.SummaryName(he.System) + ": " + info);
 
             extButtonInaraStation.Enabled = he.IsDocked;
 
@@ -292,16 +339,27 @@ namespace EDDLite
                     EliteDangerousCore.Inara.InaraSync.NewEvent(LogLine, he);
                 }
 
-                if (DLLManager.Count > 0)       // if worth calling..
-                    DLLManager.NewJournalEntry(EDDDLLCallerHE.CreateFromHistoryEntry(he));
-
                 screenshot.NewJournalEntry(he.journalEntry);
             }
+
+            if (DLLManager.Count > 0)       // if worth calling..
+                DLLManager.NewJournalEntry(EDDDLLCallerHE.CreateFromHistoryEntry(he, stored), stored);
         }
 
         public void UIEvent(UIEvent u)
         {
-           // extRichTextBoxLog.AppendText( u.EventTimeUTC + " " + u.EventTypeStr + Environment.NewLine);
+            //JsonSerializer serializer = new JsonSerializer();
+
+            try
+            {
+                string output = JsonConvert.SerializeObject(u);
+                if (DLLManager.Count > 0)       // if worth calling..
+                    DLLManager.NewUIEvent(output);
+            }
+            catch ( Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Could not serialise " + u.EventTypeStr + " "  + ex);
+            }
         }
 
         public void LogLine(string s)       // can be called from other thread
@@ -310,6 +368,49 @@ namespace EDDLite
                 extRichTextBoxLog.AppendText(s + Environment.NewLine);
             else
                 BeginInvoke((MethodInvoker) delegate { LogLine(s); });
+        }
+
+        private Size screenshotimagesize;
+
+        public void DisplayScreenshot(string infile, string outfile, Size imagesize, EliteDangerousCore.JournalEvents.JournalScreenshot ss)
+        {
+            System.Diagnostics.Debug.WriteLine("Screen shot " + infile + " -> " + outfile + " " + imagesize);
+
+            try
+            {
+                screenshotimagesize = imagesize;
+                pictureBoxScreenshot.ImageLocation = outfile;                       // this could except, so protect..
+                FitScreenshotToWindow();
+            }
+            catch
+            {
+            }
+        }
+
+        void FitScreenshotToWindow()
+        { 
+            var boxsize = splitContainerNamesButtonsScreenshot.Panel2.ClientSize;
+            double ratiopicture = (double)screenshotimagesize.Width / (double)screenshotimagesize.Height;
+
+            int imagewidth = boxsize.Width;
+            int imageheight = (int)((double)imagewidth / ratiopicture);
+
+            if (imageheight > boxsize.Height)        // if width/ratio > available height, scale down width
+            {
+                double scaledownwidth = (double)imageheight / (double)boxsize.Height;
+                imagewidth = (int)((double)imagewidth / scaledownwidth);
+            }
+
+            imageheight = (int)((double)imagewidth / ratiopicture);
+
+            pictureBoxScreenshot.Location = new Point((boxsize.Width - imagewidth) / 2, (boxsize.Height - imageheight) / 2);
+            pictureBoxScreenshot.Size = new Size(imagewidth, imageheight);
+        }
+
+        private void SplitContainerNamesButtonsScreenshot_Resize(object sender, EventArgs e)
+        {
+            if (pictureBoxScreenshot.ImageLocation != null)
+                FitScreenshotToWindow();
         }
 
         #endregion
@@ -517,8 +618,21 @@ namespace EDDLite
                     BaseUtils.BrowserInfo.LaunchBrowser(uri);
                 }
             }
+        }
+
+        private void extButtonEDDBSystem_Click(object sender, EventArgs e)
+        {
+            if (lasthe != null)
+                System.Diagnostics.Process.Start(Properties.Resources.URLEDDBSystemName + HttpUtility.UrlEncode(lasthe.System.Name));
+        }
+
+        private void extButtonEDDBStation_Click(object sender, EventArgs e)
+        {
+            if (lasthe != null && lasthe.MarketID != null)
+                System.Diagnostics.Process.Start(Properties.Resources.URLEDDBStationMarketId + lasthe.MarketID.ToStringInvariant());
 
         }
+
         #endregion
 
         #region Menu UI
@@ -531,12 +645,7 @@ namespace EDDLite
 
         #endregion
 
-        private void enableToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-        {
-            screenshot.AutoConvert = screenshotenableToolStripMenuItem.Checked;
-        }
-
-        private void configureToolStripMenuItem_Click(object sender, EventArgs e)
+        private void screenShotCaptureToolStripMenuItem_Click(object sender, EventArgs e)
         {
             screenshot.Configure(this);
         }

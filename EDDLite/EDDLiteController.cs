@@ -23,7 +23,7 @@ namespace EDDLite
     public class EDDLiteController
     {
         public bool RequestRescan { get; set; } = false;
-        public Action<HistoryEntry> Refresh { get; set; } = null;
+        public Action<HistoryEntry> RefreshFinished { get; set; } = null;
         public Action<HistoryEntry,bool> NewEntry { get; set; } = null;
         public Action<UIEvent> NewUI { get; set; } = null;
         public Action<string> ProgressEvent { get; set; } = null;
@@ -56,7 +56,7 @@ namespace EDDLite
             // order the reading of last 2 files (in case continue) and fire back the last two
             journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 2, (a) => InvokeAsyncOnUiThread(() => { Entry(a, true); }), 2);
 
-            InvokeAsyncOnUiThread(() => { Refresh?.Invoke(currenthe); });
+            InvokeAsyncOnUiThread(() => { RefreshFinished?.Invoke(currenthe); });
 
             LogLine?.Invoke("Finished reading Journals");
 
@@ -74,7 +74,7 @@ namespace EDDLite
                     journalmonitor.SetupWatchers();
                     journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 2, (a) => InvokeAsyncOnUiThread(() => { Entry(a, true); }), 2);
                     journalmonitor.StartMonitor();
-                    InvokeAsyncOnUiThread(() => { Refresh?.Invoke(currenthe); });
+                    InvokeAsyncOnUiThread(() => { RefreshFinished?.Invoke(currenthe); });
                     LogLine?.Invoke("Finished reading Journals");
                 }
 
@@ -111,10 +111,11 @@ namespace EDDLite
         public void Entry(JournalEntry je, bool stored)        // on UI thread. hooked into journal monitor and receives new entries.. Also call if you programatically add an entry
         {
             System.Diagnostics.Debug.Assert(System.Windows.Forms.Application.MessageLoop);
-            System.Diagnostics.Debug.WriteLine("JE " + stored + " on UI thread " + je.EventTypeStr  );
 
             if (je.EventTimeUTC >= lastutc)     // in case we get them fed in the wrong order, or during stored reply we have two playing, only take the latest one
             {
+                System.Diagnostics.Debug.WriteLine("JE " + EDCommander.GetCommander(je.CommanderId).Name + " " + je.EventTypeStr);
+
                 if (je.CommanderId != currentcmdrnr)
                 {
                     Reset(false);
@@ -141,7 +142,9 @@ namespace EDDLite
                 NewEntry?.Invoke(he, stored);
             }
             else
-                System.Diagnostics.Debug.WriteLine("Reject due to older");
+            {
+                System.Diagnostics.Debug.WriteLine("Rejected older JE " + EDCommander.GetCommander(je.CommanderId).Name + " " + je.EventTypeStr);
+            }
         }
 
         private HistoryEntry currenthe;

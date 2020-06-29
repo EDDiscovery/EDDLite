@@ -123,6 +123,10 @@
       <Project>{3d79de63-5eec-4f30-a879-fb4c6ba4b2dc}</Project>
       <Name>SQLLite</Name>
     </ProjectReference>
+    <ProjectReference Include="..\EliteDangerousCore\EDDDLLInterfaces\EDDDLLInterfaces.csproj">
+      <Project>{829041b1-d4a5-48d9-8260-b5eeff28bcd8}</Project>
+      <Name>EDDDLLInterfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EliteDangerousCore\EliteDangerous\EliteDangerous.csproj">
       <Project>{019917a4-7342-4f67-8aaf-9e20c016a935}</Project>
       <Name>EliteDangerous</Name>
@@ -156,6 +160,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Credits.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EDDB.png" />
   </ItemGroup>
   <UsingTask TaskName="Zip" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
     <ParameterGroup>
