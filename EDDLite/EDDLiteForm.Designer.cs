@@ -58,6 +58,8 @@
             this.labelCredits = new System.Windows.Forms.Label();
             this.labelLocation = new System.Windows.Forms.Label();
             this.labelLatestMission = new System.Windows.Forms.Label();
+            this.extButtonSpanshStation = new ExtendedControls.ExtButton();
+            this.extButtonSpanshSystem = new ExtendedControls.ExtButton();
             this.extButtonEDDBSystem = new ExtendedControls.ExtButton();
             this.extButtonInaraSystem = new ExtendedControls.ExtButton();
             this.labelData = new System.Windows.Forms.Label();
@@ -331,6 +333,8 @@
             this.extPanelScrollStatus.Controls.Add(this.labelCredits);
             this.extPanelScrollStatus.Controls.Add(this.labelLocation);
             this.extPanelScrollStatus.Controls.Add(this.labelLatestMission);
+            this.extPanelScrollStatus.Controls.Add(this.extButtonSpanshStation);
+            this.extPanelScrollStatus.Controls.Add(this.extButtonSpanshSystem);
             this.extPanelScrollStatus.Controls.Add(this.extButtonEDDBSystem);
             this.extPanelScrollStatus.Controls.Add(this.extButtonInaraSystem);
             this.extPanelScrollStatus.Controls.Add(this.labelData);
@@ -493,6 +497,26 @@
             this.labelLatestMission.Size = new System.Drawing.Size(13, 13);
             this.labelLatestMission.TabIndex = 3;
             this.labelLatestMission.Text = "?";
+            // 
+            // extButtonSpanshStation
+            // 
+            this.extButtonSpanshStation.Image = global::EDDLite.Properties.Resources.spansh;
+            this.extButtonSpanshStation.Location = new System.Drawing.Point(310, 71);
+            this.extButtonSpanshStation.Name = "extButtonSpanshStation";
+            this.extButtonSpanshStation.Size = new System.Drawing.Size(42, 32);
+            this.extButtonSpanshStation.TabIndex = 6;
+            this.extButtonSpanshStation.UseVisualStyleBackColor = true;
+            this.extButtonSpanshStation.Click += new System.EventHandler(this.extButtonSpanshStation_Click);
+            // 
+            // extButtonSpanshSystem
+            // 
+            this.extButtonSpanshSystem.Image = global::EDDLite.Properties.Resources.spansh;
+            this.extButtonSpanshSystem.Location = new System.Drawing.Point(358, 36);
+            this.extButtonSpanshSystem.Name = "extButtonSpanshSystem";
+            this.extButtonSpanshSystem.Size = new System.Drawing.Size(42, 32);
+            this.extButtonSpanshSystem.TabIndex = 6;
+            this.extButtonSpanshSystem.UseVisualStyleBackColor = true;
+            this.extButtonSpanshSystem.Click += new System.EventHandler(this.extButtonSpanshSystem_Click);
             // 
             // extButtonEDDBSystem
             // 
@@ -1032,6 +1056,8 @@
         private System.Windows.Forms.Panel panel1;
         private ExtendedControls.ExtButton extButtonEDDBStation;
         private ExtendedControls.ExtButton extButtonEDDBSystem;
+        private ExtendedControls.ExtButton extButtonSpanshStation;
+        private ExtendedControls.ExtButton extButtonSpanshSystem;
     }
 }
 

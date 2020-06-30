@@ -202,4 +202,16 @@
   <data name="URLEDDBSystemName" xml:space="preserve">
     <value>https://eddb.io/system/name/</value>
   </data>
+  <data name="spansh" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\spansh.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="URLSpanshBodyId" xml:space="preserve">
+    <value>https://spansh.co.uk/body/</value>
+  </data>
+  <data name="URLSpanshStationMarketId" xml:space="preserve">
+    <value>https://spansh.co.uk/station/</value>
+  </data>
+  <data name="URLSpanshSystemSystemId" xml:space="preserve">
+    <value>https://spansh.co.uk/system/</value>
+  </data>
 </root>

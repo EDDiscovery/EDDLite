@@ -229,92 +229,112 @@ namespace EDDLite
         }
 
         HistoryEntry lasthe = null;
+        HistoryEntry lastuihe = null;       // last he that the ui was updated on.. used during store to try and prevent too much thrash
 
-        public void HistoryEvent(HistoryEntry he, bool stored)
+        public void HistoryEvent(HistoryEntry he, bool stored, bool recent)     // recent is true on stored for last few entries..
         {
-            bool reposbut = false;
+            bool dontupdateui = (lasthe != null && stored && !recent);
 
-            if (lasthe == null || he.Commander.Name != lasthe.Commander.Name)
+            if (!dontupdateui)      // so, if we have displayed one, and we are in stored reply, and not a recent entry.. don't update UI 
             {
-                labelCmdr.Text = he.Commander.Name;
-                if (EDCommander.Current.Name != he.Commander.Name)
-                    labelCmdr.Text += " Report clash " + EDCommander.Current.Name;
-            }
+                bool reposbut = false;
 
-            if (lasthe == null || he.Credits != lasthe.Credits)
-            {
-                labelCredits.Text = he.Credits.ToString("N0");
-            }
-
-            if (lasthe == null || he.System.Name != lasthe.System.Name)
-            {
-                extButtonEDSMSystem.Enabled = extButtonInaraSystem.Enabled = extButtonEDDBSystem.Enabled = true;
-                labelSystem.Text = he.System.Name;
-                reposbut = true;
-            }
-
-
-            if (lasthe == null || he.WhereAmI != lasthe.WhereAmI)
-            {
-                labelLocation.Text = he.WhereAmI;
-                reposbut = true;
-                extButtonInaraStation.Enabled = extButtonEDDBStation.Enabled = he?.MarketID.HasValue ?? false;
-            }
-
-            if ((he.ShipInformation != null) != extButtonEDSY.Enabled)      // enabled/visible causes effort, only do it if different
-            {
-                extButtonEDSY.Enabled = extButtonCoriolis.Enabled = he.ShipInformation != null;
-            }
-
-            if (he.ShipInformation != null && (lasthe == null || lasthe.ShipInformation == null || he.ShipInformation.ShipNameIdentType != lasthe.ShipInformation.ShipNameIdentType ))
-            {
-                labelShip.Text = he.ShipInformation.ShipNameIdentType ?? "Unknown";
-                reposbut = true;
-            }
-
-            if ( reposbut )
-            {
-                int maxx = Math.Max(labelSystem.Right, labelLocation.Right) + 4;
-                extButtonInaraStation.Left = extButtonEDSMSystem.Left = maxx;
-                extButtonInaraSystem.Left = extButtonInaraStation.Right + 4;
-                extButtonEDDBSystem.Left = extButtonInaraSystem.Right + 4;
-                extButtonEDDBStation.Left = extButtonInaraStation.Right + 4;
-
-                extButtonCoriolis.Left = labelShip.Right + 4;
-                extButtonEDSY.Left = extButtonCoriolis.Right + 4;
-            }
-
-            if (lasthe == null || he.MaterialCommodity.DataCount != lasthe.MaterialCommodity.DataCount || he.MaterialCommodity.CargoCount != lasthe.MaterialCommodity.CargoCount
-                                    || he.MaterialCommodity.MaterialsCount != lasthe.MaterialCommodity.MaterialsCount)
-            {
-                labelData.Text = he.MaterialCommodity.DataCount.ToString();
-                labelCargo.Text = he.MaterialCommodity.CargoCount.ToString();
-                labelMaterials.Text = he.MaterialCommodity.MaterialsCount.ToString();
-            }
-
-            he.journalEntry.FillInformation(out string info, out string detailed);
-            LogLine(he.EventTimeUTC + " " + he.journalEntry.SummaryName(he.System) + ": " + info);
-
-            extButtonInaraStation.Enabled = he.IsDocked;
-
-            if (he.MissionList != null )
-            {
-                labelMissionCount.Text = he.MissionList.Missions.Count.ToString();
-                string mtext = "";
-                if (he.MissionList.Missions.Count > 0)
+                if (lastuihe == null || he.Commander.Name != lastuihe.Commander.Name)
                 {
-                    var list = he.MissionList.GetAllCurrentMissions(DateTime.Now);
-                    if (list.Count > 0)
-                    {
-                        var last = list[0];
-                        mtext = BaseUtils.FieldBuilder.Build("", last.Mission.LocalisedName, "", last.Mission.Expiry, "", last.Mission.DestinationSystem, "", last.Mission.DestinationStation);
-                    }
+                    labelCmdr.Text = he.Commander.Name;
+                    if (EDCommander.Current.Name != he.Commander.Name)
+                        labelCmdr.Text += " Report clash " + EDCommander.Current.Name;
                 }
 
-                labelLatestMission.Text = mtext;
-            }
+                if (lastuihe == null || he.Credits != lastuihe.Credits)
+                {
+                    labelCredits.Text = he.Credits.ToString("N0");
+                }
 
-            lasthe = he;
+                if (lastuihe == null || he.System.Name != lastuihe.System.Name)
+                {
+                    extButtonEDSMSystem.Enabled = extButtonInaraSystem.Enabled = extButtonEDDBSystem.Enabled = true;
+                    labelSystem.Text = he.System.Name;
+                    reposbut = true;
+                }
+
+                if (lastuihe == null || he.WhereAmI != lastuihe.WhereAmI)
+                {
+                    labelLocation.Text = he.WhereAmI;
+                    reposbut = true;
+                }
+
+                bool hasmarketid = he?.MarketID.HasValue ?? false;
+                bool hasbodyormarketid = hasmarketid || he.FullBodyID.HasValue;
+
+                if (lastuihe == null || extButtonInaraStation.Enabled != hasmarketid)
+                {
+                    extButtonInaraStation.Enabled = extButtonEDDBStation.Enabled = hasmarketid;
+                }
+
+                if (lastuihe == null || extButtonSpanshStation.Enabled != hasbodyormarketid)
+                {
+                    extButtonSpanshStation.Enabled = hasbodyormarketid;
+                }
+
+                if ((he.ShipInformation != null) != extButtonEDSY.Enabled)      // enabled/visible causes effort, only do it if different
+                {
+                    extButtonEDSY.Enabled = extButtonCoriolis.Enabled = he.ShipInformation != null;
+                }
+
+                if (he.ShipInformation != null && (lastuihe == null || lastuihe.ShipInformation == null || he.ShipInformation.ShipNameIdentType != lastuihe.ShipInformation.ShipNameIdentType))
+                {
+                    labelShip.Text = he.ShipInformation.ShipNameIdentType ?? "Unknown";
+                    reposbut = true;
+                }
+
+                if (reposbut)
+                {
+                    int maxx = Math.Max(labelSystem.Right, labelLocation.Right) + 2;
+
+                    extButtonEDSMSystem.Left = maxx;
+                    extButtonInaraSystem.Left = extButtonEDSMSystem.Right + 2;
+                    extButtonEDDBSystem.Left = extButtonInaraSystem.Right + 2;
+                    extButtonSpanshSystem.Left = extButtonEDDBSystem.Right + 2;
+
+                    extButtonInaraStation.Left = maxx;
+                    extButtonEDDBStation.Left = extButtonInaraStation.Right + 2;
+                    extButtonSpanshStation.Left = extButtonEDDBStation.Right + 2;
+
+                    extButtonCoriolis.Left = labelShip.Right + 2;
+                    extButtonEDSY.Left = extButtonCoriolis.Right + 2;
+                }
+
+                if (lastuihe == null || he.MaterialCommodity.DataCount != lastuihe.MaterialCommodity.DataCount || he.MaterialCommodity.CargoCount != lastuihe.MaterialCommodity.CargoCount
+                                        || he.MaterialCommodity.MaterialsCount != lastuihe.MaterialCommodity.MaterialsCount)
+                {
+                    labelData.Text = he.MaterialCommodity.DataCount.ToString();
+                    labelCargo.Text = he.MaterialCommodity.CargoCount.ToString();
+                    labelMaterials.Text = he.MaterialCommodity.MaterialsCount.ToString();
+                }
+
+                he.journalEntry.FillInformation(out string info, out string detailed);
+                LogLine(he.EventTimeUTC + " " + he.journalEntry.SummaryName(he.System) + ": " + info);
+
+                if (he.MissionList != null)
+                {
+                    labelMissionCount.Text = he.MissionList.Missions.Count.ToString();
+                    string mtext = "";
+                    if (he.MissionList.Missions.Count > 0)
+                    {
+                        var list = he.MissionList.GetAllCurrentMissions(DateTime.Now);
+                        if (list.Count > 0)
+                        {
+                            var last = list[0];
+                            mtext = BaseUtils.FieldBuilder.Build("", last.Mission.LocalisedName, "", last.Mission.Expiry, "", last.Mission.DestinationSystem, "", last.Mission.DestinationStation);
+                        }
+                    }
+
+                    labelLatestMission.Text = mtext;
+                }
+
+                lastuihe = he;
+            }
 
             if (!stored)
             {
@@ -344,6 +364,9 @@ namespace EDDLite
 
             if (DLLManager.Count > 0)       // if worth calling..
                 DLLManager.NewJournalEntry(EDDDLLCallerHE.CreateFromHistoryEntry(he, stored), stored);
+
+            lasthe = he;
+
         }
 
         public void UIEvent(UIEvent u)
@@ -631,6 +654,24 @@ namespace EDDLite
             if (lasthe != null && lasthe.MarketID != null)
                 System.Diagnostics.Process.Start(Properties.Resources.URLEDDBStationMarketId + lasthe.MarketID.ToStringInvariant());
 
+        }
+
+        private void extButtonSpanshSystem_Click(object sender, EventArgs e)
+        {
+            if (lasthe != null && lasthe.System.SystemAddress.HasValue)
+                System.Diagnostics.Process.Start(Properties.Resources.URLSpanshSystemSystemId + lasthe.System.SystemAddress.Value.ToStringInvariant());
+        }
+
+        private void extButtonSpanshStation_Click(object sender, EventArgs e)
+        {
+            if (lasthe != null)
+            {
+                if (lasthe.MarketID != null)
+                  System.Diagnostics.Process.Start(Properties.Resources.URLSpanshStationMarketId + lasthe.MarketID.ToStringInvariant());
+                else if (lasthe.FullBodyID.HasValue)
+                    System.Diagnostics.Process.Start(Properties.Resources.URLSpanshBodyId + lasthe.FullBodyID.ToStringInvariant());
+
+            }
         }
 
         #endregion

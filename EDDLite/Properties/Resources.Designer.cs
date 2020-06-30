@@ -167,6 +167,16 @@ namespace EDDLite.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap spansh {
+            get {
+                object obj = ResourceManager.GetObject("spansh", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to https://coriolis.io/import?.
         /// </summary>
         internal static string URLCoriolis {
@@ -325,6 +335,33 @@ namespace EDDLite.Properties {
         internal static string URLProjectWiki {
             get {
                 return ResourceManager.GetString("URLProjectWiki", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://spansh.co.uk/body/.
+        /// </summary>
+        internal static string URLSpanshBodyId {
+            get {
+                return ResourceManager.GetString("URLSpanshBodyId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://spansh.co.uk/station/.
+        /// </summary>
+        internal static string URLSpanshStationMarketId {
+            get {
+                return ResourceManager.GetString("URLSpanshStationMarketId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://spansh.co.uk/system/.
+        /// </summary>
+        internal static string URLSpanshSystemSystemId {
+            get {
+                return ResourceManager.GetString("URLSpanshSystemSystemId", resourceCulture);
             }
         }
     }

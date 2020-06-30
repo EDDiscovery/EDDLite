@@ -24,10 +24,12 @@ namespace EDDLite
     {
         public bool RequestRescan { get; set; } = false;
         public Action<HistoryEntry> RefreshFinished { get; set; } = null;
-        public Action<HistoryEntry,bool> NewEntry { get; set; } = null;
+        public Action<HistoryEntry,bool,bool> NewEntry { get; set; } = null;
         public Action<UIEvent> NewUI { get; set; } = null;
         public Action<string> ProgressEvent { get; set; } = null;
         public Action<string> LogLine { get; set; } = null;
+
+        private int recentlimit = 50;       // entries marked as close to end as this are marked recent
 
         public void Start(Action<Action> invokeAsyncOnUiThread)
         {
@@ -47,14 +49,16 @@ namespace EDDLite
         private void Controller()
         {
             journalmonitor = new EDJournalUIScanner(InvokeAsyncOnUiThread);
-            journalmonitor.OnNewJournalEntry += (je) => { Entry(je, false); };
+            journalmonitor.OnNewJournalEntry += (je) => { Entry(je, false, true); };
             journalmonitor.OnNewUIEvent += (ui) => { InvokeAsyncOnUiThread(()=>NewUI?.Invoke(ui)); };
 
             LogLine?.Invoke("Reading Journals");
             Reset();
             journalmonitor.SetupWatchers();
             // order the reading of last 2 files (in case continue) and fire back the last two
-            journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 2, (a) => InvokeAsyncOnUiThread(() => { Entry(a, true); }), 2);
+            journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 2, (a,ji,jt,ei,et) => InvokeAsyncOnUiThread(() => {
+                //System.Diagnostics.Debug.WriteLine("In FG {0} {1} {2} {3} {4} {5}", a.CommanderId, ji, jt, ei, et, a.EventTypeStr );
+                Entry(a, true, ji==jt-1 && ei-et > -recentlimit); }), 2);
 
             InvokeAsyncOnUiThread(() => { RefreshFinished?.Invoke(currenthe); });
 
@@ -72,7 +76,8 @@ namespace EDDLite
                     journalmonitor.StopMonitor();
                     Reset();
                     journalmonitor.SetupWatchers();
-                    journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 2, (a) => InvokeAsyncOnUiThread(() => { Entry(a, true); }), 2);
+                    journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 2, 
+                            (a,ji,jt,ei,et) => InvokeAsyncOnUiThread(() => { Entry(a, true, ji == jt - 1 && ei - et > -recentlimit); }), 2);
                     journalmonitor.StartMonitor();
                     InvokeAsyncOnUiThread(() => { RefreshFinished?.Invoke(currenthe); });
                     LogLine?.Invoke("Finished reading Journals");
@@ -108,13 +113,13 @@ namespace EDDLite
             }
         }
 
-        public void Entry(JournalEntry je, bool stored)        // on UI thread. hooked into journal monitor and receives new entries.. Also call if you programatically add an entry
+        public void Entry(JournalEntry je, bool stored, bool recent)        // on UI thread. hooked into journal monitor and receives new entries.. Also call if you programatically add an entry
         {
             System.Diagnostics.Debug.Assert(System.Windows.Forms.Application.MessageLoop);
 
             if (je.EventTimeUTC >= lastutc)     // in case we get them fed in the wrong order, or during stored reply we have two playing, only take the latest one
             {
-                System.Diagnostics.Debug.WriteLine("JE " + EDCommander.GetCommander(je.CommanderId).Name + " " + je.EventTypeStr);
+                System.Diagnostics.Debug.WriteLine("JE " + stored + ":" + recent + ":" + EDCommander.GetCommander(je.CommanderId).Name + ":" + je.EventTypeStr);
 
                 if (je.CommanderId != currentcmdrnr)
                 {
@@ -139,11 +144,11 @@ namespace EDDLite
                 he.ShipInformation = ret.Item1;
                 he.StoredModules = ret.Item2;
 
-                NewEntry?.Invoke(he, stored);
+                NewEntry?.Invoke(he, stored, recent);
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("Rejected older JE " + EDCommander.GetCommander(je.CommanderId).Name + " " + je.EventTypeStr);
+                //System.Diagnostics.Debug.WriteLine("Rejected older JE " + stored + ":" + recent + ":" + EDCommander.GetCommander(je.CommanderId).Name + " " + je.EventTypeStr);
             }
         }
 

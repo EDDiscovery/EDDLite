@@ -164,6 +164,9 @@
   <ItemGroup>
     <None Include="Resources\EDDB.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\spansh.png" />
+  </ItemGroup>
   <UsingTask TaskName="Zip" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
     <ParameterGroup>
       <OutputFilename ParameterType="System.String" Required="true" />
