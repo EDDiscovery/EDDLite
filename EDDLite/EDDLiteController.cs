@@ -57,8 +57,8 @@ namespace EDDLite
             journalmonitor.SetupWatchers();
             // order the reading of last 2 files (in case continue) and fire back the last two
             journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 2, (a,ji,jt,ei,et) => InvokeAsyncOnUiThread(() => {
-                //System.Diagnostics.Debug.WriteLine("In FG {0} {1} {2} {3} {4} {5}", a.CommanderId, ji, jt, ei, et, a.EventTypeStr );
-                Entry(a, true, ji==jt-1 && ei-et > -recentlimit); }), 2);
+                System.Diagnostics.Debug.WriteLine("In FG {0} {1} {2} {3} {4} {5}", EDCommander.GetCommander(a.CommanderId).Name, ji, jt, ei, et, a.EventTypeStr );
+                Entry(a, true, ei-et > -recentlimit); }), 2);
 
             InvokeAsyncOnUiThread(() => { RefreshFinished?.Invoke(currenthe); });
 
@@ -77,7 +77,7 @@ namespace EDDLite
                     Reset();
                     journalmonitor.SetupWatchers();
                     journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 2, 
-                            (a,ji,jt,ei,et) => InvokeAsyncOnUiThread(() => { Entry(a, true, ji == jt - 1 && ei - et > -recentlimit); }), 2);
+                            (a,ji,jt,ei,et) => InvokeAsyncOnUiThread(() => { Entry(a, true, ei - et > -recentlimit); }), 2);
                     journalmonitor.StartMonitor();
                     InvokeAsyncOnUiThread(() => { RefreshFinished?.Invoke(currenthe); });
                     LogLine?.Invoke("Finished reading Journals");

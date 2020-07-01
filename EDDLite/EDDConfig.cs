@@ -273,7 +273,7 @@ namespace EDDLite
                 orderrowsinverted = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("OrderRowsInverted", false);
                 minimizeToNotifyIcon = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("MinimizeToNotifyIcon", false);
                 keepOnTop = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("KeepOnTop", false);
-                displayTimeFormat = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingInt("DisplayUTC", 0);
+                displayTimeFormat = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingInt("DisplayUTC", 2);
                 language = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString("DefaultLanguage", "Auto");
                 coriolisURL = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString("CorolisURL", EDDLite.Properties.Resources.URLCoriolis);
                 eddshipyardURL = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString("EDDShipyardURL", EDDLite.Properties.Resources.URLEDShipyard);

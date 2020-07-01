@@ -75,6 +75,7 @@
             this.labelCashHr = new System.Windows.Forms.Label();
             this.labelCmdr = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.extButtonScreenshotDisabled = new ExtendedControls.ExtButton();
             this.pictureBoxScreenshot = new System.Windows.Forms.PictureBox();
             this.extRichTextBoxLog = new ExtendedControls.ExtRichTextBox();
             this.tableLayoutPanelTop = new System.Windows.Forms.TableLayoutPanel();
@@ -82,6 +83,10 @@
             this.menuMain = new System.Windows.Forms.MenuStrip();
             this.configToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.screenShotCaptureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.displayTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gameTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.utcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.localToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.themeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -649,6 +654,7 @@
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.extButtonScreenshotDisabled);
             this.panel1.Controls.Add(this.pictureBoxScreenshot);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
@@ -656,9 +662,20 @@
             this.panel1.Size = new System.Drawing.Size(378, 293);
             this.panel1.TabIndex = 8;
             // 
+            // extButtonScreenshotDisabled
+            // 
+            this.extButtonScreenshotDisabled.Dock = System.Windows.Forms.DockStyle.Top;
+            this.extButtonScreenshotDisabled.Location = new System.Drawing.Point(0, 0);
+            this.extButtonScreenshotDisabled.Name = "extButtonScreenshotDisabled";
+            this.extButtonScreenshotDisabled.Size = new System.Drawing.Size(376, 25);
+            this.extButtonScreenshotDisabled.TabIndex = 8;
+            this.extButtonScreenshotDisabled.Text = "Screenshot Capture Disabled. Click here to configure";
+            this.extButtonScreenshotDisabled.UseVisualStyleBackColor = true;
+            this.extButtonScreenshotDisabled.Click += new System.EventHandler(this.extButtonScreenshotDisabled_Click);
+            // 
             // pictureBoxScreenshot
             // 
-            this.pictureBoxScreenshot.Location = new System.Drawing.Point(39, 31);
+            this.pictureBoxScreenshot.Location = new System.Drawing.Point(37, 198);
             this.pictureBoxScreenshot.Name = "pictureBoxScreenshot";
             this.pictureBoxScreenshot.Size = new System.Drawing.Size(100, 50);
             this.pictureBoxScreenshot.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -732,14 +749,15 @@
             this.helpToolStripMenuItem});
             this.menuMain.Location = new System.Drawing.Point(0, 0);
             this.menuMain.Name = "menuMain";
-            this.menuMain.Size = new System.Drawing.Size(151, 24);
+            this.menuMain.Size = new System.Drawing.Size(271, 24);
             this.menuMain.TabIndex = 0;
             this.menuMain.Text = "menuStrip1";
             // 
             // configToolStripMenuItem
             // 
             this.configToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.screenShotCaptureToolStripMenuItem});
+            this.screenShotCaptureToolStripMenuItem,
+            this.displayTimeToolStripMenuItem});
             this.configToolStripMenuItem.Name = "configToolStripMenuItem";
             this.configToolStripMenuItem.Size = new System.Drawing.Size(55, 20);
             this.configToolStripMenuItem.Text = "Config";
@@ -750,6 +768,43 @@
             this.screenShotCaptureToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.screenShotCaptureToolStripMenuItem.Text = "Screen Shot Capture";
             this.screenShotCaptureToolStripMenuItem.Click += new System.EventHandler(this.screenShotCaptureToolStripMenuItem_Click);
+            // 
+            // displayTimeToolStripMenuItem
+            // 
+            this.displayTimeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.gameTimeToolStripMenuItem,
+            this.utcToolStripMenuItem,
+            this.localToolStripMenuItem});
+            this.displayTimeToolStripMenuItem.Name = "displayTimeToolStripMenuItem";
+            this.displayTimeToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.displayTimeToolStripMenuItem.Text = "Display Time";
+            // 
+            // gameTimeToolStripMenuItem
+            // 
+            this.gameTimeToolStripMenuItem.CheckOnClick = true;
+            this.gameTimeToolStripMenuItem.Name = "gameTimeToolStripMenuItem";
+            this.gameTimeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.gameTimeToolStripMenuItem.Tag = "2";
+            this.gameTimeToolStripMenuItem.Text = "Game Time";
+            this.gameTimeToolStripMenuItem.CheckedChanged += new System.EventHandler(this.gameTimeToolStripMenuItem_CheckedChanged);
+            // 
+            // utcToolStripMenuItem
+            // 
+            this.utcToolStripMenuItem.CheckOnClick = true;
+            this.utcToolStripMenuItem.Name = "utcToolStripMenuItem";
+            this.utcToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.utcToolStripMenuItem.Tag = "1";
+            this.utcToolStripMenuItem.Text = "UTC";
+            this.utcToolStripMenuItem.CheckedChanged += new System.EventHandler(this.gameTimeToolStripMenuItem_CheckedChanged);
+            // 
+            // localToolStripMenuItem
+            // 
+            this.localToolStripMenuItem.CheckOnClick = true;
+            this.localToolStripMenuItem.Name = "localToolStripMenuItem";
+            this.localToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.localToolStripMenuItem.Tag = "0";
+            this.localToolStripMenuItem.Text = "Local";
+            this.localToolStripMenuItem.CheckedChanged += new System.EventHandler(this.gameTimeToolStripMenuItem_CheckedChanged);
             // 
             // viewToolStripMenuItem
             // 
@@ -819,7 +874,7 @@
             // 
             this.label_version.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label_version.AutoSize = true;
-            this.label_version.Location = new System.Drawing.Point(159, 6);
+            this.label_version.Location = new System.Drawing.Point(279, 6);
             this.label_version.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.label_version.Name = "label_version";
             this.label_version.Size = new System.Drawing.Size(43, 13);
@@ -831,7 +886,7 @@
             // 
             this.labelInfoBoxTop.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.labelInfoBoxTop.AutoSize = true;
-            this.labelInfoBoxTop.Location = new System.Drawing.Point(213, 6);
+            this.labelInfoBoxTop.Location = new System.Drawing.Point(333, 6);
             this.labelInfoBoxTop.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.labelInfoBoxTop.Name = "labelInfoBoxTop";
             this.labelInfoBoxTop.Size = new System.Drawing.Size(43, 13);
@@ -842,7 +897,7 @@
             // 
             this.labelGameDateTime.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.labelGameDateTime.AutoSize = true;
-            this.labelGameDateTime.Location = new System.Drawing.Point(267, 6);
+            this.labelGameDateTime.Location = new System.Drawing.Point(387, 6);
             this.labelGameDateTime.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.labelGameDateTime.Name = "labelGameDateTime";
             this.labelGameDateTime.Size = new System.Drawing.Size(43, 13);
@@ -1058,6 +1113,11 @@
         private ExtendedControls.ExtButton extButtonEDDBSystem;
         private ExtendedControls.ExtButton extButtonSpanshStation;
         private ExtendedControls.ExtButton extButtonSpanshSystem;
+        private ExtendedControls.ExtButton extButtonScreenshotDisabled;
+        private System.Windows.Forms.ToolStripMenuItem displayTimeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gameTimeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem utcToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem localToolStripMenuItem;
     }
 }
 

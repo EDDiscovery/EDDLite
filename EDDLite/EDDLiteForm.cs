@@ -37,6 +37,8 @@ namespace EDDLite
         EDDDLLManager DLLManager;
         EDDDLLInterfaces.EDDDLLIF.EDDCallBacks DLLCallBacks;
 
+        #region Init
+
         public EDDLiteForm()
         {
             InitializeComponent();
@@ -73,7 +75,15 @@ namespace EDDLite
             dataGridViewCommanders.RowsDefaultCellStyle.SelectionBackColor = EDDLiteTheme.Instance.GridCellBack;    // hide selection
             dataGridViewCommanders.RowsDefaultCellStyle.SelectionForeColor = EDDLiteTheme.Instance.GridCellText;
 
+
+            gameTimeToolStripMenuItem.Checked = false;
+            utcToolStripMenuItem.Checked =
+            localToolStripMenuItem.Checked = false;
+
+            UpdateGameTimeTick();
+
             screenshot = new ScreenShotConverter();
+            extButtonScreenshotDisabled.Visible = !screenshot.AutoConvert;
 
             controller = new EDDLiteController();
             controller.ProgressEvent += (s) => { toolStripStatus.Text = s; };
@@ -81,7 +91,6 @@ namespace EDDLite
             controller.NewEntry += HistoryEvent;
             controller.LogLine += LogLine;
             controller.NewUI += UIEvent;
-
 
             if (!EDDOptions.Instance.DisableTimeDisplay)
             {
@@ -210,6 +219,8 @@ namespace EDDLite
             return false;
         }
 
+        #endregion
+
         #region Controller feedback
 
         public void RefreshFinished(HistoryEntry currenthe)
@@ -314,7 +325,7 @@ namespace EDDLite
                 }
 
                 he.journalEntry.FillInformation(out string info, out string detailed);
-                LogLine(he.EventTimeUTC + " " + he.journalEntry.SummaryName(he.System) + ": " + info);
+                LogLine(EDDConfig.Instance.ConvertTimeToSelectedFromUTC(he.EventTimeUTC) + " " + he.journalEntry.SummaryName(he.System) + ": " + info);
 
                 if (he.MissionList != null)
                 {
@@ -684,11 +695,15 @@ namespace EDDLite
             UserDatabase.Instance.PutSettingBool("TimeDisplay", timeToolStripMenuItem.Checked);
         }
 
-        #endregion
-
         private void screenShotCaptureToolStripMenuItem_Click(object sender, EventArgs e)
         {
             screenshot.Configure(this);
+            extButtonScreenshotDisabled.Visible = !screenshot.AutoConvert;
+        }
+
+        private void extButtonScreenshotDisabled_Click(object sender, EventArgs e)
+        {
+            screenShotCaptureToolStripMenuItem_Click(sender, e);
         }
 
         private void themeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -706,5 +721,28 @@ namespace EDDLite
             dataGridViewCommanders.RowsDefaultCellStyle.SelectionForeColor = EDDLiteTheme.Instance.GridCellText;
         }
 
+        bool ingtchange = false;
+        private void gameTimeToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!ingtchange)
+            {
+                ToolStripMenuItem mi = sender as ToolStripMenuItem;
+                int index = ((string)mi.Tag).InvariantParseInt(0);
+                EDDConfig.Instance.DisplayTimeIndex = index;
+                UpdateGameTimeTick();
+            }
+        }
+
+        private void UpdateGameTimeTick()
+        {
+            ingtchange = true;
+            int index = EDDConfig.Instance.DisplayTimeIndex;
+            gameTimeToolStripMenuItem.Checked = index == 2;
+            utcToolStripMenuItem.Checked = index == 1;
+            localToolStripMenuItem.Checked = index == 0;
+            ingtchange = false;
+        }
+
+        #endregion
     }
 }
