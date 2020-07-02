@@ -136,8 +136,6 @@ namespace EDDLite
 
             screenshot.OnScreenshot += DisplayScreenshot;
 
-            string alloweddlls = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString("DLLAllowed", "");
-
             EDDDLLAssemblyFinder.AssemblyFindPath = EDDOptions.Instance.DLLAppDirectory();      // any needed assemblies from here
             AppDomain.CurrentDomain.AssemblyResolve += EDDDLLAssemblyFinder.AssemblyResolve;
 
@@ -155,23 +153,39 @@ namespace EDDLite
                                               EDDDLLInterfaces.EDDDLLIF.FLAG_CALLBACKVERSION + "2",
                                             };
 
+            string alloweddlls = EDDConfig.Instance.DLLPermissions;
+
             Tuple<string, string, string> res = DLLManager.Load(EDDOptions.Instance.DLLAppDirectory(), 
                                 verstring,  options,
                                 DLLCallBacks, alloweddlls);
 
-            if (res.Item3.HasChars())
+            if (res.Item3.HasChars())       // new DLLs
             {
-                if (ExtendedControls.MessageBoxTheme.Show(this,
-                                string.Format(("The following application extension DLLs have been found" + Environment.NewLine +
-                                "Do you wish to allow these to be used?" + Environment.NewLine +
-                                "{0} " + Environment.NewLine +
-                                "If you do not, either remove the DLLs from the DLL folder in EDDLite Appdata"
-                                ).T(EDTx.EDDiscoveryForm_DLLW), res.Item3),
-                                "Warning".T(EDTx.Warning),
-                                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                string[] list = res.Item3.Split(',');
+                bool changed = false;
+                foreach (var dll in list)
                 {
-                    alloweddlls = alloweddlls.AppendPrePad(res.Item3, ",");
-                    EliteDangerousCore.DB.UserDatabase.Instance.PutSettingString("DLLAllowed", alloweddlls);
+                    if (ExtendedControls.MessageBoxTheme.Show(this,
+                                    string.Format(("The following application extension DLL have been found" + Environment.NewLine +
+                                    "Do you wish to allow these to be used?" + Environment.NewLine +
+                                    "{0} " + Environment.NewLine
+                                    ).T(EDTx.EDDiscoveryForm_DLLW), res.Item3),
+                                    "Warning".T(EDTx.Warning),
+                                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                    {
+                        alloweddlls = alloweddlls.AppendPrePad("+" + res.Item3, ",");
+                        changed = true;
+                    }
+                    else
+                    {
+                        alloweddlls = alloweddlls.AppendPrePad("-" + res.Item3, ",");
+                    }
+                }
+
+                EDDConfig.Instance.DLLPermissions = alloweddlls;
+
+                if ( changed )
+                { 
                     DLLManager.UnLoad();
                     res = DLLManager.Load(EDDOptions.Instance.DLLAppDirectory(), verstring, options, DLLCallBacks, alloweddlls);
                 }
@@ -743,6 +757,12 @@ namespace EDDLite
             ingtchange = false;
         }
 
+        private void removeDLLPermissionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EDDConfig.Instance.DLLPermissions = "";
+        }
+
         #endregion
+
     }
 }

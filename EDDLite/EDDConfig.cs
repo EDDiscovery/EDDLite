@@ -55,6 +55,7 @@ namespace EDDLite
         private string language = "Auto";
         private string coriolisURL = "";
         private string eddshipyardURL = "";
+        private string dllpermissions = "";
 
         /// <summary>
         /// Controls whether or not a system notification area (systray) icon will be shown.
@@ -230,6 +231,19 @@ namespace EDDLite
             }
         }
 
+        public string DLLPermissions
+        {
+            get
+            {
+                return dllpermissions;
+            }
+            set
+            {
+                dllpermissions = value;
+                EliteDangerousCore.DB.UserDatabase.Instance.PutSettingString("DLLAllowed", value);
+            }
+        }
+
         public string Language         // as standard culture en-gb or en etc, or Auto
         {
             get
@@ -277,6 +291,7 @@ namespace EDDLite
                 language = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString("DefaultLanguage", "Auto");
                 coriolisURL = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString("CorolisURL", EDDLite.Properties.Resources.URLCoriolis);
                 eddshipyardURL = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString("EDDShipyardURL", EDDLite.Properties.Resources.URLEDShipyard);
+                dllpermissions = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString("DLLAllowed", "");
 
                 if (eddshipyardURL == "http://www.edshipyard.com/")     // 30/jul/19 changed address
                     EDDShipyardURL = "http://edsy.org/";

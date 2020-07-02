@@ -87,6 +87,7 @@
             this.gameTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.utcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.localToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeDLLPermissionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.themeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -757,7 +758,8 @@
             // 
             this.configToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.screenShotCaptureToolStripMenuItem,
-            this.displayTimeToolStripMenuItem});
+            this.displayTimeToolStripMenuItem,
+            this.removeDLLPermissionsToolStripMenuItem});
             this.configToolStripMenuItem.Name = "configToolStripMenuItem";
             this.configToolStripMenuItem.Size = new System.Drawing.Size(55, 20);
             this.configToolStripMenuItem.Text = "Config";
@@ -765,7 +767,7 @@
             // screenShotCaptureToolStripMenuItem
             // 
             this.screenShotCaptureToolStripMenuItem.Name = "screenShotCaptureToolStripMenuItem";
-            this.screenShotCaptureToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.screenShotCaptureToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
             this.screenShotCaptureToolStripMenuItem.Text = "Screen Shot Capture";
             this.screenShotCaptureToolStripMenuItem.Click += new System.EventHandler(this.screenShotCaptureToolStripMenuItem_Click);
             // 
@@ -776,14 +778,14 @@
             this.utcToolStripMenuItem,
             this.localToolStripMenuItem});
             this.displayTimeToolStripMenuItem.Name = "displayTimeToolStripMenuItem";
-            this.displayTimeToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.displayTimeToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
             this.displayTimeToolStripMenuItem.Text = "Display Time";
             // 
             // gameTimeToolStripMenuItem
             // 
             this.gameTimeToolStripMenuItem.CheckOnClick = true;
             this.gameTimeToolStripMenuItem.Name = "gameTimeToolStripMenuItem";
-            this.gameTimeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.gameTimeToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.gameTimeToolStripMenuItem.Tag = "2";
             this.gameTimeToolStripMenuItem.Text = "Game Time";
             this.gameTimeToolStripMenuItem.CheckedChanged += new System.EventHandler(this.gameTimeToolStripMenuItem_CheckedChanged);
@@ -792,7 +794,7 @@
             // 
             this.utcToolStripMenuItem.CheckOnClick = true;
             this.utcToolStripMenuItem.Name = "utcToolStripMenuItem";
-            this.utcToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.utcToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.utcToolStripMenuItem.Tag = "1";
             this.utcToolStripMenuItem.Text = "UTC";
             this.utcToolStripMenuItem.CheckedChanged += new System.EventHandler(this.gameTimeToolStripMenuItem_CheckedChanged);
@@ -801,10 +803,17 @@
             // 
             this.localToolStripMenuItem.CheckOnClick = true;
             this.localToolStripMenuItem.Name = "localToolStripMenuItem";
-            this.localToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.localToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.localToolStripMenuItem.Tag = "0";
             this.localToolStripMenuItem.Text = "Local";
             this.localToolStripMenuItem.CheckedChanged += new System.EventHandler(this.gameTimeToolStripMenuItem_CheckedChanged);
+            // 
+            // removeDLLPermissionsToolStripMenuItem
+            // 
+            this.removeDLLPermissionsToolStripMenuItem.Name = "removeDLLPermissionsToolStripMenuItem";
+            this.removeDLLPermissionsToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.removeDLLPermissionsToolStripMenuItem.Text = "Remove DLL permissions";
+            this.removeDLLPermissionsToolStripMenuItem.Click += new System.EventHandler(this.removeDLLPermissionsToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -1118,6 +1127,7 @@
         private System.Windows.Forms.ToolStripMenuItem gameTimeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem utcToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem localToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeDLLPermissionsToolStripMenuItem;
     }
 }
 
