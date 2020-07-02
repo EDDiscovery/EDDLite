@@ -52,10 +52,11 @@ namespace EDDLite
             journalmonitor.OnNewJournalEntry += (je) => { Entry(je, false, true); };
             journalmonitor.OnNewUIEvent += (ui) => { InvokeAsyncOnUiThread(()=>NewUI?.Invoke(ui)); };
 
-            LogLine?.Invoke("Reading Journals");
+            LogLine?.Invoke("Detecting Journals");
             Reset();
             journalmonitor.SetupWatchers();
             // order the reading of last 2 files (in case continue) and fire back the last two
+            LogLine?.Invoke("Reading Journals");
             journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 2, (a,ji,jt,ei,et) => InvokeAsyncOnUiThread(() => {
                // System.Diagnostics.Debug.WriteLine("In FG {0} {1} {2} {3} {4} {5}", EDCommander.GetCommander(a.CommanderId).Name, ji, jt, ei, et, a.EventTypeStr );
                 Entry(a, true, ei-et > -recentlimit); }), 2);
@@ -92,7 +93,7 @@ namespace EDDLite
         private void UpdateWatcher(int p, string s) // in thread
         {
             InvokeAsyncOnUiThread(() => { ProgressEvent?.Invoke(s); });
-            System.Diagnostics.Debug.WriteLine("Update " + p + " " + s);
+            System.Diagnostics.Debug.WriteLine("Watcher Update " + p + " " + s);
         }
 
         DateTime lastutc;

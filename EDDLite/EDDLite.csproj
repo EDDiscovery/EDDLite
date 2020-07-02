@@ -239,10 +239,6 @@
       <ZipFiles Include="$(TargetPath)" />
       <ZipFiles Include="$(OutDir)*.dll" />
       <ZipFiles Include="$(OutDir)*.pdb" />
-      <ZipFiles Include="$(ProjectDir)\Translations\*.tlf" />
-      <ZipFiles Include="$(ProjectDir)\UserControls\*.tlp" />
-      <ZipFiles Include="$(SolutionDir)\EliteDangerousCore\EliteDangerous\EliteDangerous\*.tlp" />
-      <ZipFiles Include="$(SolutionDir)\EliteDangerousCore\EliteDangerous\JournalEvents\*.tlp" />
       <ZipFiles Include="$(ProjectDir)App.Portable.config">
         <Name>EDDLite.exe.config</Name>
       </ZipFiles>
