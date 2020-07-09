@@ -43,6 +43,26 @@ namespace EDDLite
         {
             InitializeComponent();
 
+            string logpath = EDDOptions.Instance.LogAppDirectory();
+
+            BaseUtils.LogClean.DeleteOldLogFiles(logpath, "*.hlog", 2, 256);        // Remove hlogs faster
+            BaseUtils.LogClean.DeleteOldLogFiles(logpath, "*.log", 10, 256);
+
+            if (!System.Diagnostics.Debugger.IsAttached || EDDOptions.Instance.TraceLog != null)
+            {
+                BaseUtils.TraceLog.RedirectTrace(logpath, EDDOptions.Instance.TraceLog);
+            }
+
+            if (!System.Diagnostics.Debugger.IsAttached || EDDOptions.Instance.LogExceptions)
+            {
+                BaseUtils.ExceptionCatcher.RedirectExceptions(Properties.Resources.URLProjectFeedback);
+            }
+
+            if (EDDOptions.Instance.LogExceptions)
+            {
+                BaseUtils.FirstChanceExceptionCatcher.RegisterFirstChanceExceptionHandler();
+            }
+
             // verify its first so its on top
             System.Diagnostics.Debug.Assert(extPanelScrollStatus.Controls[0] is ExtendedControls.ExtScrollBar);
 
@@ -169,16 +189,16 @@ namespace EDDLite
                                     string.Format(("The following application extension DLL have been found" + Environment.NewLine +
                                     "Do you wish to allow these to be used?" + Environment.NewLine +
                                     "{0} " + Environment.NewLine
-                                    ).T(EDTx.EDDiscoveryForm_DLLW), res.Item3),
+                                    ).T(EDTx.EDDiscoveryForm_DLLW), dll),
                                     "Warning".T(EDTx.Warning),
                                     MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                     {
-                        alloweddlls = alloweddlls.AppendPrePad("+" + res.Item3, ",");
+                        alloweddlls = alloweddlls.AppendPrePad("+" + dll, ",");
                         changed = true;
                     }
                     else
                     {
-                        alloweddlls = alloweddlls.AppendPrePad("-" + res.Item3, ",");
+                        alloweddlls = alloweddlls.AppendPrePad("-" + dll, ",");
                     }
                 }
 
@@ -759,7 +779,10 @@ namespace EDDLite
 
         private void removeDLLPermissionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            EDDConfig.Instance.DLLPermissions = "";
+            if (ExtendedControls.MessageBoxTheme.Show(this, "Remove all DLL permissions, on next start, you will be asked per DLL if you wish to allow the DLL to run. Are you sure?".T(EDTx.EDDiscoveryForm_RemoveDLLPerms), "Warning".T(EDTx.Warning), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+            {
+                EDDConfig.Instance.DLLPermissions = "";
+            }
         }
 
         #endregion

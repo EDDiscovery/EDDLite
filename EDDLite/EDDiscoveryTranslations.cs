@@ -80,6 +80,8 @@ namespace EDDLite
         EDDiscoveryForm_SafeMode, // To start in safe mode, exit the program, hold down the shift key
         EDDiscoveryForm_ResetEDSMID, // Confirm you wish to reset the assigned EDSM ID
 
+        EDDiscoveryForm_RemoveDLLPerms, // Confirm dll etc
+
         EDDiscoveryController_CD, // Closing down, please wait..
         EDDiscoveryController_EDSM, // Get galactic mapping from EDSM.
         EDDiscoveryController_LN, // Loaded Notes, Bookmarks and Galactic mapping.

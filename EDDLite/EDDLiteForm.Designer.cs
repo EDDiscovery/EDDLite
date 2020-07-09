@@ -511,6 +511,7 @@
             this.extButtonSpanshStation.Name = "extButtonSpanshStation";
             this.extButtonSpanshStation.Size = new System.Drawing.Size(42, 32);
             this.extButtonSpanshStation.TabIndex = 6;
+            this.extButtonSpanshStation.Text = "S";
             this.extButtonSpanshStation.UseVisualStyleBackColor = true;
             this.extButtonSpanshStation.Click += new System.EventHandler(this.extButtonSpanshStation_Click);
             // 
@@ -521,6 +522,7 @@
             this.extButtonSpanshSystem.Name = "extButtonSpanshSystem";
             this.extButtonSpanshSystem.Size = new System.Drawing.Size(42, 32);
             this.extButtonSpanshSystem.TabIndex = 6;
+            this.extButtonSpanshSystem.Text = "S";
             this.extButtonSpanshSystem.UseVisualStyleBackColor = true;
             this.extButtonSpanshSystem.Click += new System.EventHandler(this.extButtonSpanshSystem_Click);
             // 
@@ -750,7 +752,7 @@
             this.helpToolStripMenuItem});
             this.menuMain.Location = new System.Drawing.Point(0, 0);
             this.menuMain.Name = "menuMain";
-            this.menuMain.Size = new System.Drawing.Size(271, 24);
+            this.menuMain.Size = new System.Drawing.Size(151, 24);
             this.menuMain.TabIndex = 0;
             this.menuMain.Text = "menuStrip1";
             // 
@@ -883,7 +885,7 @@
             // 
             this.label_version.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label_version.AutoSize = true;
-            this.label_version.Location = new System.Drawing.Point(279, 6);
+            this.label_version.Location = new System.Drawing.Point(159, 6);
             this.label_version.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.label_version.Name = "label_version";
             this.label_version.Size = new System.Drawing.Size(43, 13);
@@ -895,7 +897,7 @@
             // 
             this.labelInfoBoxTop.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.labelInfoBoxTop.AutoSize = true;
-            this.labelInfoBoxTop.Location = new System.Drawing.Point(333, 6);
+            this.labelInfoBoxTop.Location = new System.Drawing.Point(213, 6);
             this.labelInfoBoxTop.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.labelInfoBoxTop.Name = "labelInfoBoxTop";
             this.labelInfoBoxTop.Size = new System.Drawing.Size(43, 13);
@@ -906,7 +908,7 @@
             // 
             this.labelGameDateTime.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.labelGameDateTime.AutoSize = true;
-            this.labelGameDateTime.Location = new System.Drawing.Point(387, 6);
+            this.labelGameDateTime.Location = new System.Drawing.Point(267, 6);
             this.labelGameDateTime.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.labelGameDateTime.Name = "labelGameDateTime";
             this.labelGameDateTime.Size = new System.Drawing.Size(43, 13);
