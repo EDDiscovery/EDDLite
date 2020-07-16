@@ -135,15 +135,15 @@ namespace EDDLite
                 cashledger.Process(je);
                 he.Credits = cashledger.CashTotal;
 
-                he.MissionList = missionlistaccumulator.Process(je, he.System, he.WhereAmI);
+                he.UpdateMissionList(missionlistaccumulator.Process(je, he.System, he.WhereAmI));
 
                 currenthe = he;
                 lastutc = je.EventTimeUTC;
                 outfitting.Process(je);
 
                 Tuple<ShipInformation, ModulesInStore> ret = shipinformationlist.Process(je, he.WhereAmI, he.System);
-                he.ShipInformation = ret.Item1;
-                he.StoredModules = ret.Item2;
+                he.UpdateShipInformation(ret.Item1);
+                he.UpdateShipStoredModules(ret.Item2);
 
                 NewEntry?.Invoke(he, stored, recent);
             }
