@@ -416,13 +416,13 @@ namespace EDDLite
 
         public void UIEvent(UIEvent u)
         {
-            //JsonSerializer serializer = new JsonSerializer();
-
             try
             {
-                string output = JsonConvert.SerializeObject(u);
                 if (DLLManager.Count > 0)       // if worth calling..
+                {
+                    string output = JsonConvert.SerializeObject(u);
                     DLLManager.NewUIEvent(output);
+                }
             }
             catch ( Exception ex)
             {
