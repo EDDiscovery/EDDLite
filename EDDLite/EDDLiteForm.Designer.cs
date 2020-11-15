@@ -36,7 +36,7 @@
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainerCmdrDataLogs = new System.Windows.Forms.SplitContainer();
             this.extPanelDataGridViewScrollCmdrs = new ExtendedControls.ExtPanelDataGridViewScroll();
-            this.dataGridViewCommanders = new System.Windows.Forms.DataGridView();
+            this.dataGridViewCommanders = new BaseUtils.DataGridViewAltContextMenus();
             this.ColumnCommander = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EdsmName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.JournalDirCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -220,7 +220,6 @@
             this.dataGridViewCommanders.Size = new System.Drawing.Size(848, 77);
             this.dataGridViewCommanders.TabIndex = 3;
             this.dataGridViewCommanders.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewCommanders_CellDoubleClick);
-            this.dataGridViewCommanders.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewCommanders_MouseDown);
             // 
             // ColumnCommander
             // 
@@ -1066,7 +1065,7 @@
         private ExtendedControls.ExtRichTextBox extRichTextBoxLog;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatus;
-        private System.Windows.Forms.DataGridView dataGridViewCommanders;
+        private BaseUtils.DataGridViewAltContextMenus dataGridViewCommanders;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnCommander;
         private System.Windows.Forms.DataGridViewTextBoxColumn EdsmName;
         private System.Windows.Forms.DataGridViewTextBoxColumn JournalDirCol;

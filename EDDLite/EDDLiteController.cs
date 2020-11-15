@@ -65,7 +65,7 @@ namespace EDDLite
 
             LogLine?.Invoke("Finished reading Journals");
 
-            journalmonitor.StartMonitor();
+            journalmonitor.StartMonitor(false);
 
             while (!stopit)
             {
@@ -79,7 +79,7 @@ namespace EDDLite
                     journalmonitor.SetupWatchers();
                     journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 2, 
                             (a,ji,jt,ei,et) => InvokeAsyncOnUiThread(() => { Entry(a, true, ei - et > -recentlimit); }), 2);
-                    journalmonitor.StartMonitor();
+                    journalmonitor.StartMonitor(false);
                     InvokeAsyncOnUiThread(() => { RefreshFinished?.Invoke(currenthe); });
                     LogLine?.Invoke("Finished reading Journals");
                 }

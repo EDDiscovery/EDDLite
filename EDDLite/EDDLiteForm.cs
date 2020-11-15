@@ -19,7 +19,6 @@ using EliteDangerousCore.DB;
 using EliteDangerousCore.DLL;
 using EliteDangerousCore.EDSM;
 using EliteDangerousCore.ScreenShots;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -284,7 +283,7 @@ namespace EDDLite
             {
                 bool reposbut = false;
 
-                if (lastuihe == null || he.Commander.Name != lastuihe.Commander.Name)
+                if (lastuihe == null || !he.Commander.Name.Equals(lastuihe.Commander.Name))
                 {
                     labelCmdr.Text = he.Commander.Name;
                     if (EDCommander.Current.Name != he.Commander.Name)
@@ -296,14 +295,14 @@ namespace EDDLite
                     labelCredits.Text = he.Credits.ToString("N0");
                 }
 
-                if (lastuihe == null || he.System.Name != lastuihe.System.Name)
-                {
+                if (!labelSystem.Text.Equals(he.System.Name))       // because of StartJump rewriting the previous entry, we can't detect system names changes using UI
+                {                                                   // which ends up we never seeing lastui.system.name being different to he.system.name
                     extButtonEDSMSystem.Enabled = extButtonInaraSystem.Enabled = extButtonEDDBSystem.Enabled = true;
                     labelSystem.Text = he.System.Name;
                     reposbut = true;
                 }
 
-                if (lastuihe == null || he.WhereAmI != lastuihe.WhereAmI)
+                if (lastuihe == null || !he.WhereAmI.Equals(lastuihe.WhereAmI))
                 {
                     labelLocation.Text = he.WhereAmI;
                     reposbut = true;
@@ -379,6 +378,7 @@ namespace EDDLite
                 }
 
                 lastuihe = he;
+                System.Diagnostics.Debug.WriteLine("Set lastuihe to " + lastuihe.System.Name);
             }
 
             if (!stored)
@@ -411,22 +411,17 @@ namespace EDDLite
                 DLLManager.NewJournalEntry(EDDDLLCallerHE.CreateFromHistoryEntry(he, stored), stored);
 
             lasthe = he;
-
         }
 
-        public void UIEvent(UIEvent u)
+        public void UIEvent(UIEvent uievent)
         {
-            try
+            if (DLLManager.Count > 0)       // if worth calling..
             {
-                if (DLLManager.Count > 0)       // if worth calling..
-                {
-                    string output = JsonConvert.SerializeObject(u);
+                string output = BaseUtils.JSON.JToken.FromObject(uievent)?.ToString();
+                if (output != null)
                     DLLManager.NewUIEvent(output);
-                }
-            }
-            catch ( Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("Could not serialise " + u.EventTypeStr + " "  + ex);
+                else
+                    System.Diagnostics.Debug.WriteLine("Could not serialise " + uievent.EventTypeStr);
             }
         }
 
@@ -520,12 +515,6 @@ namespace EDDLite
 
         #region Commander editing
 
-        private int rightclickrow = -1;
-        private void dataGridViewCommanders_MouseDown(object sender, MouseEventArgs e)
-        {
-            dataGridViewCommanders.HandleClickOnDataGrid(e, out int unusedleftclickrow, out rightclickrow);
-        }
-
         private void dataGridViewCommanders_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -551,16 +540,16 @@ namespace EDDLite
 
         private void editToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (rightclickrow >= 0)
-                EditCmdr(rightclickrow);
+            if (dataGridViewCommanders.RightClickRow >= 0)
+                EditCmdr(dataGridViewCommanders.RightClickRow);
 
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (rightclickrow >= 0)
+            if (dataGridViewCommanders.RightClickRow >= 0)
             {
-                int row = dataGridViewCommanders.SelectedRows[0].Index;
+                int row = dataGridViewCommanders.RightClickRow;
                 EDCommander cmdr = dataGridViewCommanders.Rows[row].DataBoundItem as EDCommander;
 
                 var result = ExtendedControls.MessageBoxTheme.Show(FindForm(), "Do you wish to delete commander ".T(EDTx.UserControlSettings_DelCmdr) + cmdr.Name + "?", "Warning".T(EDTx.Warning), MessageBoxButtons.YesNo, MessageBoxIcon.Information);
@@ -649,9 +638,7 @@ namespace EDDLite
         {
             if ( lasthe != null )
             {
-                Newtonsoft.Json.Linq.JObject jo = lasthe.ShipInformation.ToJSONLoadout();
-
-                string loadoutjournalline = jo.ToString(Newtonsoft.Json.Formatting.Indented);
+                string loadoutjournalline = lasthe.ShipInformation.ToJSONLoadout();
 
                 //     File.WriteAllText(@"c:\code\loadoutout.txt", loadoutjournalline);
 
