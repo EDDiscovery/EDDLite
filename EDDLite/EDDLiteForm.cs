@@ -49,7 +49,7 @@ namespace EDDLite
 
             if (!System.Diagnostics.Debugger.IsAttached || EDDOptions.Instance.TraceLog != null)
             {
-                BaseUtils.TraceLog.RedirectTrace(logpath, EDDOptions.Instance.TraceLog);
+                BaseUtils.TraceLog.RedirectTrace(logpath, true, EDDOptions.Instance.TraceLog);
             }
 
             if (!System.Diagnostics.Debugger.IsAttached || EDDOptions.Instance.LogExceptions)
@@ -150,12 +150,13 @@ namespace EDDLite
                                  {
                                      return new Tuple<string, string, string>("Unknown", "Unknown", "Unknown");
                                  }
-                             }
+                             },
+                             8000
                              );
 
             screenshot.OnScreenshot += DisplayScreenshot;
 
-            EDDDLLAssemblyFinder.AssemblyFindPath = EDDOptions.Instance.DLLAppDirectory();      // any needed assemblies from here
+            EDDDLLAssemblyFinder.AssemblyFindPaths.Add(EDDOptions.Instance.DLLAppDirectory());      // any needed assemblies from here
             AppDomain.CurrentDomain.AssemblyResolve += EDDDLLAssemblyFinder.AssemblyResolve;
 
             DLLManager = new EDDDLLManager();
@@ -174,9 +175,9 @@ namespace EDDLite
 
             string alloweddlls = EDDConfig.Instance.DLLPermissions;
 
-            Tuple<string, string, string> res = DLLManager.Load(EDDOptions.Instance.DLLAppDirectory(), 
+            Tuple<string, string, string,string> res = DLLManager.Load(new string[] { EDDOptions.Instance.DLLAppDirectory() }, new bool[] {false},
                                 verstring,  options,
-                                DLLCallBacks, alloweddlls);
+                                DLLCallBacks, ref alloweddlls);
 
             if (res.Item3.HasChars())       // new DLLs
             {
@@ -206,7 +207,9 @@ namespace EDDLite
                 if ( changed )
                 { 
                     DLLManager.UnLoad();
-                    res = DLLManager.Load(EDDOptions.Instance.DLLAppDirectory(), verstring, options, DLLCallBacks, alloweddlls);
+                    res = DLLManager.Load(new string[] { EDDOptions.Instance.DLLAppDirectory() }, new bool[] { false }, 
+                                            verstring, options, 
+                                            DLLCallBacks, ref alloweddlls);
                 }
             }
 
@@ -263,7 +266,9 @@ namespace EDDLite
 
             if (currenthe != null)
             {
-                DLLManager.Refresh(EDCommander.Current.Name, EDDDLLCallerHE.CreateFromHistoryEntry(currenthe));
+                var matlist = controller.GetMatList(currenthe);
+                var missionlist = controller.GetCurrentMissionList(currenthe);
+                DLLManager.Refresh(EDCommander.Current.Name, EDDDLLCallerHE.CreateFromHistoryEntry(currenthe, matlist, missionlist));
 
                 if (currenthe.Commander.SyncToInara)
                 {
@@ -278,6 +283,9 @@ namespace EDDLite
         public void HistoryEvent(HistoryEntry he, bool stored, bool recent)     // recent is true on stored for last few entries..
         {
             bool dontupdateui = (lasthe != null && stored && !recent);
+
+            var matlist = controller.GetMatList(he);
+            var missionlist = controller.GetCurrentMissionList(he);
 
             if (!dontupdateui)      // so, if we have displayed one, and we are in stored reply, and not a recent entry.. don't update UI 
             {
@@ -349,33 +357,33 @@ namespace EDDLite
                     extButtonEDSY.Left = extButtonCoriolis.Right + 2;
                 }
 
-                if (lastuihe == null || he.MaterialCommodity.DataCount != lastuihe.MaterialCommodity.DataCount || he.MaterialCommodity.CargoCount != lastuihe.MaterialCommodity.CargoCount
-                                        || he.MaterialCommodity.MaterialsCount != lastuihe.MaterialCommodity.MaterialsCount)
+                int datacount = MaterialCommoditiesMicroResourceList.DataCount(matlist);
+                int matcount = MaterialCommoditiesMicroResourceList.MaterialsCount(matlist);
+                int cargocount = MaterialCommoditiesMicroResourceList.CargoCount(matlist);
+                var prevmatlist = (lastuihe != null) ? controller.GetMatList(lastuihe) : null;
+                int prevdatacount = prevmatlist != null ? MaterialCommoditiesMicroResourceList.DataCount(prevmatlist) : 0;
+                int prevmatcount = prevmatlist != null ? MaterialCommoditiesMicroResourceList.MaterialsCount(prevmatlist) : 0;
+                int prevcargocount = prevmatlist != null ? MaterialCommoditiesMicroResourceList.CargoCount(prevmatlist) : 0;
+
+                if (prevmatlist == null || datacount != prevdatacount || matcount != prevmatcount || cargocount != prevcargocount )
                 {
-                    labelData.Text = he.MaterialCommodity.DataCount.ToString();
-                    labelCargo.Text = he.MaterialCommodity.CargoCount.ToString();
-                    labelMaterials.Text = he.MaterialCommodity.MaterialsCount.ToString();
+                    labelData.Text = datacount.ToString();
+                    labelCargo.Text = cargocount.ToString();
+                    labelMaterials.Text = matcount.ToString();
                 }
 
-                he.journalEntry.FillInformation(out string info, out string detailed);
+                he.journalEntry.FillInformation(he.System,out string info, out string detailed);
                 LogLine(EDDConfig.Instance.ConvertTimeToSelectedFromUTC(he.EventTimeUTC) + " " + he.journalEntry.SummaryName(he.System) + ": " + info);
 
-                if (he.MissionList != null)
+                labelMissionCount.Text = missionlist.Count.ToString();
+                string mtext = "";
+                if (missionlist.Count > 0)
                 {
-                    labelMissionCount.Text = he.MissionList.Missions.Count.ToString();
-                    string mtext = "";
-                    if (he.MissionList.Missions.Count > 0)
-                    {
-                        var list = he.MissionList.GetAllCurrentMissions(DateTime.Now);
-                        if (list.Count > 0)
-                        {
-                            var last = list[0];
-                            mtext = BaseUtils.FieldBuilder.Build("", last.Mission.LocalisedName, "", last.Mission.Expiry, "", last.Mission.DestinationSystem, "", last.Mission.DestinationStation);
-                        }
-                    }
-
-                    labelLatestMission.Text = mtext;
+                    var last = missionlist[0];
+                    mtext = BaseUtils.FieldBuilder.Build("", last.Mission.LocalisedName, "", last.Mission.Expiry, "", last.Mission.DestinationSystem, "", last.Mission.DestinationStation);
                 }
+
+                labelLatestMission.Text = mtext;
 
                 lastuihe = he;
                 System.Diagnostics.Debug.WriteLine("Set lastuihe to " + lastuihe.System.Name);
@@ -385,7 +393,7 @@ namespace EDDLite
             {
                 if (he.Commander.SyncToEdsm)
                 {
-                    EDSMJournalSync.SendEDSMEvents(LogLine, he);
+                    EDSMJournalSync.SendEDSMEvents(LogLine, new List<HistoryEntry> { he });
                 }
 
                 if (he.Commander.SyncToIGAU)
@@ -393,7 +401,7 @@ namespace EDDLite
                     EliteDangerousCore.IGAU.IGAUSync.NewEvent(LogLine, he);
                 }
 
-                if (EliteDangerousCore.EDDN.EDDNClass.IsEDDNMessage(he.EntryType, he.EventTimeUTC) && he.AgeOfEntry() < TimeSpan.FromDays(1.0) &&
+                if (EliteDangerousCore.EDDN.EDDNClass.IsEDDNMessage(he.EntryType) && he.AgeOfEntry() < TimeSpan.FromDays(1.0) &&
                         he.Commander.SyncToEddn == true)
                 {
                     EliteDangerousCore.EDDN.EDDNSync.SendEDDNEvents(LogLine, he);
@@ -401,14 +409,17 @@ namespace EDDLite
 
                 if (he.Commander.SyncToInara)
                 {
-                    EliteDangerousCore.Inara.InaraSync.NewEvent(LogLine, he);
+                    var mcmrlist = controller.GetMatDict(he);
+                    EliteDangerousCore.Inara.InaraSync.NewEvent(LogLine, he, mcmrlist);
                 }
 
                 screenshot.NewJournalEntry(he.journalEntry);
             }
 
             if (DLLManager.Count > 0)       // if worth calling..
-                DLLManager.NewJournalEntry(EDDDLLCallerHE.CreateFromHistoryEntry(he, stored), stored);
+            {
+                DLLManager.NewJournalEntry(EDDDLLCallerHE.CreateFromHistoryEntry(he, matlist, missionlist, stored), stored);
+            }
 
             lasthe = he;
         }
@@ -531,8 +542,7 @@ namespace EDDLite
             if (cf.ShowDialog(FindForm()) == DialogResult.OK)
             {
                 bool forceupdate = cf.Update(cmdr);
-                List<EDCommander> edcommanders = (List<EDCommander>)dataGridViewCommanders.DataSource;
-                EDCommander.Update(edcommanders, false);
+                cmdr.Update();
                 dataGridViewCommanders.Refresh();
                 controller.RequestRescan = true;
             }
@@ -573,7 +583,7 @@ namespace EDDLite
                 {
                     EDCommander cmdr = new EDCommander();
                     cf.Update(cmdr);
-                    EDCommander.Create(cmdr);
+                    EDCommander.Add(cmdr);
                     UpdateCommandersListBox();
                     controller.RequestRescan = true;
                 }
@@ -602,7 +612,7 @@ namespace EDDLite
             if (lasthe != null)
             {
                 EDSMClass edsm = new EDSMClass();
-                string url = edsm.GetUrlToEDSMSystem(lasthe.System.Name);
+                string url = edsm.GetUrlToSystem(lasthe.System.Name);
 
                 if (url.Length > 0)         // may pass back empty string if not known, this solves another exception
                     System.Diagnostics.Process.Start(url);

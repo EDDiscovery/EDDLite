@@ -36,7 +36,7 @@
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainerCmdrDataLogs = new System.Windows.Forms.SplitContainer();
             this.extPanelDataGridViewScrollCmdrs = new ExtendedControls.ExtPanelDataGridViewScroll();
-            this.dataGridViewCommanders = new BaseUtils.DataGridViewAltContextMenus();
+            this.dataGridViewCommanders = new BaseUtils.DataGridViewBaseEnhancements();
             this.ColumnCommander = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EdsmName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.JournalDirCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -186,7 +186,6 @@
             this.extPanelDataGridViewScrollCmdrs.Controls.Add(this.extScrollBar1);
             this.extPanelDataGridViewScrollCmdrs.Dock = System.Windows.Forms.DockStyle.Fill;
             this.extPanelDataGridViewScrollCmdrs.InternalMargin = new System.Windows.Forms.Padding(0);
-            this.extPanelDataGridViewScrollCmdrs.LimitLargeChange = 2147483647;
             this.extPanelDataGridViewScrollCmdrs.Location = new System.Drawing.Point(0, 0);
             this.extPanelDataGridViewScrollCmdrs.Name = "extPanelDataGridViewScrollCmdrs";
             this.extPanelDataGridViewScrollCmdrs.Size = new System.Drawing.Size(864, 77);
@@ -201,6 +200,7 @@
             this.dataGridViewCommanders.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridViewCommanders.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dataGridViewCommanders.CausesValidation = false;
+            this.dataGridViewCommanders.ColumnHeaderMenuStrip = null;
             this.dataGridViewCommanders.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewCommanders.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ColumnCommander,
@@ -213,12 +213,15 @@
             this.dataGridViewCommanders.MultiSelect = false;
             this.dataGridViewCommanders.Name = "dataGridViewCommanders";
             this.dataGridViewCommanders.ReadOnly = true;
+            this.dataGridViewCommanders.RowHeaderMenuStrip = null;
             this.dataGridViewCommanders.RowHeadersVisible = false;
             this.dataGridViewCommanders.RowHeadersWidth = 20;
             this.dataGridViewCommanders.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.dataGridViewCommanders.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridViewCommanders.SingleRowSelect = true;
             this.dataGridViewCommanders.Size = new System.Drawing.Size(848, 77);
             this.dataGridViewCommanders.TabIndex = 3;
+            this.dataGridViewCommanders.TopLeftHeaderMenuStrip = null;
             this.dataGridViewCommanders.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewCommanders_CellDoubleClick);
             // 
             // ColumnCommander
@@ -1065,7 +1068,7 @@
         private ExtendedControls.ExtRichTextBox extRichTextBoxLog;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatus;
-        private BaseUtils.DataGridViewAltContextMenus dataGridViewCommanders;
+        private BaseUtils.DataGridViewBaseEnhancements dataGridViewCommanders;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnCommander;
         private System.Windows.Forms.DataGridViewTextBoxColumn EdsmName;
         private System.Windows.Forms.DataGridViewTextBoxColumn JournalDirCol;

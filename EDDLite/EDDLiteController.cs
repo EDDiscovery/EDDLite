@@ -16,6 +16,7 @@
 
 using EliteDangerousCore;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace EDDLite
@@ -54,12 +55,18 @@ namespace EDDLite
 
             LogLine?.Invoke("Detecting Journals");
             Reset();
-            journalmonitor.SetupWatchers();
+            string stdfolder = EliteDangerousCore.FrontierFolder.FolderName();     // may be null
+
+            journalmonitor.SetupWatchers(new string[] { stdfolder }, "Journal*.log", DateTime.MinValue);
             // order the reading of last 2 files (in case continue) and fire back the last two
             LogLine?.Invoke("Reading Journals");
-            journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 2, (a,ji,jt,ei,et) => InvokeAsyncOnUiThread(() => {
-               // System.Diagnostics.Debug.WriteLine("In FG {0} {1} {2} {3} {4} {5}", EDCommander.GetCommander(a.CommanderId).Name, ji, jt, ei, et, a.EventTypeStr );
-                Entry(a, true, ei-et > -recentlimit); }), 2);
+            journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, DateTime.MinValue,
+                                                            2, 
+                                                            (a,ji,jt,ei,et) => InvokeAsyncOnUiThread(() => 
+                                                            {
+                // System.Diagnostics.Debug.WriteLine("In FG {0} {1} {2} {3} {4} {5}", EDCommander.GetCommander(a.CommanderId).Name, ji, jt, ei, et, a.EventTypeStr );
+                Entry(a, true, ei-et > -recentlimit); })
+                                                            , 2);
 
             InvokeAsyncOnUiThread(() => { RefreshFinished?.Invoke(currenthe); });
 
@@ -76,9 +83,12 @@ namespace EDDLite
                     LogLine?.Invoke("Re-reading Journals");
                     journalmonitor.StopMonitor();
                     Reset();
-                    journalmonitor.SetupWatchers();
-                    journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 2, 
-                            (a,ji,jt,ei,et) => InvokeAsyncOnUiThread(() => { Entry(a, true, ei - et > -recentlimit); }), 2);
+                    journalmonitor.SetupWatchers(new string[] { stdfolder }, "Journal*.log", DateTime.MinValue);
+                    journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 
+                                    DateTime.MinValue, 
+                                    2, // force reload of last two journal files
+                                    (a,ji,jt,ei,et) => InvokeAsyncOnUiThread(() => { Entry(a, true, ei - et > -recentlimit); }), 
+                                    2); // fire back last two
                     journalmonitor.StartMonitor(false);
                     InvokeAsyncOnUiThread(() => { RefreshFinished?.Invoke(currenthe); });
                     LogLine?.Invoke("Finished reading Journals");
@@ -103,7 +113,7 @@ namespace EDDLite
             currenthe = null;
             outfitting = new OutfittingList();
             shipinformationlist = new ShipInformationList();
-            matlist = new MaterialCommoditiesList();
+            matlist = new MaterialCommoditiesMicroResourceList();
             missionlistaccumulator = new MissionListAccumulator(); // and mission list..
             cashledger = new Ledger();
 
@@ -129,8 +139,9 @@ namespace EDDLite
                     EDCommander.CurrentCmdrID = currentcmdrnr;
                 }
 
-                HistoryEntry he = HistoryEntry.FromJournalEntry(je, currenthe, false, out bool unusedjournalupdate);
-                he.UpdateMaterials( je, currenthe);
+                HistoryEntry he = HistoryEntry.FromJournalEntry(je, currenthe);
+
+                he.UpdateMaterialsCommodities( matlist.Process(je, currenthe?.journalEntry, he.Status.TravelState == HistoryEntryStatus.TravelStateType.SRV));
 
                 cashledger.Process(je);
                 he.Credits = cashledger.CashTotal;
@@ -153,10 +164,25 @@ namespace EDDLite
             }
         }
 
+        public List<MaterialCommodityMicroResource> GetMatList(HistoryEntry he)
+        {
+            return matlist.Get(he.MaterialCommodity);
+        }
+
+        public Dictionary<string,MaterialCommodityMicroResource> GetMatDict(HistoryEntry he)
+        {
+            return matlist.GetDict(he.MaterialCommodity);
+        }
+
+        public List<MissionState> GetCurrentMissionList(HistoryEntry he)
+        {
+            return missionlistaccumulator.GetAllCurrentMissions(he.MissionList,he.EventTimeUTC);
+        }
+
         private HistoryEntry currenthe;
         private OutfittingList outfitting;
         private ShipInformationList shipinformationlist;
-        private MaterialCommoditiesList matlist;
+        private MaterialCommoditiesMicroResourceList matlist;
         private MissionListAccumulator missionlistaccumulator;
         private Ledger cashledger;
         private int currentcmdrnr;

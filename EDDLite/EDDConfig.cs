@@ -295,8 +295,6 @@ namespace EDDLite
 
                 if (eddshipyardURL == "http://www.edshipyard.com/")     // 30/jul/19 changed address
                     EDDShipyardURL = "http://edsy.org/";
-
-                EliteDangerousCore.EDCommander.Load(write);
             }
             catch (Exception ex)
             {
