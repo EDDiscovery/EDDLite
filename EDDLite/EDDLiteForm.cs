@@ -403,6 +403,11 @@ namespace EDDLite
                     EliteDangerousCore.IGAU.IGAUSync.NewEvent(LogLine, he);
                 }
 
+                if (EDCommander.Current.SyncToEDAstro)
+                {
+                    EliteDangerousCore.EDAstro.EDAstroSync.SendEDAstroEvents(new List<HistoryEntry>() { he });
+                }
+
                 if (EliteDangerousCore.EDDN.EDDNClass.IsEDDNMessage(he.EntryType) && he.AgeOfEntry() < TimeSpan.FromDays(1.0) &&
                         he.Commander.SyncToEddn == true)
                 {
