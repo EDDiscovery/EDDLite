@@ -42,6 +42,8 @@ namespace EDDLite
         {
             InitializeComponent();
 
+            MaterialCommodityMicroResourceType.FillTable();     // lets statically fill the table way before anyone wants to access it
+
             string logpath = EDDOptions.Instance.LogAppDirectory();
 
             BaseUtils.LogClean.DeleteOldLogFiles(logpath, "*.hlog", 2, 256);        // Remove hlogs faster
