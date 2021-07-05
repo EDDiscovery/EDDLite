@@ -64,6 +64,8 @@ namespace EDDLite
                 BaseUtils.FirstChanceExceptionCatcher.RegisterFirstChanceExceptionHandler();
             }
 
+            BaseUtils.HttpCom.LogPath = logpath;
+
             // verify its first so its on top
             System.Diagnostics.Debug.Assert(extPanelScrollStatus.Controls[0] is ExtendedControls.ExtScrollBar);
 
