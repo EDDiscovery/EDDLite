@@ -35,6 +35,7 @@ namespace EDDLite
         ScreenShotConverter screenshot;
         EDDDLLManager DLLManager;
         EDDDLLInterfaces.EDDDLLIF.EDDCallBacks DLLCallBacks;
+        int prevencodedcount, prevrawcount, prevmanucount, prevdatacount, previtemcount, prevconsumecount, prevcomponentcount, prevcargocount;
 
         #region Init
 
@@ -361,20 +362,42 @@ namespace EDDLite
                     extButtonEDSY.Left = extButtonCoriolis.Right + 2;
                 }
 
-                int datacount = MaterialCommoditiesMicroResourceList.DataCount(matlist);
-                int matcount = MaterialCommoditiesMicroResourceList.MaterialsCount(matlist);
-                int cargocount = MaterialCommoditiesMicroResourceList.CargoCount(matlist);
-                var prevmatlist = (lastuihe != null) ? controller.GetMatList(lastuihe) : null;
-                int prevdatacount = prevmatlist != null ? MaterialCommoditiesMicroResourceList.DataCount(prevmatlist) : 0;
-                int prevmatcount = prevmatlist != null ? MaterialCommoditiesMicroResourceList.MaterialsCount(prevmatlist) : 0;
-                int prevcargocount = prevmatlist != null ? MaterialCommoditiesMicroResourceList.CargoCount(prevmatlist) : 0;
+                int encodedcount = MaterialCommoditiesMicroResourceList.Count(matlist, MaterialCommodityMicroResourceType.CatType.Encoded);
+                int rawcount = MaterialCommoditiesMicroResourceList.Count(matlist, MaterialCommodityMicroResourceType.CatType.Raw);
+                int manucount = MaterialCommoditiesMicroResourceList.Count(matlist, MaterialCommodityMicroResourceType.CatType.Manufactured);
+                int datacount = MaterialCommoditiesMicroResourceList.Count(matlist, MaterialCommodityMicroResourceType.CatType.Data);
+                int itemcount = MaterialCommoditiesMicroResourceList.Count(matlist, MaterialCommodityMicroResourceType.CatType.Item);
+                int consumecount = MaterialCommoditiesMicroResourceList.Count(matlist, MaterialCommodityMicroResourceType.CatType.Consumable);
+                int componentcount = MaterialCommoditiesMicroResourceList.Count(matlist, MaterialCommodityMicroResourceType.CatType.Component);
+                int cargocount = MaterialCommoditiesMicroResourceList.Count(matlist, MaterialCommodityMicroResourceType.CatType.Commodity);
 
-                if (prevmatlist == null || datacount != prevdatacount || matcount != prevmatcount || cargocount != prevcargocount )
-                {
+                if (encodedcount != prevencodedcount)
+                    labelEncoded.Text = encodedcount.ToString();
+                if (rawcount != prevrawcount)
+                    labelRaw.Text = rawcount.ToString();
+                if (manucount != prevmanucount)
+                    labelManufactured.Text = manucount.ToString();
+
+                if (datacount != prevdatacount)
                     labelData.Text = datacount.ToString();
+                if (itemcount != previtemcount)
+                    labelItems.Text = itemcount.ToString();
+                if (consumecount != prevconsumecount)
+                    labelConsumables.Text = consumecount.ToString();
+                if (componentcount != prevcomponentcount)
+                    labelComponents.Text = componentcount.ToString();
+
+                if (cargocount != prevcargocount)
                     labelCargo.Text = cargocount.ToString();
-                    labelMaterials.Text = matcount.ToString();
-                }
+
+                prevencodedcount = encodedcount;
+                prevrawcount = rawcount;
+                prevmanucount = manucount;
+                prevdatacount = datacount;
+                previtemcount = itemcount;
+                prevconsumecount = consumecount;
+                prevcomponentcount = componentcount;
+                prevcargocount = cargocount;
 
                 he.journalEntry.FillInformation(he.System,out string info, out string detailed);
                 LogLine(EDDConfig.Instance.ConvertTimeToSelectedFromUTC(he.EventTimeUTC) + " " + he.journalEntry.SummaryName(he.System) + ": " + info);

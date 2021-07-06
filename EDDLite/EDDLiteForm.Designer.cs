@@ -62,13 +62,23 @@
             this.extButtonSpanshSystem = new ExtendedControls.ExtButton();
             this.extButtonEDDBSystem = new ExtendedControls.ExtButton();
             this.extButtonInaraSystem = new ExtendedControls.ExtButton();
-            this.labelData = new System.Windows.Forms.Label();
+            this.labelEncoded = new System.Windows.Forms.Label();
             this.labelShipH = new System.Windows.Forms.Label();
-            this.labelMatH = new System.Windows.Forms.Label();
+            this.labelComponentsH = new System.Windows.Forms.Label();
+            this.labelItemsH = new System.Windows.Forms.Label();
+            this.labelONDH = new System.Windows.Forms.Label();
+            this.labelMRCH = new System.Windows.Forms.Label();
+            this.labelComponents = new System.Windows.Forms.Label();
+            this.labelRawH = new System.Windows.Forms.Label();
+            this.labelItems = new System.Windows.Forms.Label();
+            this.labelManuH = new System.Windows.Forms.Label();
+            this.labelData = new System.Windows.Forms.Label();
             this.extButtonEDSMSystem = new ExtendedControls.ExtButton();
-            this.labelMaterials = new System.Windows.Forms.Label();
+            this.labelRaw = new System.Windows.Forms.Label();
+            this.labelConsumables = new System.Windows.Forms.Label();
+            this.labelManufactured = new System.Windows.Forms.Label();
             this.labelCargoH = new System.Windows.Forms.Label();
-            this.labelDataH = new System.Windows.Forms.Label();
+            this.labelEncH = new System.Windows.Forms.Label();
             this.labelSystem = new System.Windows.Forms.Label();
             this.labelShip = new System.Windows.Forms.Label();
             this.labelMissionH = new System.Windows.Forms.Label();
@@ -345,13 +355,23 @@
             this.extPanelScrollStatus.Controls.Add(this.extButtonSpanshSystem);
             this.extPanelScrollStatus.Controls.Add(this.extButtonEDDBSystem);
             this.extPanelScrollStatus.Controls.Add(this.extButtonInaraSystem);
-            this.extPanelScrollStatus.Controls.Add(this.labelData);
+            this.extPanelScrollStatus.Controls.Add(this.labelEncoded);
             this.extPanelScrollStatus.Controls.Add(this.labelShipH);
-            this.extPanelScrollStatus.Controls.Add(this.labelMatH);
+            this.extPanelScrollStatus.Controls.Add(this.labelComponentsH);
+            this.extPanelScrollStatus.Controls.Add(this.labelItemsH);
+            this.extPanelScrollStatus.Controls.Add(this.labelONDH);
+            this.extPanelScrollStatus.Controls.Add(this.labelMRCH);
+            this.extPanelScrollStatus.Controls.Add(this.labelComponents);
+            this.extPanelScrollStatus.Controls.Add(this.labelRawH);
+            this.extPanelScrollStatus.Controls.Add(this.labelItems);
+            this.extPanelScrollStatus.Controls.Add(this.labelManuH);
+            this.extPanelScrollStatus.Controls.Add(this.labelData);
             this.extPanelScrollStatus.Controls.Add(this.extButtonEDSMSystem);
-            this.extPanelScrollStatus.Controls.Add(this.labelMaterials);
+            this.extPanelScrollStatus.Controls.Add(this.labelRaw);
+            this.extPanelScrollStatus.Controls.Add(this.labelConsumables);
+            this.extPanelScrollStatus.Controls.Add(this.labelManufactured);
             this.extPanelScrollStatus.Controls.Add(this.labelCargoH);
-            this.extPanelScrollStatus.Controls.Add(this.labelDataH);
+            this.extPanelScrollStatus.Controls.Add(this.labelEncH);
             this.extPanelScrollStatus.Controls.Add(this.labelSystem);
             this.extPanelScrollStatus.Controls.Add(this.labelShip);
             this.extPanelScrollStatus.Controls.Add(this.labelMissionH);
@@ -377,7 +397,7 @@
             this.extScrollBarMainSection.HideScrollBar = true;
             this.extScrollBarMainSection.LargeChange = 10;
             this.extScrollBarMainSection.Location = new System.Drawing.Point(466, 0);
-            this.extScrollBarMainSection.Maximum = -86;
+            this.extScrollBarMainSection.Maximum = -62;
             this.extScrollBarMainSection.Minimum = 0;
             this.extScrollBarMainSection.MouseOverButtonColor = System.Drawing.Color.Green;
             this.extScrollBarMainSection.MousePressedButtonColor = System.Drawing.Color.Red;
@@ -391,8 +411,8 @@
             this.extScrollBarMainSection.ThumbButtonColor = System.Drawing.Color.DarkBlue;
             this.extScrollBarMainSection.ThumbColorScaling = 0.5F;
             this.extScrollBarMainSection.ThumbDrawAngle = 0F;
-            this.extScrollBarMainSection.Value = -86;
-            this.extScrollBarMainSection.ValueLimited = -86;
+            this.extScrollBarMainSection.Value = -62;
+            this.extScrollBarMainSection.ValueLimited = -62;
             // 
             // labelCmdrH
             // 
@@ -453,7 +473,7 @@
             // labelMissionCount
             // 
             this.labelMissionCount.AutoSize = true;
-            this.labelMissionCount.Location = new System.Drawing.Point(59, 185);
+            this.labelMissionCount.Location = new System.Drawing.Point(60, 209);
             this.labelMissionCount.Name = "labelMissionCount";
             this.labelMissionCount.Size = new System.Drawing.Size(13, 13);
             this.labelMissionCount.TabIndex = 3;
@@ -500,7 +520,7 @@
             // labelLatestMission
             // 
             this.labelLatestMission.AutoSize = true;
-            this.labelLatestMission.Location = new System.Drawing.Point(126, 185);
+            this.labelLatestMission.Location = new System.Drawing.Point(127, 209);
             this.labelLatestMission.Name = "labelLatestMission";
             this.labelLatestMission.Size = new System.Drawing.Size(13, 13);
             this.labelLatestMission.TabIndex = 3;
@@ -548,14 +568,14 @@
             this.extButtonInaraSystem.UseVisualStyleBackColor = true;
             this.extButtonInaraSystem.Click += new System.EventHandler(this.extButtonInaraSystem_Click);
             // 
-            // labelData
+            // labelEncoded
             // 
-            this.labelData.AutoSize = true;
-            this.labelData.Location = new System.Drawing.Point(60, 165);
-            this.labelData.Name = "labelData";
-            this.labelData.Size = new System.Drawing.Size(13, 13);
-            this.labelData.TabIndex = 3;
-            this.labelData.Text = "?";
+            this.labelEncoded.AutoSize = true;
+            this.labelEncoded.Location = new System.Drawing.Point(60, 165);
+            this.labelEncoded.Name = "labelEncoded";
+            this.labelEncoded.Size = new System.Drawing.Size(13, 13);
+            this.labelEncoded.TabIndex = 3;
+            this.labelEncoded.Text = "?";
             // 
             // labelShipH
             // 
@@ -566,14 +586,86 @@
             this.labelShipH.TabIndex = 3;
             this.labelShipH.Text = "Ship";
             // 
-            // labelMatH
+            // labelComponentsH
             // 
-            this.labelMatH.AutoSize = true;
-            this.labelMatH.Location = new System.Drawing.Point(116, 165);
-            this.labelMatH.Name = "labelMatH";
-            this.labelMatH.Size = new System.Drawing.Size(49, 13);
-            this.labelMatH.TabIndex = 3;
-            this.labelMatH.Text = "Materials";
+            this.labelComponentsH.AutoSize = true;
+            this.labelComponentsH.Location = new System.Drawing.Point(255, 187);
+            this.labelComponentsH.Name = "labelComponentsH";
+            this.labelComponentsH.Size = new System.Drawing.Size(38, 13);
+            this.labelComponentsH.TabIndex = 3;
+            this.labelComponentsH.Text = "Assets";
+            // 
+            // labelItemsH
+            // 
+            this.labelItemsH.AutoSize = true;
+            this.labelItemsH.Location = new System.Drawing.Point(180, 187);
+            this.labelItemsH.Name = "labelItemsH";
+            this.labelItemsH.Size = new System.Drawing.Size(38, 13);
+            this.labelItemsH.TabIndex = 3;
+            this.labelItemsH.Text = "Goods";
+            // 
+            // labelONDH
+            // 
+            this.labelONDH.AutoSize = true;
+            this.labelONDH.Location = new System.Drawing.Point(110, 187);
+            this.labelONDH.Name = "labelONDH";
+            this.labelONDH.Size = new System.Drawing.Size(30, 13);
+            this.labelONDH.TabIndex = 3;
+            this.labelONDH.Text = "Data";
+            // 
+            // labelMRCH
+            // 
+            this.labelMRCH.AutoSize = true;
+            this.labelMRCH.Location = new System.Drawing.Point(3, 187);
+            this.labelMRCH.Name = "labelMRCH";
+            this.labelMRCH.Size = new System.Drawing.Size(70, 13);
+            this.labelMRCH.TabIndex = 3;
+            this.labelMRCH.Text = "Consumables";
+            // 
+            // labelComponents
+            // 
+            this.labelComponents.AutoSize = true;
+            this.labelComponents.Location = new System.Drawing.Point(303, 187);
+            this.labelComponents.Name = "labelComponents";
+            this.labelComponents.Size = new System.Drawing.Size(13, 13);
+            this.labelComponents.TabIndex = 3;
+            this.labelComponents.Text = "?";
+            // 
+            // labelRawH
+            // 
+            this.labelRawH.AutoSize = true;
+            this.labelRawH.Location = new System.Drawing.Point(199, 165);
+            this.labelRawH.Name = "labelRawH";
+            this.labelRawH.Size = new System.Drawing.Size(29, 13);
+            this.labelRawH.TabIndex = 3;
+            this.labelRawH.Text = "Raw";
+            // 
+            // labelItems
+            // 
+            this.labelItems.AutoSize = true;
+            this.labelItems.Location = new System.Drawing.Point(227, 187);
+            this.labelItems.Name = "labelItems";
+            this.labelItems.Size = new System.Drawing.Size(13, 13);
+            this.labelItems.TabIndex = 3;
+            this.labelItems.Text = "?";
+            // 
+            // labelManuH
+            // 
+            this.labelManuH.AutoSize = true;
+            this.labelManuH.Location = new System.Drawing.Point(91, 165);
+            this.labelManuH.Name = "labelManuH";
+            this.labelManuH.Size = new System.Drawing.Size(73, 13);
+            this.labelManuH.TabIndex = 3;
+            this.labelManuH.Text = "Manufactured";
+            // 
+            // labelData
+            // 
+            this.labelData.AutoSize = true;
+            this.labelData.Location = new System.Drawing.Point(150, 187);
+            this.labelData.Name = "labelData";
+            this.labelData.Size = new System.Drawing.Size(13, 13);
+            this.labelData.TabIndex = 3;
+            this.labelData.Text = "?";
             // 
             // extButtonEDSMSystem
             // 
@@ -585,13 +677,32 @@
             this.extButtonEDSMSystem.UseVisualStyleBackColor = true;
             this.extButtonEDSMSystem.Click += new System.EventHandler(this.extButtonEDSM_Click);
             // 
-            // labelMaterials
+            // labelRaw
             // 
-            this.labelMaterials.Location = new System.Drawing.Point(173, 165);
-            this.labelMaterials.Name = "labelMaterials";
-            this.labelMaterials.Size = new System.Drawing.Size(13, 13);
-            this.labelMaterials.TabIndex = 3;
-            this.labelMaterials.Text = "?";
+            this.labelRaw.AutoSize = true;
+            this.labelRaw.Location = new System.Drawing.Point(234, 165);
+            this.labelRaw.Name = "labelRaw";
+            this.labelRaw.Size = new System.Drawing.Size(13, 13);
+            this.labelRaw.TabIndex = 3;
+            this.labelRaw.Text = "?";
+            // 
+            // labelConsumables
+            // 
+            this.labelConsumables.AutoSize = true;
+            this.labelConsumables.Location = new System.Drawing.Point(76, 187);
+            this.labelConsumables.Name = "labelConsumables";
+            this.labelConsumables.Size = new System.Drawing.Size(13, 13);
+            this.labelConsumables.TabIndex = 3;
+            this.labelConsumables.Text = "?";
+            // 
+            // labelManufactured
+            // 
+            this.labelManufactured.AutoSize = true;
+            this.labelManufactured.Location = new System.Drawing.Point(168, 165);
+            this.labelManufactured.Name = "labelManufactured";
+            this.labelManufactured.Size = new System.Drawing.Size(13, 13);
+            this.labelManufactured.TabIndex = 3;
+            this.labelManufactured.Text = "?";
             // 
             // labelCargoH
             // 
@@ -602,14 +713,14 @@
             this.labelCargoH.TabIndex = 3;
             this.labelCargoH.Text = "Cargo";
             // 
-            // labelDataH
+            // labelEncH
             // 
-            this.labelDataH.AutoSize = true;
-            this.labelDataH.Location = new System.Drawing.Point(3, 165);
-            this.labelDataH.Name = "labelDataH";
-            this.labelDataH.Size = new System.Drawing.Size(30, 13);
-            this.labelDataH.TabIndex = 3;
-            this.labelDataH.Text = "Data";
+            this.labelEncH.AutoSize = true;
+            this.labelEncH.Location = new System.Drawing.Point(3, 165);
+            this.labelEncH.Name = "labelEncH";
+            this.labelEncH.Size = new System.Drawing.Size(50, 13);
+            this.labelEncH.TabIndex = 3;
+            this.labelEncH.Text = "Encoded";
             // 
             // labelSystem
             // 
@@ -632,7 +743,7 @@
             // labelMissionH
             // 
             this.labelMissionH.AutoSize = true;
-            this.labelMissionH.Location = new System.Drawing.Point(3, 185);
+            this.labelMissionH.Location = new System.Drawing.Point(3, 209);
             this.labelMissionH.Name = "labelMissionH";
             this.labelMissionH.Size = new System.Drawing.Size(47, 13);
             this.labelMissionH.TabIndex = 3;
@@ -1100,12 +1211,12 @@
         private ExtendedControls.ExtButton extButtonInaraSystem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem timeToolStripMenuItem;
-        private System.Windows.Forms.Label labelData;
+        private System.Windows.Forms.Label labelEncoded;
         private System.Windows.Forms.Label labelLatestMission;
-        private System.Windows.Forms.Label labelDataH;
+        private System.Windows.Forms.Label labelEncH;
         private System.Windows.Forms.Label labelCargoH;
-        private System.Windows.Forms.Label labelMaterials;
-        private System.Windows.Forms.Label labelMatH;
+        private System.Windows.Forms.Label labelManufactured;
+        private System.Windows.Forms.Label labelManuH;
         private System.Windows.Forms.ToolStripMenuItem screenShotCaptureToolStripMenuItem;
         private System.Windows.Forms.Label labelCredits;
         private System.Windows.Forms.Label labelCashHr;
@@ -1132,6 +1243,16 @@
         private System.Windows.Forms.ToolStripMenuItem utcToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem localToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeDLLPermissionsToolStripMenuItem;
+        private System.Windows.Forms.Label labelMRCH;
+        private System.Windows.Forms.Label labelConsumables;
+        private System.Windows.Forms.Label labelONDH;
+        private System.Windows.Forms.Label labelData;
+        private System.Windows.Forms.Label labelRawH;
+        private System.Windows.Forms.Label labelRaw;
+        private System.Windows.Forms.Label labelComponentsH;
+        private System.Windows.Forms.Label labelItemsH;
+        private System.Windows.Forms.Label labelComponents;
+        private System.Windows.Forms.Label labelItems;
     }
 }
 
