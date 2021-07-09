@@ -362,14 +362,15 @@ namespace EDDLite
                     extButtonEDSY.Left = extButtonCoriolis.Right + 2;
                 }
 
-                int encodedcount = MaterialCommoditiesMicroResourceList.Count(matlist, MaterialCommodityMicroResourceType.CatType.Encoded);
-                int rawcount = MaterialCommoditiesMicroResourceList.Count(matlist, MaterialCommodityMicroResourceType.CatType.Raw);
-                int manucount = MaterialCommoditiesMicroResourceList.Count(matlist, MaterialCommodityMicroResourceType.CatType.Manufactured);
-                int datacount = MaterialCommoditiesMicroResourceList.Count(matlist, MaterialCommodityMicroResourceType.CatType.Data);
-                int itemcount = MaterialCommoditiesMicroResourceList.Count(matlist, MaterialCommodityMicroResourceType.CatType.Item);
-                int consumecount = MaterialCommoditiesMicroResourceList.Count(matlist, MaterialCommodityMicroResourceType.CatType.Consumable);
-                int componentcount = MaterialCommoditiesMicroResourceList.Count(matlist, MaterialCommodityMicroResourceType.CatType.Component);
-                int cargocount = MaterialCommoditiesMicroResourceList.Count(matlist, MaterialCommodityMicroResourceType.CatType.Commodity);
+                var counts = MaterialCommoditiesMicroResourceList.Count(matlist);
+                int encodedcount = counts[(int)MaterialCommodityMicroResourceType.CatType.Encoded];
+                int rawcount = counts[(int)MaterialCommodityMicroResourceType.CatType.Raw];
+                int manucount = counts[(int)MaterialCommodityMicroResourceType.CatType.Manufactured];
+                int datacount = counts[(int)MaterialCommodityMicroResourceType.CatType.Data];
+                int itemcount = counts[(int)MaterialCommodityMicroResourceType.CatType.Item];
+                int consumecount = counts[(int)MaterialCommodityMicroResourceType.CatType.Consumable];
+                int componentcount = counts[(int)MaterialCommodityMicroResourceType.CatType.Component];
+                int cargocount = counts[(int)MaterialCommodityMicroResourceType.CatType.Commodity];
 
                 if (encodedcount != prevencodedcount)
                     labelEncoded.Text = encodedcount.ToString();
