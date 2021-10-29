@@ -50,6 +50,7 @@ namespace EDDLite
         private bool useNotifyIcon = false;
         private bool orderrowsinverted = false;
         private bool minimizeToNotifyIcon = false;
+        private bool startMinimized = false;
         private bool keepOnTop = false; /**< Whether to keep the windows on top or not */
         private int displayTimeFormat = 0; //0=local,1=utc,2=elite time
         private string language = "Auto";
@@ -104,6 +105,27 @@ namespace EDDLite
             }
         }
 
+        /// <summary>
+        /// Controls whether or not the main window will be minimized
+        /// (or hidden to the system notification area icon (systray))
+        /// on start.
+        /// </summary>
+        public bool StartMinimized
+        {
+            get
+            {
+                return startMinimized;
+            }
+            set
+            {
+                startMinimized = value;
+                EliteDangerousCore.DB.UserDatabase.Instance.PutSettingBool("StartMinimized", value);
+            }
+        }
+
+        /// <summary>
+        /// Controls whether or not the main window stay on top
+        /// </summary>
         public bool KeepOnTop
         {
             get
@@ -286,6 +308,7 @@ namespace EDDLite
                 useNotifyIcon = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("UseNotifyIcon", false);
                 orderrowsinverted = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("OrderRowsInverted", false);
                 minimizeToNotifyIcon = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("MinimizeToNotifyIcon", false);
+                startMinimized = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("StartMinimized", false);
                 keepOnTop = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("KeepOnTop", false);
                 displayTimeFormat = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingInt("DisplayUTC", 2);
                 language = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString("DefaultLanguage", "Auto");

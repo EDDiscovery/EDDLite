@@ -99,6 +99,10 @@ namespace EDDLite
             dataGridViewCommanders.RowsDefaultCellStyle.SelectionBackColor = EDDLiteTheme.Instance.GridCellBack;    // hide selection
             dataGridViewCommanders.RowsDefaultCellStyle.SelectionForeColor = EDDLiteTheme.Instance.GridCellText;
 
+            showTrayIconToolStripMenuItem.Checked = EDDConfig.Instance.UseNotifyIcon;
+            minimizeToTrayToolStripMenuItem.Enabled = EDDConfig.Instance.UseNotifyIcon;
+            minimizeToTrayToolStripMenuItem.Checked = EDDConfig.Instance.UseNotifyIcon && EDDConfig.Instance.MinimizeToNotifyIcon;
+            startMinimizedToolStripMenuItem.Checked = EDDConfig.Instance.StartMinimized;
 
             gameTimeToolStripMenuItem.Checked = false;
             utcToolStripMenuItem.Checked =
@@ -137,11 +141,16 @@ namespace EDDLite
             EDSMClass.SoftwareName = "EDDLite";
 
             splitContainerNamesButtonsScreenshot.Panel2.Resize += SplitContainerNamesButtonsScreenshot_Resize;
+
+            EnableNotifyIcon(EDDConfig.Instance.UseNotifyIcon);
         }
 
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
+
+            if (EDDConfig.Instance.StartMinimized)
+                SetMinimized();
 
             screenshot.Start((a) => Invoke(a),
                              (b) => LogLine(b),
@@ -541,7 +550,15 @@ namespace EDDLite
 
         private void panel_minimize_Click(object sender, EventArgs e)
         {
-            this.WindowState = FormWindowState.Minimized;
+            SetMinimized();
+        }
+
+        private void SetMinimized()
+        {
+            if (EDDConfig.Instance.UseNotifyIcon && EDDConfig.Instance.MinimizeToNotifyIcon)
+                this.Visible = false;
+            else
+                this.WindowState = FormWindowState.Minimized;
         }
 
         private void panel_eddiscovery_MouseClick(object sender, MouseEventArgs e)
@@ -763,6 +780,53 @@ namespace EDDLite
         {
             screenshot.Configure(this);
             extButtonScreenshotDisabled.Visible = !screenshot.AutoConvert;
+        }
+
+        private void showTrayIconToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            var s = sender as ToolStripMenuItem;
+            EDDConfig.Instance.UseNotifyIcon = s.Checked;
+            minimizeToTrayToolStripMenuItem.Enabled = s.Checked;
+            if (!s.Checked) minimizeToTrayToolStripMenuItem.Checked = false;
+            EnableNotifyIcon(s.Checked);
+        }
+
+        private void EnableNotifyIcon(bool enable)
+        {
+            if (enable)
+            {
+                notifyIcon.Text = this.Text;
+                notifyIcon.Icon = this.Icon;
+                notifyIcon.Visible = true;
+            }
+            else
+            {
+                notifyIcon.Visible = false;
+            }
+        }
+
+        private void minimizeToTrayToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            var s = sender as ToolStripMenuItem;
+            EDDConfig.Instance.MinimizeToNotifyIcon = s.Checked;
+        }
+
+        private void startMinimizedToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            var s = sender as ToolStripMenuItem;
+            EDDConfig.Instance.StartMinimized = s.Checked;
+        }
+
+        private void keepOnTopToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            var s = sender as ToolStripMenuItem;
+            EDDConfig.Instance.KeepOnTop = s.Checked;
+            this.TopMost = s.Checked;
+        }
+
+        private void notifyIconShowHideMainWindow_DoubleClick(object sender, EventArgs e)
+        {
+            this.Visible = !this.Visible;
         }
 
         private void extButtonScreenshotDisabled_Click(object sender, EventArgs e)

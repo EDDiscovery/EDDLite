@@ -98,6 +98,12 @@
             this.utcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.localToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeDLLPermissionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.showTrayIconToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.minimizeToTrayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.startMinimizedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            this.keepOnTopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.themeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -116,6 +122,12 @@
             this.extStatusStrip = new ExtendedControls.ExtStatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.notifyIconContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.showWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripCmdr.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerCmdrDataLogs)).BeginInit();
             this.splitContainerCmdrDataLogs.Panel1.SuspendLayout();
@@ -139,6 +151,7 @@
             this.menuMain.SuspendLayout();
             this.flowLayoutPanelRight.SuspendLayout();
             this.extStatusStrip.SuspendLayout();
+            this.notifyIconContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuStripCmdr
@@ -874,7 +887,13 @@
             this.configToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.screenShotCaptureToolStripMenuItem,
             this.displayTimeToolStripMenuItem,
-            this.removeDLLPermissionsToolStripMenuItem});
+            this.removeDLLPermissionsToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.showTrayIconToolStripMenuItem,
+            this.minimizeToTrayToolStripMenuItem,
+            this.startMinimizedToolStripMenuItem,
+            this.toolStripMenuItem2,
+            this.keepOnTopToolStripMenuItem});
             this.configToolStripMenuItem.Name = "configToolStripMenuItem";
             this.configToolStripMenuItem.Size = new System.Drawing.Size(55, 20);
             this.configToolStripMenuItem.Text = "Config";
@@ -929,6 +948,48 @@
             this.removeDLLPermissionsToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
             this.removeDLLPermissionsToolStripMenuItem.Text = "Remove DLL permissions";
             this.removeDLLPermissionsToolStripMenuItem.Click += new System.EventHandler(this.removeDLLPermissionsToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(203, 6);
+            // 
+            // showTrayIconToolStripMenuItem
+            // 
+            this.showTrayIconToolStripMenuItem.CheckOnClick = true;
+            this.showTrayIconToolStripMenuItem.Name = "showTrayIconToolStripMenuItem";
+            this.showTrayIconToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.showTrayIconToolStripMenuItem.Text = "Show tray icon";
+            this.showTrayIconToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showTrayIconToolStripMenuItem_CheckedChanged);
+            // 
+            // minimizeToTrayToolStripMenuItem
+            // 
+            this.minimizeToTrayToolStripMenuItem.CheckOnClick = true;
+            this.minimizeToTrayToolStripMenuItem.Name = "minimizeToTrayToolStripMenuItem";
+            this.minimizeToTrayToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.minimizeToTrayToolStripMenuItem.Text = "Minimize to tray";
+            this.minimizeToTrayToolStripMenuItem.CheckedChanged += new System.EventHandler(this.minimizeToTrayToolStripMenuItem_CheckedChanged);
+            // 
+            // startMinimizedToolStripMenuItem
+            // 
+            this.startMinimizedToolStripMenuItem.CheckOnClick = true;
+            this.startMinimizedToolStripMenuItem.Name = "startMinimizedToolStripMenuItem";
+            this.startMinimizedToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.startMinimizedToolStripMenuItem.Text = "Start minimized";
+            this.startMinimizedToolStripMenuItem.CheckedChanged += new System.EventHandler(this.startMinimizedToolStripMenuItem_CheckedChanged);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(203, 6);
+            // 
+            // keepOnTopToolStripMenuItem
+            // 
+            this.keepOnTopToolStripMenuItem.CheckOnClick = true;
+            this.keepOnTopToolStripMenuItem.Name = "keepOnTopToolStripMenuItem";
+            this.keepOnTopToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.keepOnTopToolStripMenuItem.Text = "Keep on top";
+            this.keepOnTopToolStripMenuItem.CheckedChanged += new System.EventHandler(this.keepOnTopToolStripMenuItem_CheckedChanged);
             // 
             // viewToolStripMenuItem
             // 
@@ -1119,6 +1180,48 @@
             this.toolStripStatus.Name = "toolStripStatus";
             this.toolStripStatus.Size = new System.Drawing.Size(0, 17);
             // 
+            // notifyIcon
+            // 
+            this.notifyIcon.ContextMenuStrip = this.notifyIconContextMenuStrip;
+            this.notifyIcon.DoubleClick += new System.EventHandler(this.notifyIconShowHideMainWindow_DoubleClick);
+            // 
+            // notifyIconContextMenuStrip
+            // 
+            this.notifyIconContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showWindowToolStripMenuItem,
+            this.aboutToolStripMenuItem1,
+            this.toolStripMenuItem3,
+            this.exitToolStripMenuItem});
+            this.notifyIconContextMenuStrip.Name = "notifyIconContextMenuStrip";
+            this.notifyIconContextMenuStrip.Size = new System.Drawing.Size(135, 76);
+            // 
+            // showWindowToolStripMenuItem
+            // 
+            this.showWindowToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.showWindowToolStripMenuItem.Name = "showWindowToolStripMenuItem";
+            this.showWindowToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.showWindowToolStripMenuItem.Text = "Show/hide";
+            this.showWindowToolStripMenuItem.Click += new System.EventHandler(this.notifyIconShowHideMainWindow_DoubleClick);
+            // 
+            // aboutToolStripMenuItem1
+            // 
+            this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
+            this.aboutToolStripMenuItem1.Text = "About...";
+            this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(131, 6);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.panel_close_Click);
+            // 
             // EDDLiteForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1160,6 +1263,7 @@
             this.flowLayoutPanelRight.ResumeLayout(false);
             this.extStatusStrip.ResumeLayout(false);
             this.extStatusStrip.PerformLayout();
+            this.notifyIconContextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1253,6 +1357,18 @@
         private System.Windows.Forms.Label labelItemsH;
         private System.Windows.Forms.Label labelComponents;
         private System.Windows.Forms.Label labelItems;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem showTrayIconToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem minimizeToTrayToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem startMinimizedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem keepOnTopToolStripMenuItem;
+        private System.Windows.Forms.NotifyIcon notifyIcon;
+        private System.Windows.Forms.ContextMenuStrip notifyIconContextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem showWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     }
 }
 
