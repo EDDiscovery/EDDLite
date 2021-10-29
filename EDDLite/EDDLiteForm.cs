@@ -827,6 +827,7 @@ namespace EDDLite
         private void notifyIconShowHideMainWindow_DoubleClick(object sender, EventArgs e)
         {
             this.Visible = !this.Visible;
+            if (this.Visible) this.Activate();
         }
 
         private void extButtonScreenshotDisabled_Click(object sender, EventArgs e)
