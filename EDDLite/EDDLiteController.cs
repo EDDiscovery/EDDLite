@@ -50,8 +50,8 @@ namespace EDDLite
         private void Controller()
         {
             journalmonitor = new EDJournalUIScanner(InvokeAsyncOnUiThread);
-            journalmonitor.OnNewJournalEntry += (je) => { Entry(je, false, true); };
-            journalmonitor.OnNewUIEvent += (ui) => { InvokeAsyncOnUiThread(()=>NewUI?.Invoke(ui)); };
+            journalmonitor.OnNewJournalEntry += (je,sr) => { Entry(je, false, true); };
+            journalmonitor.OnNewUIEvent += (ui,sr) => { InvokeAsyncOnUiThread(()=>NewUI?.Invoke(ui)); };
 
             LogLine?.Invoke("Detecting Journals");
             Reset();

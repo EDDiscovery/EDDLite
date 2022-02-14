@@ -5,12 +5,12 @@
  * file except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under
  * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
  * ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
- * 
+ *
  * EDDiscovery is not affiliated with Frontier Developments plc.
  */
 
@@ -35,6 +35,8 @@ namespace EDDLite
         ScreenShotConverter screenshot;
         EDDDLLManager DLLManager;
         EDDDLLInterfaces.EDDDLLIF.EDDCallBacks DLLCallBacks;
+        ExtendedControls.ThemeList ThemeList;
+
         int prevencodedcount, prevrawcount, prevmanucount, prevdatacount, previtemcount, prevconsumecount, prevcomponentcount, prevcargocount;
 
         #region Init
@@ -73,7 +75,10 @@ namespace EDDLite
             var appdata = EDDOptions.Instance.AppDataDirectory;     // FORCE ED options to Instance - do not remove.
             System.Diagnostics.Debug.WriteLine("App data " + appdata);
 
-            UserDatabase.Instance.Start("UserDB");
+            UserDatabase.Instance.Name = "UserDB";
+            UserDatabase.Instance.MinThreads = UserDatabase.Instance.MaxThreads = 2;        // set at 2 threads max/min
+            UserDatabase.Instance.MultiThreaded = true;     // starts up the threads
+
             UserDatabase.Instance.Initialize();
 
             BaseUtils.Icons.IconSet.CreateSingleton();
@@ -81,8 +86,10 @@ namespace EDDLite
 
             EDDConfig.Instance.Update();
 
-            EDDLiteTheme.Init();
-            EDDLiteTheme.Instance.SetThemeByName(UserDatabase.Instance.GetSettingString("Theme", "EDSM"));
+
+            ThemeList = new ExtendedControls.ThemeList();
+            ThemeList.LoadBaseThemes();                                         // default themes and ones on disk loaded
+            ThemeList.SetThemeByName(UserDatabase.Instance.GetSettingString("Theme", "EDSM"));                        // this is the default theme we use
             ApplyTheme();
 
             RestoreFormPositionRegKey = "MainForm";
@@ -96,8 +103,8 @@ namespace EDDLite
             extButtonInaraStation.Enabled = extButtonEDDBStation.Enabled = false;
             extButtonEDSY.Enabled = extButtonCoriolis.Enabled = false;
 
-            dataGridViewCommanders.RowsDefaultCellStyle.SelectionBackColor = EDDLiteTheme.Instance.GridCellBack;    // hide selection
-            dataGridViewCommanders.RowsDefaultCellStyle.SelectionForeColor = EDDLiteTheme.Instance.GridCellText;
+            dataGridViewCommanders.RowsDefaultCellStyle.SelectionBackColor = ExtendedControls.Theme.Current.GridCellBack;    // hide selection
+            dataGridViewCommanders.RowsDefaultCellStyle.SelectionForeColor = ExtendedControls.Theme.Current.GridCellText;
 
 
             gameTimeToolStripMenuItem.Checked = false;
@@ -135,6 +142,8 @@ namespace EDDLite
             EliteDangerousCore.EDDN.EDDNClass.SoftwareName =
             EliteDangerousCore.Inara.InaraClass.SoftwareName =
             EDSMClass.SoftwareName = "EDDLite";
+
+         //   Bodies.Prepopulate();
 
             splitContainerNamesButtonsScreenshot.Panel2.Resize += SplitContainerNamesButtonsScreenshot_Resize;
         }
@@ -182,7 +191,8 @@ namespace EDDLite
 
             Tuple<string, string, string,string> res = DLLManager.Load(new string[] { EDDOptions.Instance.DLLAppDirectory() }, new bool[] {false},
                                 verstring,  options,
-                                DLLCallBacks, ref alloweddlls);
+                                DLLCallBacks, ref alloweddlls,
+                                 (name) => UserDatabase.Instance.GetSettingString("DLLConfig_" + name, ""), (name, set) => UserDatabase.Instance.PutSettingString("DLLConfig_" + name, set));
 
             if (res.Item3.HasChars())       // new DLLs
             {
@@ -210,11 +220,12 @@ namespace EDDLite
                 EDDConfig.Instance.DLLPermissions = alloweddlls;
 
                 if ( changed )
-                { 
+                {
                     DLLManager.UnLoad();
-                    res = DLLManager.Load(new string[] { EDDOptions.Instance.DLLAppDirectory() }, new bool[] { false }, 
-                                            verstring, options, 
-                                            DLLCallBacks, ref alloweddlls);
+                    res = DLLManager.Load(new string[] { EDDOptions.Instance.DLLAppDirectory() }, new bool[] { false },
+                                            verstring, options,
+                                            DLLCallBacks, ref alloweddlls,
+                                            (name) => UserDatabase.Instance.GetSettingString("DLLConfig_" + name, ""), (name, set) => UserDatabase.Instance.PutSettingString("DLLConfig_" + name, set));
                 }
             }
 
@@ -292,7 +303,7 @@ namespace EDDLite
             var matlist = controller.GetMatList(he);
             var missionlist = controller.GetCurrentMissionList(he);
 
-            if (!dontupdateui)      // so, if we have displayed one, and we are in stored reply, and not a recent entry.. don't update UI 
+            if (!dontupdateui)      // so, if we have displayed one, and we are in stored reply, and not a recent entry.. don't update UI
             {
                 bool reposbut = false;
 
@@ -400,7 +411,7 @@ namespace EDDLite
                 prevcomponentcount = componentcount;
                 prevcargocount = cargocount;
 
-                he.journalEntry.FillInformation(he.System,out string info, out string detailed);
+                he.journalEntry.FillInformation(he.System,he.WhereAmI, out string info, out string detailed);
                 LogLine(EDDConfig.Instance.ConvertTimeToSelectedFromUTC(he.EventTimeUTC) + " " + he.journalEntry.SummaryName(he.System) + ": " + info);
 
                 labelMissionCount.Text = missionlist.Count.ToString();
@@ -437,7 +448,7 @@ namespace EDDLite
                 if (EliteDangerousCore.EDDN.EDDNClass.IsEDDNMessage(he.EntryType) && he.AgeOfEntry() < TimeSpan.FromDays(1.0) &&
                         he.Commander.SyncToEddn == true)
                 {
-                    EliteDangerousCore.EDDN.EDDNSync.SendEDDNEvents(LogLine, he);
+                    EliteDangerousCore.EDDN.EDDNSync.SendEDDNEvents(LogLine, new List<HistoryEntry> { he });
                 }
 
                 if (he.Commander.SyncToInara)
@@ -461,7 +472,7 @@ namespace EDDLite
         {
             if (DLLManager.Count > 0)       // if worth calling..
             {
-                string output = BaseUtils.JSON.JToken.FromObject(uievent)?.ToString();
+                string output = QuickJSON.JToken.FromObject(uievent)?.ToString();
                 if (output != null)
                     DLLManager.NewUIEvent(output);
                 else
@@ -495,7 +506,7 @@ namespace EDDLite
         }
 
         void FitScreenshotToWindow()
-        { 
+        {
             var boxsize = splitContainerNamesButtonsScreenshot.Panel2.ClientSize;
             double ratiopicture = (double)screenshotimagesize.Width / (double)screenshotimagesize.Height;
 
@@ -566,7 +577,7 @@ namespace EDDLite
         }
 
         private void EditCmdr(int row)
-        { 
+        {
             EDCommander cmdr = dataGridViewCommanders.Rows[row].DataBoundItem as EDCommander;
 
             EliteDangerousCore.Forms.CommanderForm cf = new EliteDangerousCore.Forms.CommanderForm();
@@ -637,7 +648,7 @@ namespace EDDLite
         }
 
         #endregion
-        
+
         #region Form Buttons
 
         private void extButtonEDSM_Click(object sender, EventArgs e)
@@ -773,16 +784,16 @@ namespace EDDLite
         private void themeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var s = sender as ToolStripMenuItem;
-            EDDLiteTheme.Instance.SetThemeByName(s.Text);
+            ThemeList.SetThemeByName(s.Text);
             UserDatabase.Instance.PutSettingString("Theme", s.Text);
             ApplyTheme();
         }
 
         private void ApplyTheme()
         {
-            EDDLiteTheme.Instance.ApplyStd(this);
-            dataGridViewCommanders.RowsDefaultCellStyle.SelectionBackColor = EDDLiteTheme.Instance.GridCellBack;    // hide selection
-            dataGridViewCommanders.RowsDefaultCellStyle.SelectionForeColor = EDDLiteTheme.Instance.GridCellText;
+            ExtendedControls.Theme.Current.ApplyStd(this);
+            dataGridViewCommanders.RowsDefaultCellStyle.SelectionBackColor = ExtendedControls.Theme.Current.GridCellBack;    // hide selection
+            dataGridViewCommanders.RowsDefaultCellStyle.SelectionForeColor = ExtendedControls.Theme.Current.GridCellText;
         }
 
         bool ingtchange = false;

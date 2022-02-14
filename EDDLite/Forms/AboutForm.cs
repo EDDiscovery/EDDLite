@@ -44,7 +44,7 @@ namespace EDDLite.Forms
             textBoxLicense.Text = textBoxLicense.Text.LineTextInsersion("","\n","\n");
 
             System.Diagnostics.Debug.WriteLine("Theme AF");
-            var theme = EDDLite.EDDLiteTheme.Instance;
+            var theme = ExtendedControls.Theme.Current;
             bool winborder = theme.ApplyDialog(this);
             panel_close.Visible = !winborder;
 
