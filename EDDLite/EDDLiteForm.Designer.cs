@@ -104,6 +104,7 @@
             this.eDSMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eliteVerdanaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eliteEurocapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.highDPIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label_version = new System.Windows.Forms.Label();
@@ -116,6 +117,11 @@
             this.extStatusStrip = new ExtendedControls.ExtStatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.eDSMArialNarrowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eDSMEuroCapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.materialDarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.easyDarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eliteCalistoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripCmdr.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerCmdrDataLogs)).BeginInit();
             this.splitContainerCmdrDataLogs.Panel1.SuspendLayout();
@@ -807,8 +813,9 @@
             this.extRichTextBoxLog.Location = new System.Drawing.Point(0, 0);
             this.extRichTextBoxLog.Name = "extRichTextBoxLog";
             this.extRichTextBoxLog.ReadOnly = false;
-            this.extRichTextBoxLog.Rtf = "{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang2057{\\fonttbl{\\f0\\fnil\\fcharset0 Microsoft S" +
-    "ans Serif;}}\r\n\\viewkind4\\uc1\\pard\\f0\\fs17\\par\r\n}\r\n";
+            this.extRichTextBoxLog.Rtf = "{\\rtf1\\ansi\\ansicpg1252\\deff0\\nouicompat\\deflang2057{\\fonttbl{\\f0\\fnil\\fcharset0 " +
+    "Microsoft Sans Serif;}}\r\n{\\*\\generator Riched20 10.0.19041}\\viewkind4\\uc1 \r\n\\par" +
+    "d\\f0\\fs17\\par\r\n}\r\n";
             this.extRichTextBoxLog.ScrollBarArrowBorderColor = System.Drawing.Color.LightBlue;
             this.extRichTextBoxLog.ScrollBarArrowButtonColor = System.Drawing.Color.LightGray;
             this.extRichTextBoxLog.ScrollBarBackColor = System.Drawing.SystemColors.Control;
@@ -865,7 +872,7 @@
             this.helpToolStripMenuItem});
             this.menuMain.Location = new System.Drawing.Point(0, 0);
             this.menuMain.Name = "menuMain";
-            this.menuMain.Size = new System.Drawing.Size(151, 24);
+            this.menuMain.Size = new System.Drawing.Size(271, 24);
             this.menuMain.TabIndex = 0;
             this.menuMain.Text = "menuStrip1";
             // 
@@ -945,39 +952,54 @@
             this.timeToolStripMenuItem.CheckOnClick = true;
             this.timeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.timeToolStripMenuItem.Name = "timeToolStripMenuItem";
-            this.timeToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
+            this.timeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.timeToolStripMenuItem.Text = "Time";
             // 
             // themeToolStripMenuItem
             // 
             this.themeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.eDSMToolStripMenuItem,
+            this.eDSMEuroCapsToolStripMenuItem,
+            this.eDSMArialNarrowToolStripMenuItem,
             this.eliteVerdanaToolStripMenuItem,
-            this.eliteEurocapsToolStripMenuItem});
+            this.eliteCalistoToolStripMenuItem,
+            this.eliteEurocapsToolStripMenuItem,
+            this.materialDarkToolStripMenuItem,
+            this.easyDarkToolStripMenuItem,
+            this.highDPIToolStripMenuItem});
             this.themeToolStripMenuItem.Name = "themeToolStripMenuItem";
-            this.themeToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
+            this.themeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.themeToolStripMenuItem.Text = "Theme";
             // 
             // eDSMToolStripMenuItem
             // 
             this.eDSMToolStripMenuItem.Name = "eDSMToolStripMenuItem";
-            this.eDSMToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.eDSMToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.eDSMToolStripMenuItem.Text = "EDSM";
             this.eDSMToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
             // 
             // eliteVerdanaToolStripMenuItem
             // 
             this.eliteVerdanaToolStripMenuItem.Name = "eliteVerdanaToolStripMenuItem";
-            this.eliteVerdanaToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.eliteVerdanaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.eliteVerdanaToolStripMenuItem.Text = "Elite Verdana";
             this.eliteVerdanaToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
             // 
             // eliteEurocapsToolStripMenuItem
             // 
             this.eliteEurocapsToolStripMenuItem.Name = "eliteEurocapsToolStripMenuItem";
-            this.eliteEurocapsToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.eliteEurocapsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.eliteEurocapsToolStripMenuItem.Text = "Elite EuroCaps";
             this.eliteEurocapsToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            // 
+            // highDPIToolStripMenuItem
+            // 
+            this.highDPIToolStripMenuItem.Checked = true;
+            this.highDPIToolStripMenuItem.CheckOnClick = true;
+            this.highDPIToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.highDPIToolStripMenuItem.Name = "highDPIToolStripMenuItem";
+            this.highDPIToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.highDPIToolStripMenuItem.Text = "High DPI";
             // 
             // helpToolStripMenuItem
             // 
@@ -998,7 +1020,7 @@
             // 
             this.label_version.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label_version.AutoSize = true;
-            this.label_version.Location = new System.Drawing.Point(159, 6);
+            this.label_version.Location = new System.Drawing.Point(279, 6);
             this.label_version.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.label_version.Name = "label_version";
             this.label_version.Size = new System.Drawing.Size(43, 13);
@@ -1010,7 +1032,7 @@
             // 
             this.labelInfoBoxTop.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.labelInfoBoxTop.AutoSize = true;
-            this.labelInfoBoxTop.Location = new System.Drawing.Point(213, 6);
+            this.labelInfoBoxTop.Location = new System.Drawing.Point(333, 6);
             this.labelInfoBoxTop.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.labelInfoBoxTop.Name = "labelInfoBoxTop";
             this.labelInfoBoxTop.Size = new System.Drawing.Size(43, 13);
@@ -1021,7 +1043,7 @@
             // 
             this.labelGameDateTime.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.labelGameDateTime.AutoSize = true;
-            this.labelGameDateTime.Location = new System.Drawing.Point(267, 6);
+            this.labelGameDateTime.Location = new System.Drawing.Point(387, 6);
             this.labelGameDateTime.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.labelGameDateTime.Name = "labelGameDateTime";
             this.labelGameDateTime.Size = new System.Drawing.Size(43, 13);
@@ -1118,6 +1140,41 @@
             this.toolStripStatus.Enabled = false;
             this.toolStripStatus.Name = "toolStripStatus";
             this.toolStripStatus.Size = new System.Drawing.Size(0, 17);
+            // 
+            // eDSMArialNarrowToolStripMenuItem
+            // 
+            this.eDSMArialNarrowToolStripMenuItem.Name = "eDSMArialNarrowToolStripMenuItem";
+            this.eDSMArialNarrowToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.eDSMArialNarrowToolStripMenuItem.Text = "EDSM Arial Narrow";
+            this.eDSMArialNarrowToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            // 
+            // eDSMEuroCapsToolStripMenuItem
+            // 
+            this.eDSMEuroCapsToolStripMenuItem.Name = "eDSMEuroCapsToolStripMenuItem";
+            this.eDSMEuroCapsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.eDSMEuroCapsToolStripMenuItem.Text = "EDSM EuroCaps";
+            this.eDSMEuroCapsToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            // 
+            // materialDarkToolStripMenuItem
+            // 
+            this.materialDarkToolStripMenuItem.Name = "materialDarkToolStripMenuItem";
+            this.materialDarkToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.materialDarkToolStripMenuItem.Text = "Material Dark";
+            this.materialDarkToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            // 
+            // easyDarkToolStripMenuItem
+            // 
+            this.easyDarkToolStripMenuItem.Name = "easyDarkToolStripMenuItem";
+            this.easyDarkToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.easyDarkToolStripMenuItem.Text = "Easy Dark";
+            this.easyDarkToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            // 
+            // eliteCalistoToolStripMenuItem
+            // 
+            this.eliteCalistoToolStripMenuItem.Name = "eliteCalistoToolStripMenuItem";
+            this.eliteCalistoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.eliteCalistoToolStripMenuItem.Text = "Elite Calisto";
+            this.eliteCalistoToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
             // 
             // EDDLiteForm
             // 
@@ -1253,6 +1310,12 @@
         private System.Windows.Forms.Label labelItemsH;
         private System.Windows.Forms.Label labelComponents;
         private System.Windows.Forms.Label labelItems;
+        private System.Windows.Forms.ToolStripMenuItem highDPIToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eDSMArialNarrowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eDSMEuroCapsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem materialDarkToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eliteCalistoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem easyDarkToolStripMenuItem;
     }
 }
 

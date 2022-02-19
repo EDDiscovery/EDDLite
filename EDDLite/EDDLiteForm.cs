@@ -86,11 +86,15 @@ namespace EDDLite
 
             EDDConfig.Instance.Update();
 
+            Bodies.Prepopulate();       // new! needed 
 
             ThemeList = new ExtendedControls.ThemeList();
             ThemeList.LoadBaseThemes();                                         // default themes and ones on disk loaded
-            ThemeList.SetThemeByName(UserDatabase.Instance.GetSettingString("Theme", "EDSM"));                        // this is the default theme we use
-            ApplyTheme();
+
+            string themename = UserDatabase.Instance.GetSettingString("Theme", "EDSM");
+            highDPIToolStripMenuItem.Checked = themename.Contains("High DPI");
+            this.highDPIToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.highDPIToolStripMenuItem_CheckStateChanged);
+            SetTheme(themename);
 
             RestoreFormPositionRegKey = "MainForm";
 
@@ -781,12 +785,38 @@ namespace EDDLite
             screenShotCaptureToolStripMenuItem_Click(sender, e);
         }
 
+
+        private void SetTheme(string theme)
+        {
+            theme = theme.Replace("High DPI", "").Trim();
+
+            eDSMToolStripMenuItem.Checked = theme == "EDSM";
+            eDSMEuroCapsToolStripMenuItem.Checked = theme == "EDSM EuroCaps";
+            eDSMArialNarrowToolStripMenuItem.Checked = theme == "EDSM Arial Narrow";
+            eliteVerdanaToolStripMenuItem.Checked = theme == "Elite Verdana";
+            eliteCalistoToolStripMenuItem.Checked = theme == "Elite Calisto";
+            eliteEurocapsToolStripMenuItem.Checked = theme == "Elite EuroCaps";
+            materialDarkToolStripMenuItem.Checked = theme == "Material Dark";
+            easyDarkToolStripMenuItem.Checked = theme == "Easy Dark";
+
+            if (highDPIToolStripMenuItem.Checked)
+                theme += " High DPI";
+
+            ThemeList.SetThemeByName(theme);
+
+            UserDatabase.Instance.PutSettingString("Theme", theme);
+            ApplyTheme();
+        }
+
+        private void highDPIToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+        {
+            SetTheme(UserDatabase.Instance.GetSettingString("Theme", "EDSM"));
+        }
+
         private void themeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var s = sender as ToolStripMenuItem;
-            ThemeList.SetThemeByName(s.Text);
-            UserDatabase.Instance.PutSettingString("Theme", s.Text);
-            ApplyTheme();
+            SetTheme(s.Text);
         }
 
         private void ApplyTheme()
