@@ -47,6 +47,13 @@ namespace EDDLite
 
             MaterialCommodityMicroResourceType.FillTable();     // lets statically fill the table way before anyone wants to access it
 
+            // we need to add this in, even though we do not translate, so the forms using translation won't barfe.
+
+            BaseUtils.Translator.Instance.AddExcludedControls(new Type[]
+               {   typeof(ExtendedControls.ExtComboBox), typeof(ExtendedControls.NumberBoxDouble),typeof(ExtendedControls.NumberBoxFloat),typeof(ExtendedControls.NumberBoxLong),
+                typeof(ExtendedControls.ExtScrollBar),typeof(ExtendedControls.ExtStatusStrip),typeof(ExtendedControls.ExtRichTextBox),typeof(ExtendedControls.ExtTextBox),
+                typeof(ExtendedControls.ExtTextBoxAutoComplete),typeof(ExtendedControls.ExtDateTimePicker),typeof(ExtendedControls.ExtNumericUpDown) });
+
             string logpath = EDDOptions.Instance.LogAppDirectory();
 
             BaseUtils.LogClean.DeleteOldLogFiles(logpath, "*.hlog", 2, 256);        // Remove hlogs faster
