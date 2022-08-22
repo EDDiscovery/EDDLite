@@ -193,9 +193,10 @@ namespace EDDLite
             DLLCallBacks.GetShipLoadout = (s) => { return null; };
 
             string verstring = EDDOptions.Instance.Version;
-            string[] options = new string[] { EDDDLLInterfaces.EDDDLLIF.FLAG_HOSTNAME + "EDLITE",
-                                              EDDDLLInterfaces.EDDDLLIF.FLAG_JOURNALVERSION + "2",
-                                              EDDDLLInterfaces.EDDDLLIF.FLAG_CALLBACKVERSION + "2",
+            string[] options = new string[] { EDDDLLInterfaces.EDDDLLIF.FLAG_HOSTNAME + "EDDLITE",
+                                              EDDDLLInterfaces.EDDDLLIF.FLAG_JOURNALVERSION + EliteDangerousCore.DLL.EDDDLLCallerHE.JournalVersion.ToString(),
+                                              EDDDLLInterfaces.EDDDLLIF.FLAG_CALLBACKVERSION + DLLCallBacks.ver.ToString(),
+                                              EDDDLLInterfaces.EDDDLLIF.FLAG_CALLVERSION + EDDDLLInterfaces.EDDDLLIF.CallBackVersion,
                                             };
 
             string alloweddlls = EDDConfig.Instance.DLLPermissions;
