@@ -127,8 +127,9 @@ namespace EDDLite.Forms
             this.textBoxLicense.Location = new System.Drawing.Point(3, 37);
             this.textBoxLicense.Name = "textBoxLicense";
             this.textBoxLicense.ReadOnly = true;
-            this.textBoxLicense.Rtf = "{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang2057{\\fonttbl{\\f0\\fnil\\fcharset0 Microsoft S" +
-    "ans Serif;}}\r\n\\viewkind4\\uc1\\pard\\f0\\fs17\\par\r\n}\r\n";
+            this.textBoxLicense.Rtf = "{\\rtf1\\ansi\\ansicpg1252\\deff0\\nouicompat\\deflang2057{\\fonttbl{\\f0\\fnil\\fcharset0 " +
+    "Microsoft Sans Serif;}}\r\n{\\*\\generator Riched20 10.0.19041}\\viewkind4\\uc1 \r\n\\par" +
+    "d\\f0\\fs17\\par\r\n}\r\n";
             this.textBoxLicense.ScrollBarArrowBorderColor = System.Drawing.Color.LightBlue;
             this.textBoxLicense.ScrollBarArrowButtonColor = System.Drawing.Color.LightGray;
             this.textBoxLicense.ScrollBarBackColor = System.Drawing.SystemColors.Control;
@@ -519,7 +520,7 @@ namespace EDDLite.Forms
             this.labelNoAffiliation.Name = "labelNoAffiliation";
             this.labelNoAffiliation.Size = new System.Drawing.Size(667, 26);
             this.labelNoAffiliation.TabIndex = 16;
-            this.labelNoAffiliation.Text = "(C) 2020 Robby && EDDiscovery Team\r\nEDDiscovery is not affiliated with Frontier D" +
+            this.labelNoAffiliation.Text = "(C) 2022 Robby && EDDiscovery Team\r\nEDDiscovery is not affiliated with Frontier D" +
     "evelopments plc.\r\n";
             this.labelNoAffiliation.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 

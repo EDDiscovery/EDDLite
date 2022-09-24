@@ -30,12 +30,14 @@ namespace EDDLite
 {
     public partial class EDDLiteForm : EDDLite.Forms.DraggableFormPos
     {
-        EDDLiteController controller;
-        Timer datetimetimer;
-        ScreenShotConverter screenshot;
-        EDDDLLManager DLLManager;
-        EDDDLLInterfaces.EDDDLLIF.EDDCallBacks DLLCallBacks;
-        ExtendedControls.ThemeList ThemeList;
+        private EDDLiteController controller;
+        private Timer datetimetimer;
+        private ScreenShotConverter screenshot;
+        private EDDDLLManager DLLManager;
+        private EDDDLLInterfaces.EDDDLLIF.EDDCallBacks DLLCallBacks;
+        private ExtendedControls.ThemeList ThemeList;
+
+        private HistoryEntry queuedfsssd = null;
 
         int prevencodedcount, prevrawcount, prevmanucount, prevdatacount, previtemcount, prevconsumecount, prevcomponentcount, prevcargocount;
 
@@ -152,6 +154,7 @@ namespace EDDLite
             EliteDangerousCore.IGAU.IGAUClass.SoftwareName =
             EliteDangerousCore.EDDN.EDDNClass.SoftwareName =
             EliteDangerousCore.Inara.InaraClass.SoftwareName =
+            EliteDangerousCore.EDAstro.EDAstroClass.SoftwareName =
             EDSMClass.SoftwareName = "EDDLite";
 
          //   Bodies.Prepopulate();
@@ -310,6 +313,8 @@ namespace EDDLite
 
         public void HistoryEvent(HistoryEntry he, bool stored, bool recent)     // recent is true on stored for last few entries..
         {
+            System.Diagnostics.Debug.WriteLine($"New UI HistoryEvent {he.EventTimeUTC} {he.EntryType}");
+
             bool dontupdateui = (lasthe != null && stored && !recent);
 
             var matlist = controller.GetMatList(he);
@@ -457,10 +462,27 @@ namespace EDDLite
                     EliteDangerousCore.EDAstro.EDAstroSync.SendEDAstroEvents(new List<HistoryEntry>() { he });
                 }
 
-                if (EliteDangerousCore.EDDN.EDDNClass.IsEDDNMessage(he.EntryType) && he.AgeOfEntry() < TimeSpan.FromDays(1.0) &&
-                        he.Commander.SyncToEddn == true)
+                if (he.Commander.SyncToEddn == true)
                 {
-                    EliteDangerousCore.EDDN.EDDNSync.SendEDDNEvents(LogLine, new List<HistoryEntry> { he });
+                    if (queuedfsssd != null && ((EliteDangerousCore.JournalEvents.JournalFSSSignalDiscovered)queuedfsssd.journalEntry).Signals[0].SystemAddress == he.System.SystemAddress)     // if queued, and we are now in its system
+                    {
+                        System.Diagnostics.Debug.WriteLine($"EDDN send of FSSSignalDiscovered is sent - now in system");
+                        ((EliteDangerousCore.JournalEvents.JournalFSSSignalDiscovered)queuedfsssd.journalEntry).EDDNSystem = he.System; // override for EDDN purposes
+                        EliteDangerousCore.EDDN.EDDNSync.SendEDDNEvents(LogLine, new List<HistoryEntry> { queuedfsssd });
+                        queuedfsssd = null;
+                    }
+
+                    if (EliteDangerousCore.EDDN.EDDNClass.IsEDDNMessage(he.EntryType) && he.AgeOfEntry() < TimeSpan.FromDays(1.0))
+                    {
+                        // if FSS Signal discovered, but the system address is not of the current system we think we are in, then queue it until location/jump comes about
+                        if (he.EntryType == JournalTypeEnum.FSSSignalDiscovered && ((EliteDangerousCore.JournalEvents.JournalFSSSignalDiscovered)he.journalEntry).Signals[0].SystemAddress != he.System.SystemAddress)
+                        {
+                            queuedfsssd = he;
+                            System.Diagnostics.Debug.WriteLine($"EDDN send of FSSSignalDiscovered is queued due to SystemAddress not being Isystem address");
+                        }
+                        else
+                            EliteDangerousCore.EDDN.EDDNSync.SendEDDNEvents(LogLine, new List<HistoryEntry> { he });
+                    }
                 }
 
                 if (he.Commander.SyncToInara)
@@ -832,6 +854,8 @@ namespace EDDLite
             ExtendedControls.Theme.Current.ApplyStd(this);
             dataGridViewCommanders.RowsDefaultCellStyle.SelectionBackColor = ExtendedControls.Theme.Current.GridCellBack;    // hide selection
             dataGridViewCommanders.RowsDefaultCellStyle.SelectionForeColor = ExtendedControls.Theme.Current.GridCellText;
+
+            this.Refresh();                                             // force thru refresh to make sure its repainted
         }
 
         bool ingtchange = false;

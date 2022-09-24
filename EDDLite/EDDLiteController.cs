@@ -35,6 +35,7 @@ namespace EDDLite
         public void Start(Action<Action> invokeAsyncOnUiThread)
         {
             InvokeAsyncOnUiThread = invokeAsyncOnUiThread;
+            journalqueuedelaytimer = new Timer(DelayPlay, null, Timeout.Infinite, Timeout.Infinite);
             controllerthread = new Thread(Controller);
             controllerthread.Start();
         }
@@ -45,6 +46,8 @@ namespace EDDLite
         {
             stopit = true;
             controllerthread.Join();
+            journalqueuedelaytimer.Change(Timeout.Infinite, Timeout.Infinite);
+            journalqueuedelaytimer.Dispose();
         }
 
         private void Controller()
@@ -124,6 +127,9 @@ namespace EDDLite
             }
         }
 
+        private Queue<HistoryEntry> journalqueue = new Queue<HistoryEntry>();
+        private System.Threading.Timer journalqueuedelaytimer;
+
         public void Entry(JournalEntry je, bool stored, bool recent)        // on UI thread. hooked into journal monitor and receives new entries.. Also call if you programatically add an entry
         {
             System.Diagnostics.Debug.Assert(System.Windows.Forms.Application.MessageLoop);
@@ -156,13 +162,78 @@ namespace EDDLite
                 he.UpdateShipInformation(ret.Item1);
                 he.UpdateShipStoredModules(ret.Item2);
 
-                NewEntry?.Invoke(he, stored, recent);
+                int playdelay = (je.EventTypeID == JournalTypeEnum.FSSSignalDiscovered) ? 2000 : 0;     // have we got a delayable entry
+
+                // if not stored entry, and merge says delaying to see if a companion event occurs. add it to list. Set timer so we pick it up
+
+                if (!stored && playdelay > 0)  
+                {
+                    System.Diagnostics.Debug.WriteLine(Environment.TickCount + " Delay Play queue " + je.EventTypeID + " Delay for " + playdelay);
+                    journalqueue.Enqueue(he);
+                    journalqueuedelaytimer.Change(playdelay, Timeout.Infinite);
+                }
+                else
+                {
+                    journalqueuedelaytimer.Change(Timeout.Infinite, Timeout.Infinite);  // stop the timer, but if it occurs before this, not the end of the world
+                    journalqueue.Enqueue(he);  // add it to the play list.
+                    PlayJournalList(stored,recent);    // and play
+                }
             }
             else
             {
                 //System.Diagnostics.Debug.WriteLine("Rejected older JE " + stored + ":" + recent + ":" + EDCommander.GetCommander(je.CommanderId).Name + " " + je.EventTypeStr);
             }
         }
+
+        public void DelayPlay(Object s)             // timer thread timeout after play delay.. 
+        {
+            System.Diagnostics.Debug.WriteLine(Environment.TickCount + " Delay Play timer executed");
+            journalqueuedelaytimer.Change(Timeout.Infinite, Timeout.Infinite);
+            InvokeAsyncOnUiThread(() =>
+            {
+                PlayJournalList(false,true);
+            });
+        }
+
+        void PlayJournalList(bool stored, bool recent)
+        {
+            while (journalqueue.Count > 0)      // dequeue
+            {
+                var current = journalqueue.Dequeue();
+                System.Diagnostics.Trace.WriteLine($"PlayJournalList {current.EventTimeUTC} {current.EntryType}");
+
+                if (!stored)
+                {
+                    while (journalqueue.Count > 0)     // merge back 
+                    {
+                        var peek = journalqueue.Peek(); // is there a next one?
+
+                        if (peek != null && current.EntryType == peek.EntryType)        // if same event again
+                        {
+                            if (current.EntryType == JournalTypeEnum.FSSSignalDiscovered) // if mergeable
+                            {
+                                var jdprev = current.journalEntry as EliteDangerousCore.JournalEvents.JournalFSSSignalDiscovered;
+                                var jd = peek.journalEntry as EliteDangerousCore.JournalEvents.JournalFSSSignalDiscovered;
+
+                                if (jdprev.Signals[0].SystemAddress == jd.Signals[0].SystemAddress)     // only if same system address
+                                {
+                                    jdprev.Add(jd);     // merge! and waste
+                                    System.Diagnostics.Trace.WriteLine($"PlayJournalList Merge {current.EntryType}");
+                                    journalqueue.Dequeue();                     // remove it
+                                }
+                            }
+                            else
+                                break;
+                        }
+                        else
+                            break;
+                    }
+                }
+
+                NewEntry?.Invoke(current, stored, recent);      // dispatch possibly merged candidate
+            }
+        }
+
 
         public List<MaterialCommodityMicroResource> GetMatList(HistoryEntry he)
         {
