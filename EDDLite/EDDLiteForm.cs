@@ -116,9 +116,19 @@ namespace EDDLite
             extButtonInaraStation.Enabled = extButtonEDDBStation.Enabled = false;
             extButtonEDSY.Enabled = extButtonCoriolis.Enabled = false;
 
+            useNotifyIconToolStripMenuItem.Checked = EDDConfig.Instance.UseNotifyIcon;
+            useNotifyIconToolStripMenuItem.CheckedChanged += new System.EventHandler(this.useNotifyIconToolStripMenuItem_CheckedChanged);
+
+            minimiseToNotificationAreaToolStripMenuItem.Checked = EDDConfig.Instance.MinimizeToNotifyIcon;
+            minimiseToNotificationAreaToolStripMenuItem.CheckedChanged += new System.EventHandler(this.minimiseToNotificationAreaToolStripMenuItem_CheckedChanged);
+
+            startMinimisedToolStripMenuItem.Checked = EDDConfig.Instance.StartMinimized;
+            startMinimisedToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.startMinimizedToolStripMenuItem_CheckStateChanged);
+
+            notifyIconEDD.Visible = EDDConfig.Instance.UseNotifyIcon;
+
             dataGridViewCommanders.RowsDefaultCellStyle.SelectionBackColor = ExtendedControls.Theme.Current.GridCellBack;    // hide selection
             dataGridViewCommanders.RowsDefaultCellStyle.SelectionForeColor = ExtendedControls.Theme.Current.GridCellText;
-
 
             gameTimeToolStripMenuItem.Checked = false;
             utcToolStripMenuItem.Checked =
@@ -265,6 +275,9 @@ namespace EDDLite
             });
 
             controller.Start(a => BeginInvoke(a));
+
+            if (EDDConfig.Instance.StartMinimized)
+                WindowState = FormWindowState.Minimized;
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -277,6 +290,8 @@ namespace EDDLite
             screenshot.Stop();
             screenshot.SaveSettings();
             DLLManager.UnLoad();
+            notifyIconEDD.Visible = false;
+            notifyIconEDD.Dispose();
             base.OnClosing(e);
         }
 
@@ -859,6 +874,8 @@ namespace EDDLite
         }
 
         bool ingtchange = false;
+
+
         private void gameTimeToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
         {
             if (!ingtchange)
@@ -879,7 +896,6 @@ namespace EDDLite
             localToolStripMenuItem.Checked = index == 0;
             ingtchange = false;
         }
-
         private void removeDLLPermissionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (ExtendedControls.MessageBoxTheme.Show(this, "Remove all DLL permissions, on next start, you will be asked per DLL if you wish to allow the DLL to run. Are you sure?".T(EDTx.EDDiscoveryForm_RemoveDLLPerms), "Warning".T(EDTx.Warning), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
@@ -887,6 +903,73 @@ namespace EDDLite
                 EDDConfig.Instance.DLLPermissions = "";
             }
         }
+
+        #endregion
+
+        #region Tray
+
+        private void EDDLiteForm_Resize(object sender, EventArgs e)
+        {
+            // if we are shown, and we are using minimize to notification..
+            if (FormShownOnce && EDDConfig.Instance.UseNotifyIcon && EDDConfig.Instance.MinimizeToNotifyIcon)
+            {
+                if (FormWindowState.Minimized == WindowState)   // minized, hiding hides the taskbar icon
+                    Hide();
+                else if (!Visible)      // else make sure visible
+                    Show();
+            }
+        }
+
+
+        private void notifyIconEDD_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            notifyIconMenu_Open_Click(sender, e);
+
+        }
+
+        private void notifyIconMenu_Open_Click(object sender, EventArgs e)
+        {
+            // Toggle state
+            if (FormWindowState.Minimized == WindowState)
+            {
+                if (EDDConfig.Instance.MinimizeToNotifyIcon)
+                    Show();
+
+                if (FormIsMaximised)
+                    WindowState = FormWindowState.Maximized;
+                else
+                    WindowState = FormWindowState.Normal;
+            }
+            else
+                WindowState = FormWindowState.Minimized;
+        }
+
+        private void notifyIconMenu_Exit_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void useNotifyIconToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            notifyIconEDD.Visible =
+            EDDConfig.Instance.UseNotifyIcon = useNotifyIconToolStripMenuItem.Checked;
+            if (!EDDConfig.Instance.UseNotifyIcon && !Visible)
+                Show();
+        }
+
+        private void minimiseToNotificationAreaToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            EDDConfig.Instance.MinimizeToNotifyIcon = minimiseToNotificationAreaToolStripMenuItem.Checked;
+        }
+
+
+        private void startMinimizedToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+        {
+            EDDConfig.Instance.StartMinimized = startMinimisedToolStripMenuItem.Checked;
+
+        }
+
+
 
         #endregion
 

@@ -102,9 +102,17 @@
             this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.themeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eDSMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eDSMEuroCapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eDSMArialNarrowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eliteVerdanaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eliteCalistoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eliteEurocapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.materialDarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.easyDarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.highDPIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.useNotifyIconToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.minimiseToNotificationAreaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.startMinimisedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label_version = new System.Windows.Forms.Label();
@@ -117,11 +125,10 @@
             this.extStatusStrip = new ExtendedControls.ExtStatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.eDSMArialNarrowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.eDSMEuroCapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.materialDarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.easyDarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.eliteCalistoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.notifyIconContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.notifyIconMenu_Open = new System.Windows.Forms.ToolStripMenuItem();
+            this.notifyIconMenu_Exit = new System.Windows.Forms.ToolStripMenuItem();
+            this.notifyIconEDD = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextMenuStripCmdr.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerCmdrDataLogs)).BeginInit();
             this.splitContainerCmdrDataLogs.Panel1.SuspendLayout();
@@ -145,6 +152,7 @@
             this.menuMain.SuspendLayout();
             this.flowLayoutPanelRight.SuspendLayout();
             this.extStatusStrip.SuspendLayout();
+            this.notifyIconContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuStripCmdr
@@ -872,7 +880,7 @@
             this.helpToolStripMenuItem});
             this.menuMain.Location = new System.Drawing.Point(0, 0);
             this.menuMain.Name = "menuMain";
-            this.menuMain.Size = new System.Drawing.Size(271, 24);
+            this.menuMain.Size = new System.Drawing.Size(151, 24);
             this.menuMain.TabIndex = 0;
             this.menuMain.Text = "menuStrip1";
             // 
@@ -941,7 +949,10 @@
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.timeToolStripMenuItem,
-            this.themeToolStripMenuItem});
+            this.themeToolStripMenuItem,
+            this.useNotifyIconToolStripMenuItem,
+            this.minimiseToNotificationAreaToolStripMenuItem,
+            this.startMinimisedToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
@@ -952,7 +963,7 @@
             this.timeToolStripMenuItem.CheckOnClick = true;
             this.timeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.timeToolStripMenuItem.Name = "timeToolStripMenuItem";
-            this.timeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.timeToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
             this.timeToolStripMenuItem.Text = "Time";
             // 
             // themeToolStripMenuItem
@@ -968,29 +979,64 @@
             this.easyDarkToolStripMenuItem,
             this.highDPIToolStripMenuItem});
             this.themeToolStripMenuItem.Name = "themeToolStripMenuItem";
-            this.themeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.themeToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
             this.themeToolStripMenuItem.Text = "Theme";
             // 
             // eDSMToolStripMenuItem
             // 
             this.eDSMToolStripMenuItem.Name = "eDSMToolStripMenuItem";
-            this.eDSMToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.eDSMToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.eDSMToolStripMenuItem.Text = "EDSM";
             this.eDSMToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            // 
+            // eDSMEuroCapsToolStripMenuItem
+            // 
+            this.eDSMEuroCapsToolStripMenuItem.Name = "eDSMEuroCapsToolStripMenuItem";
+            this.eDSMEuroCapsToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.eDSMEuroCapsToolStripMenuItem.Text = "EDSM EuroCaps";
+            this.eDSMEuroCapsToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            // 
+            // eDSMArialNarrowToolStripMenuItem
+            // 
+            this.eDSMArialNarrowToolStripMenuItem.Name = "eDSMArialNarrowToolStripMenuItem";
+            this.eDSMArialNarrowToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.eDSMArialNarrowToolStripMenuItem.Text = "EDSM Arial Narrow";
+            this.eDSMArialNarrowToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
             // 
             // eliteVerdanaToolStripMenuItem
             // 
             this.eliteVerdanaToolStripMenuItem.Name = "eliteVerdanaToolStripMenuItem";
-            this.eliteVerdanaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.eliteVerdanaToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.eliteVerdanaToolStripMenuItem.Text = "Elite Verdana";
             this.eliteVerdanaToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            // 
+            // eliteCalistoToolStripMenuItem
+            // 
+            this.eliteCalistoToolStripMenuItem.Name = "eliteCalistoToolStripMenuItem";
+            this.eliteCalistoToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.eliteCalistoToolStripMenuItem.Text = "Elite Calisto";
+            this.eliteCalistoToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
             // 
             // eliteEurocapsToolStripMenuItem
             // 
             this.eliteEurocapsToolStripMenuItem.Name = "eliteEurocapsToolStripMenuItem";
-            this.eliteEurocapsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.eliteEurocapsToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.eliteEurocapsToolStripMenuItem.Text = "Elite EuroCaps";
             this.eliteEurocapsToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            // 
+            // materialDarkToolStripMenuItem
+            // 
+            this.materialDarkToolStripMenuItem.Name = "materialDarkToolStripMenuItem";
+            this.materialDarkToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.materialDarkToolStripMenuItem.Text = "Material Dark";
+            this.materialDarkToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            // 
+            // easyDarkToolStripMenuItem
+            // 
+            this.easyDarkToolStripMenuItem.Name = "easyDarkToolStripMenuItem";
+            this.easyDarkToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.easyDarkToolStripMenuItem.Text = "Easy Dark";
+            this.easyDarkToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
             // 
             // highDPIToolStripMenuItem
             // 
@@ -998,8 +1044,35 @@
             this.highDPIToolStripMenuItem.CheckOnClick = true;
             this.highDPIToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.highDPIToolStripMenuItem.Name = "highDPIToolStripMenuItem";
-            this.highDPIToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.highDPIToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.highDPIToolStripMenuItem.Text = "High DPI";
+            // 
+            // useNotifyIconToolStripMenuItem
+            // 
+            this.useNotifyIconToolStripMenuItem.Checked = true;
+            this.useNotifyIconToolStripMenuItem.CheckOnClick = true;
+            this.useNotifyIconToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.useNotifyIconToolStripMenuItem.Name = "useNotifyIconToolStripMenuItem";
+            this.useNotifyIconToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.useNotifyIconToolStripMenuItem.Text = "Use Notify Icon";
+            // 
+            // minimiseToNotificationAreaToolStripMenuItem
+            // 
+            this.minimiseToNotificationAreaToolStripMenuItem.Checked = true;
+            this.minimiseToNotificationAreaToolStripMenuItem.CheckOnClick = true;
+            this.minimiseToNotificationAreaToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.minimiseToNotificationAreaToolStripMenuItem.Name = "minimiseToNotificationAreaToolStripMenuItem";
+            this.minimiseToNotificationAreaToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.minimiseToNotificationAreaToolStripMenuItem.Text = "Minimise to Notification Area";
+            // 
+            // startMinimisedToolStripMenuItem
+            // 
+            this.startMinimisedToolStripMenuItem.Checked = true;
+            this.startMinimisedToolStripMenuItem.CheckOnClick = true;
+            this.startMinimisedToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.startMinimisedToolStripMenuItem.Name = "startMinimisedToolStripMenuItem";
+            this.startMinimisedToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.startMinimisedToolStripMenuItem.Text = "Start Minimised";
             // 
             // helpToolStripMenuItem
             // 
@@ -1020,7 +1093,7 @@
             // 
             this.label_version.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label_version.AutoSize = true;
-            this.label_version.Location = new System.Drawing.Point(279, 6);
+            this.label_version.Location = new System.Drawing.Point(159, 6);
             this.label_version.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.label_version.Name = "label_version";
             this.label_version.Size = new System.Drawing.Size(43, 13);
@@ -1032,7 +1105,7 @@
             // 
             this.labelInfoBoxTop.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.labelInfoBoxTop.AutoSize = true;
-            this.labelInfoBoxTop.Location = new System.Drawing.Point(333, 6);
+            this.labelInfoBoxTop.Location = new System.Drawing.Point(213, 6);
             this.labelInfoBoxTop.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.labelInfoBoxTop.Name = "labelInfoBoxTop";
             this.labelInfoBoxTop.Size = new System.Drawing.Size(43, 13);
@@ -1043,7 +1116,7 @@
             // 
             this.labelGameDateTime.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.labelGameDateTime.AutoSize = true;
-            this.labelGameDateTime.Location = new System.Drawing.Point(387, 6);
+            this.labelGameDateTime.Location = new System.Drawing.Point(267, 6);
             this.labelGameDateTime.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.labelGameDateTime.Name = "labelGameDateTime";
             this.labelGameDateTime.Size = new System.Drawing.Size(43, 13);
@@ -1141,40 +1214,34 @@
             this.toolStripStatus.Name = "toolStripStatus";
             this.toolStripStatus.Size = new System.Drawing.Size(0, 17);
             // 
-            // eDSMArialNarrowToolStripMenuItem
+            // notifyIconContextMenuStrip
             // 
-            this.eDSMArialNarrowToolStripMenuItem.Name = "eDSMArialNarrowToolStripMenuItem";
-            this.eDSMArialNarrowToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.eDSMArialNarrowToolStripMenuItem.Text = "EDSM Arial Narrow";
-            this.eDSMArialNarrowToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            this.notifyIconContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.notifyIconMenu_Open,
+            this.notifyIconMenu_Exit});
+            this.notifyIconContextMenuStrip.Name = "notifyIconContextMenuStrip1";
+            this.notifyIconContextMenuStrip.Size = new System.Drawing.Size(181, 70);
             // 
-            // eDSMEuroCapsToolStripMenuItem
+            // notifyIconMenu_Open
             // 
-            this.eDSMEuroCapsToolStripMenuItem.Name = "eDSMEuroCapsToolStripMenuItem";
-            this.eDSMEuroCapsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.eDSMEuroCapsToolStripMenuItem.Text = "EDSM EuroCaps";
-            this.eDSMEuroCapsToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            this.notifyIconMenu_Open.Name = "notifyIconMenu_Open";
+            this.notifyIconMenu_Open.Size = new System.Drawing.Size(180, 22);
+            this.notifyIconMenu_Open.Text = "&Toggle EDDLite";
+            this.notifyIconMenu_Open.Click += new System.EventHandler(this.notifyIconMenu_Open_Click);
             // 
-            // materialDarkToolStripMenuItem
+            // notifyIconMenu_Exit
             // 
-            this.materialDarkToolStripMenuItem.Name = "materialDarkToolStripMenuItem";
-            this.materialDarkToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.materialDarkToolStripMenuItem.Text = "Material Dark";
-            this.materialDarkToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            this.notifyIconMenu_Exit.Name = "notifyIconMenu_Exit";
+            this.notifyIconMenu_Exit.Size = new System.Drawing.Size(180, 22);
+            this.notifyIconMenu_Exit.Text = "E&xit";
+            this.notifyIconMenu_Exit.Click += new System.EventHandler(this.notifyIconMenu_Exit_Click);
             // 
-            // easyDarkToolStripMenuItem
+            // notifyIconEDD
             // 
-            this.easyDarkToolStripMenuItem.Name = "easyDarkToolStripMenuItem";
-            this.easyDarkToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.easyDarkToolStripMenuItem.Text = "Easy Dark";
-            this.easyDarkToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
-            // 
-            // eliteCalistoToolStripMenuItem
-            // 
-            this.eliteCalistoToolStripMenuItem.Name = "eliteCalistoToolStripMenuItem";
-            this.eliteCalistoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.eliteCalistoToolStripMenuItem.Text = "Elite Calisto";
-            this.eliteCalistoToolStripMenuItem.Click += new System.EventHandler(this.themeToolStripMenuItem_Click);
+            this.notifyIconEDD.ContextMenuStrip = this.notifyIconContextMenuStrip;
+            this.notifyIconEDD.Icon = global::EDDLite.Properties.Resources.edlogo_3mo_icon;
+            this.notifyIconEDD.Text = "EDDLite";
+            this.notifyIconEDD.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIconEDD_MouseDoubleClick);
             // 
             // EDDLiteForm
             // 
@@ -1189,6 +1256,7 @@
             this.Name = "EDDLiteForm";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Text = "EDD Lite";
+            this.Resize += new System.EventHandler(this.EDDLiteForm_Resize);
             this.contextMenuStripCmdr.ResumeLayout(false);
             this.splitContainerCmdrDataLogs.Panel1.ResumeLayout(false);
             this.splitContainerCmdrDataLogs.Panel2.ResumeLayout(false);
@@ -1217,6 +1285,7 @@
             this.flowLayoutPanelRight.ResumeLayout(false);
             this.extStatusStrip.ResumeLayout(false);
             this.extStatusStrip.PerformLayout();
+            this.notifyIconContextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1316,6 +1385,13 @@
         private System.Windows.Forms.ToolStripMenuItem materialDarkToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem eliteCalistoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem easyDarkToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip notifyIconContextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem notifyIconMenu_Open;
+        private System.Windows.Forms.ToolStripMenuItem notifyIconMenu_Exit;
+        private System.Windows.Forms.NotifyIcon notifyIconEDD;
+        private System.Windows.Forms.ToolStripMenuItem useNotifyIconToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem minimiseToNotificationAreaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem startMinimisedToolStripMenuItem;
     }
 }
 
