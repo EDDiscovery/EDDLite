@@ -200,7 +200,7 @@ namespace EDDLite
             DLLManager = new EDDDLLManager();
 
             DLLCallBacks = new EDDDLLInterfaces.EDDDLLIF.EDDCallBacks();
-            DLLCallBacks.ver = 2;
+            DLLCallBacks.ver = 2;       //explicit support
             DLLCallBacks.RequestHistory = DLLRequestHistory;
             DLLCallBacks.RunAction = (s1, s2) => { return false; };
             DLLCallBacks.GetShipLoadout = (s) => { return null; };
@@ -209,7 +209,7 @@ namespace EDDLite
             string[] options = new string[] { EDDDLLInterfaces.EDDDLLIF.FLAG_HOSTNAME + "EDDLITE",
                                               EDDDLLInterfaces.EDDDLLIF.FLAG_JOURNALVERSION + EliteDangerousCore.DLL.EDDDLLCallerHE.JournalVersion.ToString(),
                                               EDDDLLInterfaces.EDDDLLIF.FLAG_CALLBACKVERSION + DLLCallBacks.ver.ToString(),
-                                              EDDDLLInterfaces.EDDDLLIF.FLAG_CALLVERSION + EDDDLLInterfaces.EDDDLLIF.CallBackVersion,
+                                              EDDDLLInterfaces.EDDDLLIF.FLAG_CALLVERSION + EliteDangerousCore.DLL.EDDDLLCaller.DLLCallerVersion.ToStringInvariant(),
                                             };
 
             string alloweddlls = EDDConfig.Instance.DLLPermissions;
@@ -278,6 +278,8 @@ namespace EDDLite
 
             if (EDDConfig.Instance.StartMinimized)
                 WindowState = FormWindowState.Minimized;
+
+            DLLManager.Shown();
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -462,9 +464,9 @@ namespace EDDLite
 
             if (!stored)
             {
-                if (he.Commander.SyncToEdsm)
+                if (he.Commander.SyncToEdsm && EDSMJournalSync.OkayToSend(he))
                 {
-                    EDSMJournalSync.SendEDSMEvents(LogLine, new List<HistoryEntry> { he });
+                    EDSMJournalSync.SendEDSMEvents(LogLine, new List<HistoryEntry> { he }, he.journalEntry.GameVersion, he.journalEntry.Build);
                 }
 
                 if (he.Commander.SyncToIGAU)
@@ -511,7 +513,9 @@ namespace EDDLite
 
             if (DLLManager.Count > 0)       // if worth calling..
             {
-                DLLManager.NewJournalEntry(EDDDLLCallerHE.CreateFromHistoryEntry(he, matlist, missionlist, stored), stored);
+                var je = EDDDLLCallerHE.CreateFromHistoryEntry(he, matlist, missionlist, stored);
+                DLLManager.NewUnfilteredJournalEntry(je,stored);
+                DLLManager.NewJournalEntry(je, stored);
             }
 
             lasthe = he;
