@@ -97,6 +97,8 @@ namespace EDDLite
 
             Bodies.Prepopulate();       // new! needed 
 
+            BaseUtils.Icons.IconSet.Instance.DontReportMissingErrors = true;
+
             ThemeList = new ExtendedControls.ThemeList();
             ThemeList.LoadBaseThemes();                                         // default themes and ones on disk loaded
 
@@ -330,7 +332,7 @@ namespace EDDLite
 
         public void HistoryEvent(HistoryEntry he, bool stored, bool recent)     // recent is true on stored for last few entries..
         {
-            System.Diagnostics.Debug.WriteLine($"New UI HistoryEvent {he.EventTimeUTC} {he.EntryType}");
+           // System.Diagnostics.Debug.WriteLine($"Form HistoryEvent {he.EventTimeUTC} {he.EntryType} st {stored} rc {recent}");
 
             bool dontupdateui = (lasthe != null && stored && !recent);
 
@@ -459,7 +461,7 @@ namespace EDDLite
                 labelLatestMission.Text = mtext;
 
                 lastuihe = he;
-                System.Diagnostics.Debug.WriteLine("Set lastuihe to " + lastuihe.System.Name);
+                //System.Diagnostics.Debug.WriteLine("Set lastuihe to " + lastuihe.System.Name);
             }
 
             if (!stored)
@@ -525,11 +527,13 @@ namespace EDDLite
         {
             if (DLLManager.Count > 0)       // if worth calling..
             {
-                string output = QuickJSON.JToken.FromObject(uievent)?.ToString();
+                string output = QuickJSON.JToken.FromObject(uievent, ignoreunserialisable: true,
+                                                                                    ignored: new Type[] { typeof(Bitmap), typeof(Image) },
+                                                                                    maxrecursiondepth: 3)?.ToString();
                 if (output != null)
                     DLLManager.NewUIEvent(output);
                 else
-                    System.Diagnostics.Debug.WriteLine("Could not serialise " + uievent.EventTypeStr);
+                    System.Diagnostics.Debug.WriteLine("**** ERROR Could not serialise " + uievent.EventTypeStr);
             }
         }
 

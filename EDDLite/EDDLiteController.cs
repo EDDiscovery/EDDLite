@@ -30,7 +30,8 @@ namespace EDDLite
         public Action<string> ProgressEvent { get; set; } = null;
         public Action<string> LogLine { get; set; } = null;
 
-        private int recentlimit = 50;       // entries marked as close to end as this are marked recent
+        const int uirecentlimit = 50;         // entries marked as close to end as this are marked recent and shown to user
+        const int journalstoreload = 4;   // how many journals back to read and replay to get info on
 
         public void Start(Action<Action> invokeAsyncOnUiThread)
         {
@@ -53,29 +54,10 @@ namespace EDDLite
         private void Controller()
         {
             journalmonitor = new EDJournalUIScanner(InvokeAsyncOnUiThread);
-            journalmonitor.OnNewJournalEntry += (je,sr) => { Entry(je, false, true); };
-            journalmonitor.OnNewUIEvent += (ui,sr) => { InvokeAsyncOnUiThread(()=>NewUI?.Invoke(ui)); };
+            journalmonitor.OnNewJournalEntry += (je, sr) => { Entry(je, false, true); };
+            journalmonitor.OnNewUIEvent += (ui, sr) => { InvokeAsyncOnUiThread(() => NewUI?.Invoke(ui)); };
 
-            LogLine?.Invoke("Detecting Journals");
-            Reset();
-            string stdfolder = EliteDangerousCore.FrontierFolder.FolderName();     // may be null
-
-            journalmonitor.SetupWatchers(new string[] { stdfolder }, "Journal*.log", DateTime.MinValue);
-            // order the reading of last 2 files (in case continue) and fire back the last two
-            LogLine?.Invoke("Reading Journals");
-            journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, DateTime.MinValue,
-                                                            2, 
-                                                            (a,ji,jt,ei,et) => InvokeAsyncOnUiThread(() => 
-                                                            {
-                // System.Diagnostics.Debug.WriteLine("In FG {0} {1} {2} {3} {4} {5}", EDCommander.GetCommander(a.CommanderId).Name, ji, jt, ei, et, a.EventTypeStr );
-                Entry(a, true, ei-et > -recentlimit); })
-                                                            , 2);
-
-            InvokeAsyncOnUiThread(() => { RefreshFinished?.Invoke(currenthe); });
-
-            LogLine?.Invoke("Finished reading Journals");
-
-            journalmonitor.StartMonitor(false);
+            StartWatchersAndReplayLastStoredEntries();
 
             while (!stopit)
             {
@@ -85,22 +67,48 @@ namespace EDDLite
 
                     LogLine?.Invoke("Re-reading Journals");
                     journalmonitor.StopMonitor();
-                    Reset();
-                    journalmonitor.SetupWatchers(new string[] { stdfolder }, "Journal*.log", DateTime.MinValue);
-                    journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, 
-                                    DateTime.MinValue, 
-                                    2, // force reload of last two journal files
-                                    (a,ji,jt,ei,et) => InvokeAsyncOnUiThread(() => { Entry(a, true, ei - et > -recentlimit); }), 
-                                    2); // fire back last two
-                    journalmonitor.StartMonitor(false);
-                    InvokeAsyncOnUiThread(() => { RefreshFinished?.Invoke(currenthe); });
-                    LogLine?.Invoke("Finished reading Journals");
+
+                    StartWatchersAndReplayLastStoredEntries();
                 }
 
                 Thread.Sleep(100);
             }
 
             journalmonitor.StopMonitor();
+        }
+
+        private void StartWatchersAndReplayLastStoredEntries()
+        {
+            ResetStats();
+
+            string stdfolder = EliteDangerousCore.FrontierFolder.FolderName();     // may be null
+
+            journalmonitor.SetupWatchers(new string[] { stdfolder }, "Journal*.log", DateTime.MinValue);
+
+            LogLine?.Invoke("Reading Journals");
+
+            List<JournalEntry> toprocess = new List<JournalEntry>();        // we accumulate in a list of the journal entries from the previous N journals
+            journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, DateTime.MinValue, journalstoreload, toprocess);
+
+            System.Diagnostics.Debug.WriteLine($"Play thru {toprocess.Count} to get state");
+
+            InvokeAsyncOnUiThread(() =>
+            {
+                for (int i = 0; i < toprocess.Count; i++)
+                {
+                    JournalEntry je = toprocess[i];                             // due to async call, can't use i directly in the Entry - it will be incorrect when the async starts
+                    bool recent = i >= toprocess.Count - uirecentlimit;
+                    Entry(je, true, recent);
+                    //InvokeAsyncOnUiThread(() => { Entry(je, true, recent); });
+                };
+
+                //InvokeAsyncOnUiThread(() => { RefreshFinished?.Invoke(currenthe); });
+                RefreshFinished?.Invoke(currenthe);
+            });
+
+            LogLine?.Invoke($"Finished reading Journals");
+
+            journalmonitor.StartMonitor(false);
         }
 
         private void UpdateWatcher(int p, string s) // in thread
@@ -111,7 +119,7 @@ namespace EDDLite
 
         DateTime lastutc;
 
-        private void Reset(bool full = true)
+        private void ResetStats(bool full = true)
         {
             currenthe = null;
             outfitting = new OutfittingList();
@@ -130,22 +138,28 @@ namespace EDDLite
         private Queue<HistoryEntry> journalqueue = new Queue<HistoryEntry>();
         private System.Threading.Timer journalqueuedelaytimer;
 
-        public void Entry(JournalEntry je, bool stored, bool recent)        // on UI thread. hooked into journal monitor and receives new entries.. Also call if you programatically add an entry
+        // on UI thread. hooked into journal monitor and receives new entries.. Also call if you programatically add an entry
+        public void Entry(JournalEntry je, bool stored, bool recent)        
         {
             System.Diagnostics.Debug.Assert(System.Windows.Forms.Application.MessageLoop);
 
             if (je.EventTimeUTC >= lastutc)     // in case we get them fed in the wrong order, or during stored reply we have two playing, only take the latest one
             {
-                System.Diagnostics.Debug.WriteLine("JE " + stored + ":" + recent + ":" + EDCommander.GetCommander(je.CommanderId).Name + ":" + je.EventTypeStr);
+               // System.Diagnostics.Debug.WriteLine("Controller Entry " + stored + ":" + recent + ":" + EDCommander.GetCommander(je.CommanderId).Name + ":" + je.EventTypeStr);
 
                 if (je.CommanderId != currentcmdrnr)
                 {
-                    Reset(false);
+                    ResetStats(false);
                     currentcmdrnr = je.CommanderId;
                     EDCommander.CurrentCmdrID = currentcmdrnr;
                 }
 
                 HistoryEntry he = HistoryEntry.FromJournalEntry(je, currenthe);
+
+                if (je is EliteDangerousCore.JournalEvents.JournalApproachSettlement && !he.System.HasCoordinate)
+                {
+
+                }
 
                 he.UpdateMaterialsCommodities( matlist.Process(je, currenthe?.journalEntry, he.Status.TravelState == HistoryEntryStatus.TravelStateType.SRV));
 
@@ -200,7 +214,7 @@ namespace EDDLite
             while (journalqueue.Count > 0)      // dequeue
             {
                 var current = journalqueue.Dequeue();
-                System.Diagnostics.Trace.WriteLine($"PlayJournalList {current.EventTimeUTC} {current.EntryType}");
+                //System.Diagnostics.Trace.WriteLine($"PlayJournalList {current.EventTimeUTC} {current.EntryType}");
 
                 if (!stored)
                 {
