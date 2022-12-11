@@ -448,8 +448,7 @@ namespace EDDLite
                 prevcargocount = cargocount;
 
                 he.journalEntry.FillInformation(he.System,he.WhereAmI, out string info, out string detailed);
-                LogLine( BaseUtils.AppTicks.TickCountLap("MT") + " " +
-                    
+                LogLine( //BaseUtils.AppTicks.TickCountLap("MT") + " " +
                     EDDConfig.Instance.ConvertTimeToSelectedFromUTC(he.EventTimeUTC) + " " + he.journalEntry.SummaryName(he.System) + ": " + info);
 
                 labelMissionCount.Text = missionlist.Count.ToString();
@@ -541,8 +540,10 @@ namespace EDDLite
 
         public void LogLine(string s)     
         {
-            System.Diagnostics.Debug.Assert(System.Windows.Forms.Application.MessageLoop);
-            extRichTextBoxLog.AppendText(s + Environment.NewLine);
+            if (!System.Windows.Forms.Application.MessageLoop)
+                BeginInvoke((MethodInvoker)delegate { LogLine(s); });
+            else
+                extRichTextBoxLog.AppendText(s + Environment.NewLine);
         }
 
         private Size screenshotimagesize;
