@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright © 2020 EDDiscovery development team
+ * Copyright © 2020-2022 EDDiscovery development team
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
  * file except in compliance with the License. You may obtain a copy of the License at
@@ -10,8 +10,6 @@
  * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
  * ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
- * 
- * EDDiscovery is not affiliated with Frontier Developments plc.
  */
 
 using EliteDangerousCore;
@@ -24,11 +22,11 @@ namespace EDDLite
     public class EDDLiteController
     {
         public bool RequestRescan { get; set; } = false;
-        public Action<HistoryEntry> RefreshFinished { get; set; } = null;
-        public Action<HistoryEntry,bool,bool> NewEntry { get; set; } = null;
-        public Action<UIEvent> NewUI { get; set; } = null;
-        public Action<string> ProgressEvent { get; set; } = null;
-        public Action<string> LogLine { get; set; } = null;
+        public Action<HistoryEntry> RefreshFinished { get; set; } = null;           // on UI thread
+        public Action<HistoryEntry,bool,bool> NewEntry { get; set; } = null;        // on UI thread
+        public Action<UIEvent> NewUI { get; set; } = null;                          // on UI thread
+        public Action<string> ProgressEvent { get; set; } = null;                   // on UI thread
+        public Action<string> LogLine { get; set; } = null;                         // on UI thread
 
         const int uirecentlimit = 50;         // entries marked as close to end as this are marked recent and shown to user
         const int journalstoreload = 4;   // how many journals back to read and replay to get info on
@@ -65,7 +63,7 @@ namespace EDDLite
                 {
                     RequestRescan = false;
 
-                    LogLine?.Invoke("Re-reading Journals");
+                    InvokeAsyncOnUiThread(() => LogLine?.Invoke("Re-reading Journals") );
                     journalmonitor.StopMonitor();
 
                     StartWatchersAndReplayLastStoredEntries();
@@ -85,7 +83,7 @@ namespace EDDLite
 
             journalmonitor.SetupWatchers(new string[] { stdfolder }, "Journal*.log", DateTime.MinValue);
 
-            LogLine?.Invoke("Reading Journals");
+            InvokeAsyncOnUiThread(() => LogLine?.Invoke("Reading Journals"));
 
             List<JournalEntry> toprocess = new List<JournalEntry>();        // we accumulate in a list of the journal entries from the previous N journals
             journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, DateTime.MinValue, journalstoreload, toprocess);
@@ -94,19 +92,18 @@ namespace EDDLite
 
             InvokeAsyncOnUiThread(() =>
             {
-                for (int i = 0; i < toprocess.Count; i++)
+                for (int i = 0; i < toprocess.Count; i++)           // fill up Entries with events
                 {
-                    JournalEntry je = toprocess[i];                             // due to async call, can't use i directly in the Entry - it will be incorrect when the async starts
-                    bool recent = i >= toprocess.Count - uirecentlimit;
-                    Entry(je, true, recent);
-                    //InvokeAsyncOnUiThread(() => { Entry(je, true, recent); });
+                    Entry(toprocess[i], true, i >= toprocess.Count - uirecentlimit);
+                    if ( i % 100 == 0 )
+                        System.Windows.Forms.Application.DoEvents();        // just keep the message loop happy as we bombard the UI thread with stuff to do
                 };
+
+                LogLine?.Invoke($"Finished reading Journals");
 
                 //InvokeAsyncOnUiThread(() => { RefreshFinished?.Invoke(currenthe); });
                 RefreshFinished?.Invoke(currenthe);
             });
-
-            LogLine?.Invoke($"Finished reading Journals");
 
             journalmonitor.StartMonitor(false);
         }
@@ -155,11 +152,6 @@ namespace EDDLite
                 }
 
                 HistoryEntry he = HistoryEntry.FromJournalEntry(je, currenthe);
-
-                if (je is EliteDangerousCore.JournalEvents.JournalApproachSettlement && !he.System.HasCoordinate)
-                {
-
-                }
 
                 he.UpdateMaterialsCommodities( matlist.Process(je, currenthe?.journalEntry, he.Status.TravelState == HistoryEntryStatus.TravelStateType.SRV));
 
@@ -211,6 +203,8 @@ namespace EDDLite
 
         void PlayJournalList(bool stored, bool recent)
         {
+            System.Diagnostics.Debug.Assert(System.Windows.Forms.Application.MessageLoop);
+
             while (journalqueue.Count > 0)      // dequeue
             {
                 var current = journalqueue.Dequeue();
