@@ -59,6 +59,8 @@ namespace EDDLite
             BaseUtils.LogClean.DeleteOldLogFiles(logpath, "*.hlog", 2, 256);        // Remove hlogs faster
             BaseUtils.LogClean.DeleteOldLogFiles(logpath, "*.log", 10, 256);
 
+            BaseUtils.AppTicks.TickCountLap("MT", true);
+
             if (!System.Diagnostics.Debugger.IsAttached || EDDOptions.Instance.TraceLog != null)
             {
                 BaseUtils.TraceLog.RedirectTrace(logpath, true, EDDOptions.Instance.TraceLog);
@@ -145,6 +147,7 @@ namespace EDDLite
             controller.NewEntry += HistoryEvent;
             controller.LogLine += LogLine;
             controller.NewUI += UIEvent;
+            controller.Closed += ControllerClosed;
 
             if (!EDDOptions.Instance.DisableTimeDisplay)
             {
@@ -171,7 +174,6 @@ namespace EDDLite
 
             splitContainerNamesButtonsScreenshot.Panel2.Resize += SplitContainerNamesButtonsScreenshot_Resize;
 
-            BaseUtils.AppTicks.TickCountLap("MT", true);
         }
 
         protected override void OnShown(EventArgs e)
@@ -276,7 +278,7 @@ namespace EDDLite
                 });
             });
 
-            controller.Start(a => BeginInvoke(a));
+            controller.Start(a => Invoke(a));       // synchronous, this means each controller action executes sync with the UI, so when controller is stopped, all controller actions stop
 
             if (EDDConfig.Instance.StartMinimized)
                 WindowState = FormWindowState.Minimized;
@@ -284,9 +286,10 @@ namespace EDDLite
             DLLManager.Shown();
         }
 
-        protected override void OnClosing(CancelEventArgs e)
+        protected void ControllerClosed()
         {
-            controller.Stop();
+            System.Diagnostics.Debug.Assert(System.Windows.Forms.Application.MessageLoop);
+
             EDSMJournalSync.StopSync();
             UserDatabase.Instance.PutSettingDouble("DataLogSplitter", splitContainerDataLogs.GetSplitterDistance());
             UserDatabase.Instance.PutSettingDouble("CmdrDataLogSplitter", splitContainerCmdrDataLogs.GetSplitterDistance());
@@ -296,7 +299,18 @@ namespace EDDLite
             DLLManager.UnLoad();
             notifyIconEDD.Visible = false;
             notifyIconEDD.Dispose();
+            cancelclosing = false;
+            Close();
+        }
+
+        bool cancelclosing = true;
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
             base.OnClosing(e);
+            if ( cancelclosing )
+                controller.RequestStop();
+            e.Cancel = cancelclosing;
         }
 
         public bool DLLRequestHistory(long index, bool isjid, out EDDDLLInterfaces.EDDDLLIF.JournalEntry f)
@@ -332,7 +346,8 @@ namespace EDDLite
 
         public void HistoryEvent(HistoryEntry he, bool stored, bool recent)     // recent is true on stored for last few entries..
         {
-           // System.Diagnostics.Debug.WriteLine($"Form HistoryEvent {he.EventTimeUTC} {he.EntryType} st {stored} rc {recent}");
+            System.Diagnostics.Debug.Assert(System.Windows.Forms.Application.MessageLoop);
+            // System.Diagnostics.Debug.WriteLine($"Form HistoryEvent {he.EventTimeUTC} {he.EntryType} st {stored} rc {recent}");
 
             bool dontupdateui = (lasthe != null && stored && !recent);
 

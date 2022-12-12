@@ -27,33 +27,33 @@ namespace EDDLite
         public Action<UIEvent> NewUI { get; set; } = null;                          // on UI thread
         public Action<string> ProgressEvent { get; set; } = null;                   // on UI thread
         public Action<string> LogLine { get; set; } = null;                         // on UI thread
+        public Action Closed { get; set; } = null;                                  // on UI thread
 
         const int uirecentlimit = 50;         // entries marked as close to end as this are marked recent and shown to user
         const int journalstoreload = 4;   // how many journals back to read and replay to get info on
 
-        public void Start(Action<Action> invokeAsyncOnUiThread)
+        public void Start(Action<Action> invokeOnUiThread)
         {
-            InvokeAsyncOnUiThread = invokeAsyncOnUiThread;
+            InvokeOnUiThread = invokeOnUiThread;
             journalqueuedelaytimer = new Timer(DelayPlay, null, Timeout.Infinite, Timeout.Infinite);
-            controllerthread = new Thread(Controller);
+            controllerthread = new Thread(ControllerThread);
             controllerthread.Start();
         }
 
         bool stopit = false;
 
-        public void Stop()
+        // Request it. Controller will call Closed() when it complies
+        public void RequestStop()
         {
+            System.Diagnostics.Debug.WriteLine($"{BaseUtils.AppTicks.TickCountLap("CLS",true)} Request controller close");
             stopit = true;
-            controllerthread.Join();
-            journalqueuedelaytimer.Change(Timeout.Infinite, Timeout.Infinite);
-            journalqueuedelaytimer.Dispose();
         }
 
-        private void Controller()
+        private void ControllerThread()
         {
-            journalmonitor = new EDJournalUIScanner(InvokeAsyncOnUiThread);
+            journalmonitor = new EDJournalUIScanner(InvokeOnUiThread);
             journalmonitor.OnNewJournalEntry += (je, sr) => { Entry(je, false, true); };
-            journalmonitor.OnNewUIEvent += (ui, sr) => { InvokeAsyncOnUiThread(() => NewUI?.Invoke(ui)); };
+            journalmonitor.OnNewUIEvent += (ui, sr) => { InvokeOnUiThread(() => NewUI?.Invoke(ui)); };
 
             StartWatchersAndReplayLastStoredEntries();
 
@@ -63,7 +63,7 @@ namespace EDDLite
                 {
                     RequestRescan = false;
 
-                    InvokeAsyncOnUiThread(() => LogLine?.Invoke("Re-reading Journals") );
+                    InvokeOnUiThread(() => LogLine?.Invoke("Re-reading Journals") );
                     journalmonitor.StopMonitor();
 
                     StartWatchersAndReplayLastStoredEntries();
@@ -73,27 +73,35 @@ namespace EDDLite
             }
 
             journalmonitor.StopMonitor();
+
+            journalqueuedelaytimer.Change(Timeout.Infinite, Timeout.Infinite);
+            journalqueuedelaytimer.Dispose();
+
+            InvokeOnUiThread(() => { Closed.Invoke(); });
         }
 
         private void StartWatchersAndReplayLastStoredEntries()
         {
+            System.Diagnostics.Debug.WriteLine($"{BaseUtils.AppTicks.TickCountLap("MT")} Controller start watcher started");
             ResetStats();
 
             string stdfolder = EliteDangerousCore.FrontierFolder.FolderName();     // may be null
 
             journalmonitor.SetupWatchers(new string[] { stdfolder }, "Journal*.log", DateTime.MinValue);
 
-            InvokeAsyncOnUiThread(() => LogLine?.Invoke("Reading Journals"));
+            InvokeOnUiThread(() => LogLine?.Invoke($"Reading back {journalstoreload} Journals"));
 
             List<JournalEntry> toprocess = new List<JournalEntry>();        // we accumulate in a list of the journal entries from the previous N journals
             journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, DateTime.MinValue, journalstoreload, toprocess);
 
             System.Diagnostics.Debug.WriteLine($"Play thru {toprocess.Count} to get state");
 
-            InvokeAsyncOnUiThread(() =>
+            InvokeOnUiThread(() =>      // synchronous, in UI thread.. this means controller won't stop until this is completely done
             {
-                for (int i = 0; i < toprocess.Count; i++)           // fill up Entries with events
+                for (int i = 0; i < toprocess.Count && !stopit; i++)           // fill up Entries with events (if Stop it flag occurs we give up)
                 {
+                    //System.Diagnostics.Debug.WriteLine($"{BaseUtils.AppTicks.TickCount} Send {i}");
+
                     Entry(toprocess[i], true, i >= toprocess.Count - uirecentlimit);
                     if ( i % 100 == 0 )
                         System.Windows.Forms.Application.DoEvents();        // just keep the message loop happy as we bombard the UI thread with stuff to do
@@ -106,11 +114,12 @@ namespace EDDLite
             });
 
             journalmonitor.StartMonitor(false);
+            System.Diagnostics.Debug.WriteLine($"{BaseUtils.AppTicks.TickCountLap("MT")} Controller start watcher finished");
         }
 
         private void UpdateWatcher(int p, string s) // in thread
         {
-            InvokeAsyncOnUiThread(() => { ProgressEvent?.Invoke(s); });
+            InvokeOnUiThread(() => { ProgressEvent?.Invoke(s); });
             System.Diagnostics.Debug.WriteLine("Watcher Update " + p + " " + s);
         }
 
@@ -195,7 +204,7 @@ namespace EDDLite
         {
             System.Diagnostics.Debug.WriteLine(Environment.TickCount + " Delay Play timer executed");
             journalqueuedelaytimer.Change(Timeout.Infinite, Timeout.Infinite);
-            InvokeAsyncOnUiThread(() =>
+            InvokeOnUiThread(() =>
             {
                 PlayJournalList(false,true);
             });
@@ -267,7 +276,7 @@ namespace EDDLite
         private int currentcmdrnr;
         private Thread controllerthread;
         private EDJournalUIScanner journalmonitor;
-        private Action<Action> InvokeAsyncOnUiThread;
+        private Action<Action> InvokeOnUiThread;
 
 
     }
