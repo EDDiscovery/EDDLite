@@ -102,6 +102,16 @@ namespace EDDLite
             ThemeList = new ExtendedControls.ThemeList();
             ThemeList.LoadBaseThemes();                                         // default themes and ones on disk loaded
 
+            foreach( ToolStripMenuItem ti in themeToolStripMenuItem.DropDownItems)
+            {
+                if (ti.Text != "High DPI")
+                {
+                    bool present = ThemeList.FindTheme(ti.Text) != null;
+                    System.Diagnostics.Debug.WriteLine($"Theme tick {ti.Text} {present}");
+                    ti.Enabled = present;
+                }
+            }
+
             string themename = UserDatabase.Instance.GetSettingString("Theme", "EDSM");
             highDPIToolStripMenuItem.Checked = themename.Contains("High DPI");
             this.highDPIToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.highDPIToolStripMenuItem_CheckStateChanged);
@@ -871,7 +881,8 @@ namespace EDDLite
             if (highDPIToolStripMenuItem.Checked)
                 theme += " High DPI";
 
-            ThemeList.SetThemeByName(theme);
+            if ( !ThemeList.SetThemeByName(theme))      // theme failure, use a base theme
+                ThemeList.SetThemeByName("EDSM");
 
             UserDatabase.Instance.PutSettingString("Theme", theme);
             ApplyTheme();

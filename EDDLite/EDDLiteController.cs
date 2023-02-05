@@ -87,7 +87,9 @@ namespace EDDLite
 
             string stdfolder = EliteDangerousCore.FrontierFolder.FolderName();     // may be null
 
-            journalmonitor.SetupWatchers(new string[] { stdfolder }, "Journal*.log", DateTime.MinValue);
+            string[] stdfolders = stdfolder != null ? new string[] { stdfolder} : new string[0];
+
+            journalmonitor.SetupWatchers(stdfolders, "Journal*.log", DateTime.MinValue);
 
             InvokeOnUiThread(() => LogLine?.Invoke($"Reading back {journalstoreload} Journals"));
 
