@@ -53,14 +53,12 @@
             this.labelCargo = new System.Windows.Forms.Label();
             this.labelLocationH = new System.Windows.Forms.Label();
             this.labelMissionCount = new System.Windows.Forms.Label();
-            this.extButtonEDDBStation = new ExtendedControls.ExtButton();
             this.extButtonInaraStation = new ExtendedControls.ExtButton();
             this.labelCredits = new System.Windows.Forms.Label();
             this.labelLocation = new System.Windows.Forms.Label();
             this.labelLatestMission = new System.Windows.Forms.Label();
             this.extButtonSpanshStation = new ExtendedControls.ExtButton();
             this.extButtonSpanshSystem = new ExtendedControls.ExtButton();
-            this.extButtonEDDBSystem = new ExtendedControls.ExtButton();
             this.extButtonInaraSystem = new ExtendedControls.ExtButton();
             this.labelEncoded = new System.Windows.Forms.Label();
             this.labelShipH = new System.Windows.Forms.Label();
@@ -223,6 +221,7 @@
             this.dataGridViewCommanders.AllowUserToResizeRows = false;
             this.dataGridViewCommanders.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridViewCommanders.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            this.dataGridViewCommanders.AutoSortByColumnName = false;
             this.dataGridViewCommanders.CausesValidation = false;
             this.dataGridViewCommanders.ColumnHeaderMenuStrip = null;
             this.dataGridViewCommanders.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -287,6 +286,7 @@
             // 
             // extScrollBar1
             // 
+            this.extScrollBar1.AlwaysHideScrollBar = false;
             this.extScrollBar1.ArrowBorderColor = System.Drawing.Color.LightBlue;
             this.extScrollBar1.ArrowButtonColor = System.Drawing.Color.LightGray;
             this.extScrollBar1.ArrowColorScaling = 0.5F;
@@ -360,14 +360,12 @@
             this.extPanelScrollStatus.Controls.Add(this.labelCargo);
             this.extPanelScrollStatus.Controls.Add(this.labelLocationH);
             this.extPanelScrollStatus.Controls.Add(this.labelMissionCount);
-            this.extPanelScrollStatus.Controls.Add(this.extButtonEDDBStation);
             this.extPanelScrollStatus.Controls.Add(this.extButtonInaraStation);
             this.extPanelScrollStatus.Controls.Add(this.labelCredits);
             this.extPanelScrollStatus.Controls.Add(this.labelLocation);
             this.extPanelScrollStatus.Controls.Add(this.labelLatestMission);
             this.extPanelScrollStatus.Controls.Add(this.extButtonSpanshStation);
             this.extPanelScrollStatus.Controls.Add(this.extButtonSpanshSystem);
-            this.extPanelScrollStatus.Controls.Add(this.extButtonEDDBSystem);
             this.extPanelScrollStatus.Controls.Add(this.extButtonInaraSystem);
             this.extPanelScrollStatus.Controls.Add(this.labelEncoded);
             this.extPanelScrollStatus.Controls.Add(this.labelShipH);
@@ -401,6 +399,7 @@
             // 
             // extScrollBarMainSection
             // 
+            this.extScrollBarMainSection.AlwaysHideScrollBar = false;
             this.extScrollBarMainSection.ArrowBorderColor = System.Drawing.Color.LightBlue;
             this.extScrollBarMainSection.ArrowButtonColor = System.Drawing.Color.LightGray;
             this.extScrollBarMainSection.ArrowColorScaling = 0.5F;
@@ -493,16 +492,6 @@
             this.labelMissionCount.TabIndex = 3;
             this.labelMissionCount.Text = "?";
             // 
-            // extButtonEDDBStation
-            // 
-            this.extButtonEDDBStation.Image = global::EDDLite.Properties.Resources.EDDB;
-            this.extButtonEDDBStation.Location = new System.Drawing.Point(262, 70);
-            this.extButtonEDDBStation.Name = "extButtonEDDBStation";
-            this.extButtonEDDBStation.Size = new System.Drawing.Size(42, 33);
-            this.extButtonEDDBStation.TabIndex = 6;
-            this.extButtonEDDBStation.UseVisualStyleBackColor = true;
-            this.extButtonEDDBStation.Click += new System.EventHandler(this.extButtonEDDBStation_Click);
-            // 
             // extButtonInaraStation
             // 
             this.extButtonInaraStation.Image = global::EDDLite.Properties.Resources.Inara;
@@ -543,7 +532,7 @@
             // extButtonSpanshStation
             // 
             this.extButtonSpanshStation.Image = global::EDDLite.Properties.Resources.spansh;
-            this.extButtonSpanshStation.Location = new System.Drawing.Point(310, 71);
+            this.extButtonSpanshStation.Location = new System.Drawing.Point(262, 71);
             this.extButtonSpanshStation.Name = "extButtonSpanshStation";
             this.extButtonSpanshStation.Size = new System.Drawing.Size(42, 32);
             this.extButtonSpanshStation.TabIndex = 6;
@@ -554,7 +543,7 @@
             // extButtonSpanshSystem
             // 
             this.extButtonSpanshSystem.Image = global::EDDLite.Properties.Resources.spansh;
-            this.extButtonSpanshSystem.Location = new System.Drawing.Point(358, 36);
+            this.extButtonSpanshSystem.Location = new System.Drawing.Point(262, 36);
             this.extButtonSpanshSystem.Name = "extButtonSpanshSystem";
             this.extButtonSpanshSystem.Size = new System.Drawing.Size(42, 32);
             this.extButtonSpanshSystem.TabIndex = 6;
@@ -562,20 +551,10 @@
             this.extButtonSpanshSystem.UseVisualStyleBackColor = true;
             this.extButtonSpanshSystem.Click += new System.EventHandler(this.extButtonSpanshSystem_Click);
             // 
-            // extButtonEDDBSystem
-            // 
-            this.extButtonEDDBSystem.Image = global::EDDLite.Properties.Resources.EDDB;
-            this.extButtonEDDBSystem.Location = new System.Drawing.Point(310, 36);
-            this.extButtonEDDBSystem.Name = "extButtonEDDBSystem";
-            this.extButtonEDDBSystem.Size = new System.Drawing.Size(42, 32);
-            this.extButtonEDDBSystem.TabIndex = 6;
-            this.extButtonEDDBSystem.UseVisualStyleBackColor = true;
-            this.extButtonEDDBSystem.Click += new System.EventHandler(this.extButtonEDDBSystem_Click);
-            // 
             // extButtonInaraSystem
             // 
             this.extButtonInaraSystem.Image = global::EDDLite.Properties.Resources.Inara;
-            this.extButtonInaraSystem.Location = new System.Drawing.Point(262, 36);
+            this.extButtonInaraSystem.Location = new System.Drawing.Point(214, 36);
             this.extButtonInaraSystem.Name = "extButtonInaraSystem";
             this.extButtonInaraSystem.Size = new System.Drawing.Size(42, 32);
             this.extButtonInaraSystem.TabIndex = 6;
@@ -684,7 +663,7 @@
             // extButtonEDSMSystem
             // 
             this.extButtonEDSMSystem.Image = global::EDDLite.Properties.Resources.EDSM;
-            this.extButtonEDSMSystem.Location = new System.Drawing.Point(214, 35);
+            this.extButtonEDSMSystem.Location = new System.Drawing.Point(310, 35);
             this.extButtonEDSMSystem.Name = "extButtonEDSMSystem";
             this.extButtonEDSMSystem.Size = new System.Drawing.Size(42, 32);
             this.extButtonEDSMSystem.TabIndex = 6;
@@ -1220,19 +1199,19 @@
             this.notifyIconMenu_Open,
             this.notifyIconMenu_Exit});
             this.notifyIconContextMenuStrip.Name = "notifyIconContextMenuStrip1";
-            this.notifyIconContextMenuStrip.Size = new System.Drawing.Size(181, 70);
+            this.notifyIconContextMenuStrip.Size = new System.Drawing.Size(154, 48);
             // 
             // notifyIconMenu_Open
             // 
             this.notifyIconMenu_Open.Name = "notifyIconMenu_Open";
-            this.notifyIconMenu_Open.Size = new System.Drawing.Size(180, 22);
+            this.notifyIconMenu_Open.Size = new System.Drawing.Size(153, 22);
             this.notifyIconMenu_Open.Text = "&Toggle EDDLite";
             this.notifyIconMenu_Open.Click += new System.EventHandler(this.notifyIconMenu_Open_Click);
             // 
             // notifyIconMenu_Exit
             // 
             this.notifyIconMenu_Exit.Name = "notifyIconMenu_Exit";
-            this.notifyIconMenu_Exit.Size = new System.Drawing.Size(180, 22);
+            this.notifyIconMenu_Exit.Size = new System.Drawing.Size(153, 22);
             this.notifyIconMenu_Exit.Text = "E&xit";
             this.notifyIconMenu_Exit.Click += new System.EventHandler(this.notifyIconMenu_Exit_Click);
             // 
@@ -1359,8 +1338,6 @@
         private System.Windows.Forms.SplitContainer splitContainerNamesButtonsScreenshot;
         private System.Windows.Forms.PictureBox pictureBoxScreenshot;
         private System.Windows.Forms.Panel panel1;
-        private ExtendedControls.ExtButton extButtonEDDBStation;
-        private ExtendedControls.ExtButton extButtonEDDBSystem;
         private ExtendedControls.ExtButton extButtonSpanshStation;
         private ExtendedControls.ExtButton extButtonSpanshSystem;
         private ExtendedControls.ExtButton extButtonScreenshotDisabled;

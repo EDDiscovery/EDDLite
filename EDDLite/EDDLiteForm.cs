@@ -124,8 +124,8 @@ namespace EDDLite
             labelGameDateTime.Text = "";
             labelInfoBoxTop.Text = "";
 
-            extButtonEDSMSystem.Enabled = extButtonInaraSystem.Enabled = extButtonEDDBSystem.Enabled = false;
-            extButtonInaraStation.Enabled = extButtonEDDBStation.Enabled = false;
+            extButtonEDSMSystem.Enabled = extButtonInaraSystem.Enabled = false;
+            extButtonInaraStation.Enabled = false;
             extButtonEDSY.Enabled = extButtonCoriolis.Enabled = false;
 
             useNotifyIconToolStripMenuItem.Checked = EDDConfig.Instance.UseNotifyIcon;
@@ -382,7 +382,7 @@ namespace EDDLite
 
                 if (!labelSystem.Text.Equals(he.System.Name))       // because of StartJump rewriting the previous entry, we can't detect system names changes using UI
                 {                                                   // which ends up we never seeing lastui.system.name being different to he.system.name
-                    extButtonEDSMSystem.Enabled = extButtonInaraSystem.Enabled = extButtonEDDBSystem.Enabled = true;
+                    extButtonEDSMSystem.Enabled = extButtonInaraSystem.Enabled = true;
                     labelSystem.Text = he.System.Name;
                     reposbut = true;
                 }
@@ -393,12 +393,12 @@ namespace EDDLite
                     reposbut = true;
                 }
 
-                bool hasmarketid = he?.MarketID.HasValue ?? false;
+                bool hasmarketid = he?.Status.MarketID.HasValue ?? false;
                 bool hasbodyormarketid = hasmarketid || he.FullBodyID.HasValue;
 
                 if (lastuihe == null || extButtonInaraStation.Enabled != hasmarketid)
                 {
-                    extButtonInaraStation.Enabled = extButtonEDDBStation.Enabled = hasmarketid;
+                    extButtonInaraStation.Enabled = hasmarketid;
                 }
 
                 if (lastuihe == null || extButtonSpanshStation.Enabled != hasbodyormarketid)
@@ -421,14 +421,12 @@ namespace EDDLite
                 {
                     int maxx = Math.Max(labelSystem.Right, labelLocation.Right) + 2;
 
-                    extButtonEDSMSystem.Left = maxx;
-                    extButtonInaraSystem.Left = extButtonEDSMSystem.Right + 2;
-                    extButtonEDDBSystem.Left = extButtonInaraSystem.Right + 2;
-                    extButtonSpanshSystem.Left = extButtonEDDBSystem.Right + 2;
+                    extButtonInaraSystem.Left = maxx; 
+                    extButtonSpanshSystem.Left = extButtonInaraSystem.Right + 2;
+                    extButtonEDSMSystem.Left = extButtonSpanshSystem.Right + 2;
 
                     extButtonInaraStation.Left = maxx;
-                    extButtonEDDBStation.Left = extButtonInaraStation.Right + 2;
-                    extButtonSpanshStation.Left = extButtonEDDBStation.Right + 2;
+                    extButtonSpanshStation.Left = extButtonInaraStation.Right + 2;
 
                     extButtonCoriolis.Left = labelShip.Right + 2;
                     extButtonEDSY.Left = extButtonCoriolis.Right + 2;
@@ -472,7 +470,8 @@ namespace EDDLite
                 prevcomponentcount = componentcount;
                 prevcargocount = cargocount;
 
-                he.journalEntry.FillInformation(he.System,he.WhereAmI, out string info, out string detailed);
+                he.FillInformation(out string info, out string detailed);
+
                 LogLine( //BaseUtils.AppTicks.TickCountLap("MT") + " " +
                     EDDConfig.Instance.ConvertTimeToSelectedFromUTC(he.EventTimeUTC) + " " + he.journalEntry.SummaryName(he.System) + ": " + info);
 
@@ -804,25 +803,12 @@ namespace EDDLite
         {
             if (lasthe != null)
             {
-                if (lasthe.IsDocked)
+                if (lasthe.Status.MarketID.HasValue)
                 {
                     string uri = Properties.Resources.URLInaraStation + HttpUtility.UrlEncode(lasthe.System.Name + "[" + lasthe.WhereAmI +"]");
                     BaseUtils.BrowserInfo.LaunchBrowser(uri);
                 }
             }
-        }
-
-        private void extButtonEDDBSystem_Click(object sender, EventArgs e)
-        {
-            if (lasthe != null)
-                System.Diagnostics.Process.Start(Properties.Resources.URLEDDBSystemName + HttpUtility.UrlEncode(lasthe.System.Name));
-        }
-
-        private void extButtonEDDBStation_Click(object sender, EventArgs e)
-        {
-            if (lasthe != null && lasthe.MarketID != null)
-                System.Diagnostics.Process.Start(Properties.Resources.URLEDDBStationMarketId + lasthe.MarketID.ToStringInvariant());
-
         }
 
         private void extButtonSpanshSystem_Click(object sender, EventArgs e)
@@ -835,8 +821,8 @@ namespace EDDLite
         {
             if (lasthe != null)
             {
-                if (lasthe.MarketID != null)
-                  System.Diagnostics.Process.Start(Properties.Resources.URLSpanshStationMarketId + lasthe.MarketID.ToStringInvariant());
+                if (lasthe.Status.MarketID != null)
+                  System.Diagnostics.Process.Start(Properties.Resources.URLSpanshStationMarketId + lasthe.Status.MarketID.ToStringInvariant());
                 else if (lasthe.FullBodyID.HasValue)
                     System.Diagnostics.Process.Start(Properties.Resources.URLSpanshBodyId + lasthe.FullBodyID.ToStringInvariant());
 

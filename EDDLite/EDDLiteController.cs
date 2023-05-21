@@ -52,7 +52,7 @@ namespace EDDLite
         private void ControllerThread()
         {
             journalmonitor = new EDJournalUIScanner(InvokeOnUiThread);
-            journalmonitor.OnNewJournalEntry += (je, sr) => { Entry(je, false, true); };
+            journalmonitor.OnNewFilteredJournalEntry += (je, sr) => { Entry(je, false, true); };
             journalmonitor.OnNewUIEvent += (ui, sr) => { InvokeOnUiThread(() => NewUI?.Invoke(ui)); };
 
             StartWatchersAndReplayLastStoredEntries();
@@ -112,7 +112,7 @@ namespace EDDLite
                 LogLine?.Invoke($"Finished reading Journals");
 
                 //InvokeAsyncOnUiThread(() => { RefreshFinished?.Invoke(currenthe); });
-                RefreshFinished?.Invoke(currenthe);
+                RefreshFinished?.Invoke(hlastprocessed);
             });
 
             journalmonitor.StartMonitor(false);
@@ -129,7 +129,7 @@ namespace EDDLite
 
         private void ResetStats(bool full = true)
         {
-            currenthe = null;
+            hlastprocessed = null;
             outfitting = new OutfittingList();
             shipinformationlist = new ShipInformationList();
             matlist = new MaterialCommoditiesMicroResourceList();
@@ -162,22 +162,37 @@ namespace EDDLite
                     EDCommander.CurrentCmdrID = currentcmdrnr;
                 }
 
-                HistoryEntry he = HistoryEntry.FromJournalEntry(je, currenthe);
+                // see HistoryList::MakeHistoryEntry for a EDD analogue
 
-                he.UpdateMaterialsCommodities( matlist.Process(je, currenthe?.journalEntry, he.Status.TravelState == HistoryEntryStatus.TravelStateType.SRV));
+                HistoryEntry he = HistoryEntry.FromJournalEntry(je, hlastprocessed);
+
+                he.UnfilteredIndex = (hlastprocessed?.UnfilteredIndex ?? -1) + 1;
+                he.UpdateMaterialsCommodities( matlist.Process(je, hlastprocessed?.journalEntry, he.Status.TravelState == HistoryEntryStatus.TravelStateType.SRV));
+
+                // dont do suit, weapon, loadouts
 
                 cashledger.Process(je);
                 he.Credits = cashledger.CashTotal;
+                he.Loan = cashledger.Loan;
+                he.Assets = cashledger.Assets;
 
-                he.UpdateMissionList(missionlistaccumulator.Process(je, he.System, he.WhereAmI));
-
-                currenthe = he;
-                lastutc = je.EventTimeUTC;
+                // no shipyard
                 outfitting.Process(je);
+
+                // no carrier
 
                 Tuple<ShipInformation, ModulesInStore> ret = shipinformationlist.Process(je, he.WhereAmI, he.System);
                 he.UpdateShipInformation(ret.Item1);
                 he.UpdateShipStoredModules(ret.Item2);
+
+                he.UpdateMissionList(missionlistaccumulator.Process(je, he.System, he.WhereAmI));
+
+                // don't do update engineering
+
+                he.UpdateTravelStatus(hlastprocessed);
+
+                hlastprocessed = he;
+                lastutc = je.EventTimeUTC;
 
                 int playdelay = (je.EventTypeID == JournalTypeEnum.FSSSignalDiscovered) ? 2000 : 0;     // have we got a delayable entry
 
@@ -269,7 +284,7 @@ namespace EDDLite
             return missionlistaccumulator.GetAllCurrentMissions(he.MissionList,he.EventTimeUTC);
         }
 
-        private HistoryEntry currenthe;
+        private HistoryEntry hlastprocessed;
         private OutfittingList outfitting;
         private ShipInformationList shipinformationlist;
         private MaterialCommoditiesMicroResourceList matlist;
