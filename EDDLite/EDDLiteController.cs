@@ -85,7 +85,7 @@ namespace EDDLite
             System.Diagnostics.Debug.WriteLine($"{BaseUtils.AppTicks.TickCountLap("MT")} Controller start watcher started");
             ResetStats();
 
-            string stdfolder = EliteDangerousCore.FrontierFolder.FolderName();     // may be null
+            string stdfolder = EDDOptions.Instance.DefaultJournalFolder.HasChars() ? EDDOptions.Instance.DefaultJournalFolder : FrontierFolder.FolderName();     // may be null
 
             string[] stdfolders = stdfolder != null ? new string[] { stdfolder} : new string[0];
 
@@ -164,7 +164,7 @@ namespace EDDLite
 
                 // see HistoryList::MakeHistoryEntry for a EDD analogue
 
-                HistoryEntry he = HistoryEntry.FromJournalEntry(je, hlastprocessed);
+                HistoryEntry he = HistoryEntry.FromJournalEntry(je, hlastprocessed, null);          // we don't accumulate system names->star classes so its nul
 
                 he.UnfilteredIndex = (hlastprocessed?.UnfilteredIndex ?? -1) + 1;
                 he.UpdateMaterialsCommodities( matlist.Process(je, hlastprocessed?.journalEntry, he.Status.TravelState == HistoryEntryStatus.TravelStateType.SRV));

@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright © 2018-2022 EDDiscovery development team
+ * Copyright © 2018-2024 EDDiscovery development team
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
  * file except in compliance with the License. You may obtain a copy of the License at
@@ -43,10 +43,6 @@ namespace EDDLite
             {
                 UserDatabasePath = toeol ? ca.Rest() : ca.NextEmpty();
             }
-            else if (optname == "-cmdr" || optname == "-commander")
-            {
-                Commander = toeol ? ca.Rest() : ca.NextEmpty();
-            }
             else if (optname == "-systemsdbpath")
             {
                 SystemDatabasePath = toeol ? ca.Rest() : ca.NextEmpty();
@@ -55,21 +51,9 @@ namespace EDDLite
             {
                 TraceLog = toeol ? ca.Rest() : ca.NextEmpty();
             }
-            else if (optname == "-fontsize")
+            else if (optname == "-defaultjournalfolder")
             {
-                FontSize = (toeol ? ca.Rest() : ca.NextEmpty()).InvariantParseFloat(0);
-            }
-            else if (optname == "-font")
-            {
-                Font = toeol ? ca.Rest() : ca.NextEmpty();
-            }
-            else if (optname == "-language")
-            {
-                SelectLanguage = toeol ? ca.Rest() : ca.NextEmpty();
-            }
-            else if (optname == "-outputeventhelp")
-            {
-                OutputEventHelp = toeol ? ca.Rest() : ca.NextEmpty();
+                DefaultJournalFolder = toeol ? ca.Rest() : ca.NextEmpty();
             }
             else if (optname.StartsWith("-"))
             {
@@ -79,7 +63,6 @@ namespace EDDLite
                 {
                     case "norepositionwindow": NoWindowReposition = true; break;
                     case "nrw": NoWindowReposition = true; break;
-                    case "safemode": SafeMode = true; break;
                     case "portable": StoreDataInProgramDirectory = true; break;
                     case "logexceptions": LogExceptions = true; break;
                     case "checkrelease": CheckRelease = true; break;
@@ -97,14 +80,12 @@ namespace EDDLite
                     case "forcebeta":       // use to move logs to a beta commander for testing
                         ForceBetaOnCommander = true;
                         break;
-                    case "resetlanguage": ResetLanguage = true; break;
                     case "tempdirindatadir": TempDirInDataDir = true; break;
                     case "notempdirindatadir": TempDirInDataDir = false; break;
                     case "lowpriority": LowPriority = true; break;
                     case "nolowpriority": LowPriority = false; break;
                     case "backgroundpriority": BackgroundPriority = true; break;
                     case "nobackgroundpriority": BackgroundPriority = false; break;
-                    case "forcetls12": ForceTLS12 = true; break;
                     case "disabletimedisplay": DisableTimeDisplay = true; break;
                     default:
                         System.Diagnostics.Debug.WriteLine($"Unrecognized option -{opt}");
@@ -146,23 +127,15 @@ namespace EDDLite
         public bool NoWindowReposition { get; set; }
         public string TraceLog { get; private set; }        // null = auto file, or fixed name
         public bool LogExceptions { get; private set; }
-        public string OptionsFile { get; private set; }
         public bool DisableBetaCommanderCheck { get; private set; }
         public bool ForceBetaOnCommander { get; private set; }
         public bool CheckRelease { get; set; }
-        public bool ResetLanguage { get; set; }
-        public string SelectLanguage { get; set; }
-        public bool SafeMode { get; set; }
         public bool DisableMerge { get; set; }
-        public float FontSize { get; set; }                           // override font size, 0 if not
-        public string Font { get; set; }                           // override font, null if not
-        public string Commander { get; set; }                   // set commander, null if not
         public bool TempDirInDataDir { get; set; }
         public bool LowPriority { get; set; }
         public bool BackgroundPriority { get; set; }
-        public bool ForceTLS12 { get; set; }
         public bool DisableTimeDisplay { get; set; }
-        public string OutputEventHelp { get; set; }
+        public string DefaultJournalFolder { get; private set; }        // default is null, use computed value
 
         public string SubAppDirectory(string subfolder)     // ensures its there.. name without \ slashes
         {
@@ -176,6 +149,9 @@ namespace EDDLite
         public string DLLAppDirectory() { return SubAppDirectory("DLL"); }
         public string TranslatorDirectory() { return translationfolder; }
         public int TranslatorDirectoryIncludeSearchUpDepth { get; private set; }
+
+        public string ScanCachePath => null;        // we don't implement scan cache saving
+
         static public string ExeDirectory() { return System.AppDomain.CurrentDomain.BaseDirectory;  }
         public string[] TranslatorFolders() { return new string[] { TranslatorDirectory(), ExeDirectory() }; }
 

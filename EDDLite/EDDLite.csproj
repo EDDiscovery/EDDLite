@@ -79,7 +79,6 @@
     <Compile Include="Forms\DraggableFormPos.Designer.cs">
       <DependentUpon>DraggableFormPos.cs</DependentUpon>
     </Compile>
-    <Compile Include="Installer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="EDDLiteForm.resx">

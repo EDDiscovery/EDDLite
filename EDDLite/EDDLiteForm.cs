@@ -23,6 +23,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Web;
 using System.Windows.Forms;
+using BaseUtils;
 
 namespace EDDLite
 {
@@ -56,14 +57,25 @@ namespace EDDLite
 
             string logpath = EDDOptions.Instance.LogAppDirectory();
 
-            BaseUtils.LogClean.DeleteOldLogFiles(logpath, "*.hlog", 2, 256);        // Remove hlogs faster
-            BaseUtils.LogClean.DeleteOldLogFiles(logpath, "*.log", 10, 256);
+            BaseUtils.FileHelpers.DeleteFiles(logpath, "*.hlog", new TimeSpan(2, 0, 0, 0), 256);        // Remove hlogs faster
+            BaseUtils.FileHelpers.DeleteFiles(logpath, "*.log", new TimeSpan(10, 0, 0, 0), 256);
 
             BaseUtils.AppTicks.TickCountLap("MT", true);
 
-            if (!System.Diagnostics.Debugger.IsAttached || EDDOptions.Instance.TraceLog != null)
+#if DEBUG
+            bool releasebuild = false;
+#else
+            bool releasebuild = true;
+#endif
+
+            if (!System.Diagnostics.Debugger.IsAttached || releasebuild || EDDOptions.Instance.TraceLog != null)
             {
-                BaseUtils.TraceLog.RedirectTrace(logpath, true, EDDOptions.Instance.TraceLog);
+                TraceLog.RedirectTrace(logpath, EDDOptions.Instance.TraceLog);
+
+                TraceLog.LogFileWriterException += ex =>            // now we can attach the log writing highter into it
+                {
+                    LogLine($"Log Writer Exception: {ex}");
+                };
             }
 
             if (!System.Diagnostics.Debugger.IsAttached || EDDOptions.Instance.LogExceptions)
@@ -95,7 +107,8 @@ namespace EDDLite
 
             EDDConfig.Instance.Update();
 
-            Bodies.Prepopulate();       // new! needed 
+            Stars.Prepopulate();            // we do it this way instead of statically because we don't want them autofilled
+            Planets.Prepopulate();
 
             BaseUtils.Icons.IconSet.Instance.DontReportMissingErrors = true;
 
@@ -174,7 +187,6 @@ namespace EDDLite
             splitContainerCmdrDataLogs.SplitterDistance(UserDatabase.Instance.GetSettingDouble("CmdrDataLogSplitter", 0.1));
             splitContainerDataLogs.SplitterDistance(UserDatabase.Instance.GetSettingDouble("DataLogSplitter", 0.8));
             splitContainerNamesButtonsScreenshot.SplitterDistance(UserDatabase.Instance.GetSettingDouble("NamesButtonsScreenshotSplitter", 0.8));
-            EliteDangerousCore.IGAU.IGAUClass.SoftwareName =
             EliteDangerousCore.EDDN.EDDNClass.SoftwareName =
             EliteDangerousCore.Inara.InaraClass.SoftwareName =
             EliteDangerousCore.EDAstro.EDAstroClass.SoftwareName =
@@ -273,20 +285,26 @@ namespace EDDLite
             if (res.Item2.HasChars())
                 LogLine(string.Format("DLLs failed to load: {0}".T(EDTx.EDDiscoveryForm_DLLF), res.Item2));
 
-            //EDDOptions.Instance.CheckRelease = true; // use this to force check for debugging
+    //EDDOptions.Instance.CheckRelease = true; // use this to force check for debugging
 
-            Installer.CheckForNewInstallerAsync((rel) =>  // in thread
+            if (EDDOptions.Instance.CheckRelease)
             {
-                BeginInvoke((MethodInvoker)delegate
+                var curver = System.Reflection.Assembly.GetExecutingAssembly().GetAssemblyVersionString();
+
+                BaseUtils.GitHubRelease.CheckForNewInstallerAsync(EDDLite.Properties.Resources.URLGithubDownload, curver,
+                   (rel) =>  // in thread
                 {
-                    LogLine(string.Format("New EDDLite installer available: {0}".T(EDTx.EDDiscoveryForm_NI), rel.ReleaseName));
-                    labelInfoBoxTop.Text = "New Release Available!".T(EDTx.EDDiscoveryForm_NRA);
-                    if (ExtendedControls.MessageBoxTheme.Show("New EDDLite Available, please upgrade!", "Warning".T(EDTx.Warning), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                    BeginInvoke((MethodInvoker)delegate
                     {
-                        System.Diagnostics.Process.Start(Properties.Resources.URLProjectReleases);
-                    }
+                        LogLine(string.Format("New EDDLite installer available: {0}".T(EDTx.EDDiscoveryForm_NI), rel.ReleaseName));
+                        labelInfoBoxTop.Text = "New Release Available!".T(EDTx.EDDiscoveryForm_NRA);
+                        if (ExtendedControls.MessageBoxTheme.Show("New EDDLite Available, please upgrade!", "Warning".T(EDTx.Warning), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                        {
+                            System.Diagnostics.Process.Start(Properties.Resources.URLProjectReleases);
+                        }
+                    });
                 });
-            });
+            }
 
             controller.Start(a => Invoke(a));       // synchronous, this means each controller action executes sync with the UI, so when controller is stopped, all controller actions stop
 
@@ -494,11 +512,6 @@ namespace EDDLite
                 if (he.Commander.SyncToEdsm && EDSMJournalSync.OkayToSend(he))
                 {
                     EDSMJournalSync.SendEDSMEvents(LogLine, new List<HistoryEntry> { he }, he.journalEntry.GameVersion, he.journalEntry.Build);
-                }
-
-                if (he.Commander.SyncToIGAU)
-                {
-                    EliteDangerousCore.IGAU.IGAUSync.NewEvent(LogLine, he);
                 }
 
                 if (EDCommander.Current.SyncToEDAstro)
