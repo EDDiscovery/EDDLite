@@ -164,6 +164,8 @@ namespace EDDLite
             screenshot = new ScreenShotConverter();
             extButtonScreenshotDisabled.Visible = !screenshot.AutoConvert;
 
+            EliteDangerousCore.EDCommander.LoadCommanders();
+
             controller = new EDDLiteController();
             controller.ProgressEvent += (s) => { toolStripStatus.Text = s; };
             controller.RefreshFinished += RefreshFinished;
