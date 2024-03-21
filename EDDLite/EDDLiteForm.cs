@@ -773,7 +773,7 @@ namespace EDDLite
                 if (errstr.Length > 0)
                     ExtendedControls.MessageBoxTheme.Show(FindForm(), errstr + Environment.NewLine + "This is probably a new or powerplay module" + Environment.NewLine + "Report to EDD Team by Github giving the full text above", "Unknown Module Type");
 
-                string uri = EDDConfig.Instance.CoriolisURL + "data=" + BaseUtils.HttpUriEncode.URIGZipBase64Escape(s) + "&bn=" + Uri.EscapeDataString(lasthe.ShipInformation.Name);
+                string uri = EDDConfig.Instance.CoriolisURL + "data=" + s.URIGZipBase64Escape() + "&bn=" + Uri.EscapeDataString(lasthe.ShipInformation.Name);
 
                 if (!BaseUtils.BrowserInfo.LaunchBrowser(uri))
                 {
@@ -793,7 +793,7 @@ namespace EDDLite
 
                 //     File.WriteAllText(@"c:\code\loadoutout.txt", loadoutjournalline);
 
-                string uri = EDDConfig.Instance.EDDShipyardURL + "#/I=" + BaseUtils.HttpUriEncode.URIGZipBase64Escape(loadoutjournalline);
+                string uri = EDDConfig.Instance.EDDShipyardURL + "#/I=" + loadoutjournalline.URIGZipBase64Escape();
 
                 if (!BaseUtils.BrowserInfo.LaunchBrowser(uri))
                 {

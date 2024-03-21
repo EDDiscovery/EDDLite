@@ -68,12 +68,6 @@ namespace EDDLite
                     case "checkrelease": CheckRelease = true; break;
                     case "nocheckrelease": CheckRelease = false; break;
                     case "disablemerge": DisableMerge = true; break;
-                    case "edsmbeta":
-                        EDSMClass.ServerAddress = "http://beta.edsm.net:8080/";
-                        break;
-                    case "edsmnull":
-                        EDSMClass.ServerAddress = "";
-                        break;
                     case "disablebetacheck":
                         DisableBetaCommanderCheck = true;
                         break;
@@ -227,11 +221,6 @@ namespace EDDLite
             {
                 sb.Append($" (Using {AppFolder})");
             }
-
-            if (EDSMClass.ServerAddress.Length ==0)
-                sb.Append(" (EDSM No server)");
-            else if (EDSMClass.ServerAddress.IndexOf("Beta",StringComparison.InvariantCultureIgnoreCase)!=-1)
-                sb.Append(" (EDSM Beta server)");
 
             if (DisableBetaCommanderCheck)
             {

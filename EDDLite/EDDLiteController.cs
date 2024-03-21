@@ -40,13 +40,13 @@ namespace EDDLite
             controllerthread.Start();
         }
 
-        bool stopit = false;
+        CancellationTokenSource PendingClose = new CancellationTokenSource();                // cancel requested
 
         // Request it. Controller will call Closed() when it complies
         public void RequestStop()
         {
             System.Diagnostics.Debug.WriteLine($"{BaseUtils.AppTicks.TickCountLap("CLS",true)} Request controller close");
-            stopit = true;
+            PendingClose.Cancel();
         }
 
         private void ControllerThread()
@@ -57,7 +57,7 @@ namespace EDDLite
 
             StartWatchersAndReplayLastStoredEntries();
 
-            while (!stopit)
+            while (!PendingClose.IsCancellationRequested)
             {
                 if ( RequestRescan )
                 {
@@ -94,13 +94,13 @@ namespace EDDLite
             InvokeOnUiThread(() => LogLine?.Invoke($"Reading back {journalstoreload} Journals"));
 
             List<JournalEntry> toprocess = new List<JournalEntry>();        // we accumulate in a list of the journal entries from the previous N journals
-            journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, DateTime.MinValue, journalstoreload, toprocess);
+            journalmonitor.ParseJournalFilesOnWatchers(UpdateWatcher, PendingClose.Token, DateTime.MinValue, journalstoreload, toprocess);
 
             System.Diagnostics.Debug.WriteLine($"Play thru {toprocess.Count} to get state");
 
             InvokeOnUiThread(() =>      // synchronous, in UI thread.. this means controller won't stop until this is completely done
             {
-                for (int i = 0; i < toprocess.Count && !stopit; i++)           // fill up Entries with events (if Stop it flag occurs we give up)
+                for (int i = 0; i < toprocess.Count && !PendingClose.IsCancellationRequested; i++)           // fill up Entries with events (if Stop it flag occurs we give up)
                 {
                     //System.Diagnostics.Debug.WriteLine($"{BaseUtils.AppTicks.TickCount} Send {i}");
 
