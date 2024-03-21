@@ -123,6 +123,7 @@ namespace EDDLite.Forms
             this.textBoxLicense.BorderColor = System.Drawing.Color.Transparent;
             this.textBoxLicense.BorderColorScaling = 0.5F;
             this.textBoxLicense.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxLicense.DetectUrls = true;
             this.textBoxLicense.HideScrollBar = true;
             this.textBoxLicense.Location = new System.Drawing.Point(3, 37);
             this.textBoxLicense.Name = "textBoxLicense";
@@ -520,8 +521,8 @@ namespace EDDLite.Forms
             this.labelNoAffiliation.Name = "labelNoAffiliation";
             this.labelNoAffiliation.Size = new System.Drawing.Size(667, 26);
             this.labelNoAffiliation.TabIndex = 16;
-            this.labelNoAffiliation.Text = "(C) 2022 Robby && EDDiscovery Team\r\nEDDiscovery is not affiliated with Frontier D" +
-    "evelopments plc.\r\n";
+            this.labelNoAffiliation.Text = "(C) 2022-2024 Robby && EDDiscovery Team\r\nEDDiscovery is not affiliated with Front" +
+    "ier Developments plc.\r\n";
             this.labelNoAffiliation.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // paneltop
