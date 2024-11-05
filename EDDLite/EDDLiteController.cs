@@ -131,7 +131,7 @@ namespace EDDLite
         {
             hlastprocessed = null;
             outfitting = new OutfittingList();
-            shipinformationlist = new ShipInformationList();
+            shipinformationlist = new ShipList();
             matlist = new MaterialCommoditiesMicroResourceList();
             missionlistaccumulator = new MissionListAccumulator(); // and mission list..
             cashledger = new Ledger();
@@ -181,7 +181,7 @@ namespace EDDLite
 
                 // no carrier
 
-                Tuple<ShipInformation, ModulesInStore> ret = shipinformationlist.Process(je, he.WhereAmI, he.System);
+                Tuple<Ship, ShipModulesInStore> ret = shipinformationlist.Process(je, he.WhereAmI, he.System);
                 he.UpdateShipInformation(ret.Item1);
                 he.UpdateShipStoredModules(ret.Item2);
 
@@ -286,7 +286,7 @@ namespace EDDLite
 
         private HistoryEntry hlastprocessed;
         private OutfittingList outfitting;
-        private ShipInformationList shipinformationlist;
+        private ShipList shipinformationlist;
         private MaterialCommoditiesMicroResourceList matlist;
         private MissionListAccumulator missionlistaccumulator;
         private Ledger cashledger;
