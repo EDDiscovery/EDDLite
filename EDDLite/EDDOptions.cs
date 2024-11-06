@@ -146,6 +146,8 @@ namespace EDDLite
 
         public string ScanCachePath => null;        // we don't implement scan cache saving
 
+        public bool SetEDDNforNewCommanders { get; set; } = true;       // we set EDDN on for new commanders
+
         static public string ExeDirectory() { return System.AppDomain.CurrentDomain.BaseDirectory;  }
         public string[] TranslatorFolders() { return new string[] { TranslatorDirectory(), ExeDirectory() }; }
 

@@ -46,7 +46,8 @@ namespace EDDLite
         {
             InitializeComponent();
 
-            MaterialCommodityMicroResourceType.FillTable();     // lets statically fill the table way before anyone wants to access it
+            MaterialCommodityMicroResourceType.Initialise();     // lets statically fill the table way before anyone wants to access it
+            ItemData.Initialise();                              // let the item data initialise
 
             // we need to add this in, even though we do not translate, so the forms using translation won't barfe.
 
@@ -356,7 +357,7 @@ namespace EDDLite
         public void RefreshFinished(HistoryEntry currenthe)
         {
             dataGridViewCommanders.AutoGenerateColumns = false;             // BEFORE assigned to list..
-            dataGridViewCommanders.DataSource = EDCommander.GetListCommanders();
+            dataGridViewCommanders.DataSource = EDCommander.GetListActiveCommanders();
 
             if (currenthe != null)
             {
@@ -490,7 +491,8 @@ namespace EDDLite
                 prevcomponentcount = componentcount;
                 prevcargocount = cargocount;
 
-                he.FillInformation(out string info, out string detailed);
+                string info = he.GetInfo();
+                string detailed = he.GetDetailed();
 
                 LogLine( //BaseUtils.AppTicks.TickCountLap("MT") + " " +
                     EDDConfig.Instance.ConvertTimeToSelectedFromUTC(he.EventTimeUTC) + " " + he.journalEntry.SummaryName(he.System) + ": " + info);
@@ -707,7 +709,7 @@ namespace EDDLite
 
                 if (result == DialogResult.Yes)
                 {
-                    EDCommander.Delete(cmdr);
+                    EDCommander.Delete(cmdr.Id);
                     UpdateCommandersListBox();
                 }
             }
@@ -737,7 +739,7 @@ namespace EDDLite
         {
             int selrow = dataGridViewCommanders.SelectedRows.Count > 0 ? dataGridViewCommanders.SelectedRows[0].Index : -1;
             dataGridViewCommanders.DataSource = null;
-            List<EDCommander> cmdrs = EDCommander.GetListCommanders();
+            List<EDCommander> cmdrs = EDCommander.GetListActiveCommanders();
             dataGridViewCommanders.DataSource = cmdrs;
             if (selrow >= 0 && selrow < dataGridViewCommanders.RowCount)
                 dataGridViewCommanders.Rows[selrow].Selected = true;

@@ -39,8 +39,8 @@
     <ApplicationIcon>edlogo_3mo_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="QuickJSON, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RJKJSoft.QuickJSON.1.0.1\lib\net48\QuickJSON.dll</HintPath>
+    <Reference Include="QuickJSON, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RJKJSoft.QuickJSON.2.2.0\lib\net48\QuickJSON.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
