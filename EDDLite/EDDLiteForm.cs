@@ -32,8 +32,6 @@ namespace EDDLite
         private EDDLiteController controller;
         private Timer datetimetimer;
         private ScreenShotConverter screenshot;
-        private EDDDLLManager DLLManager;
-        private EDDDLLInterfaces.EDDDLLIF.EDDCallBacks DLLCallBacks;
         private ExtendedControls.ThemeList ThemeList;
 
         private HistoryEntry queuedfsssd = null;
@@ -81,7 +79,12 @@ namespace EDDLite
 
             if (!System.Diagnostics.Debugger.IsAttached || EDDOptions.Instance.LogExceptions)
             {
-                BaseUtils.ExceptionCatcher.RedirectExceptions(Properties.Resources.URLProjectFeedback);
+                ExceptionCatcher.RedirectExceptions((exc, exttype) => {
+                    EDDLite.Forms.ExceptionForm.ShowException(exc,
+                                exttype == ExceptionCatcher.ExceptionType.Application ? "There was an unhandled UI exception." : "An unhandled fatal exception has occurred.",
+                                Properties.Resources.URLProjectFeedback, exttype == ExceptionCatcher.ExceptionType.CurrentDomain);
+                });
+
             }
 
             if (EDDOptions.Instance.LogExceptions)
@@ -126,7 +129,7 @@ namespace EDDLite
                 }
             }
 
-            string themename = UserDatabase.Instance.GetSettingString("Theme", "EDSM");
+            string themename = UserDatabase.Instance.GetSetting("Theme", "EDSM");
             highDPIToolStripMenuItem.Checked = themename.Contains("High DPI");
             this.highDPIToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.highDPIToolStripMenuItem_CheckStateChanged);
             SetTheme(themename);
@@ -182,14 +185,14 @@ namespace EDDLite
                 datetimetimer.Tick += (sv, ev) => { DateTime gameutc = DateTime.UtcNow.AddYears(1286); labelGameDateTime.Text = gameutc.ToShortDateString() + " " + gameutc.ToShortTimeString(); };
                 datetimetimer.Start();
 
-                timeToolStripMenuItem.Checked = labelGameDateTime.Visible = UserDatabase.Instance.GetSettingBool("TimeDisplay", true);
+                timeToolStripMenuItem.Checked = labelGameDateTime.Visible = UserDatabase.Instance.GetSetting("TimeDisplay", true);
 
                 this.timeToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.timeToolStripMenuItem_CheckStateChanged);
             }
 
-            splitContainerCmdrDataLogs.SplitterDistance(UserDatabase.Instance.GetSettingDouble("CmdrDataLogSplitter", 0.1));
-            splitContainerDataLogs.SplitterDistance(UserDatabase.Instance.GetSettingDouble("DataLogSplitter", 0.8));
-            splitContainerNamesButtonsScreenshot.SplitterDistance(UserDatabase.Instance.GetSettingDouble("NamesButtonsScreenshotSplitter", 0.8));
+            splitContainerCmdrDataLogs.SplitterDistance(UserDatabase.Instance.GetSetting("CmdrDataLogSplitter", 0.1D));
+            splitContainerDataLogs.SplitterDistance(UserDatabase.Instance.GetSetting("DataLogSplitter", 0.8D));
+            splitContainerNamesButtonsScreenshot.SplitterDistance(UserDatabase.Instance.GetSetting("NamesButtonsScreenshotSplitter", 0.8D));
             EliteDangerousCore.EDDN.EDDNClass.SoftwareName =
             EliteDangerousCore.Inara.InaraClass.SoftwareName =
             EliteDangerousCore.EDAstro.EDAstroClass.SoftwareName =
@@ -223,73 +226,6 @@ namespace EDDLite
 
             screenshot.OnScreenshot += DisplayScreenshot;
 
-            EDDDLLAssemblyFinder.AssemblyFindPaths.Add(EDDOptions.Instance.DLLAppDirectory());      // any needed assemblies from here
-            AppDomain.CurrentDomain.AssemblyResolve += EDDDLLAssemblyFinder.AssemblyResolve;
-
-            DLLManager = new EDDDLLManager();
-
-            DLLCallBacks = new EDDDLLInterfaces.EDDDLLIF.EDDCallBacks();
-            DLLCallBacks.ver = 2;       //explicit support
-            DLLCallBacks.RequestHistory = DLLRequestHistory;
-            DLLCallBacks.RunAction = (s1, s2) => { return false; };
-            DLLCallBacks.GetShipLoadout = (s) => { return null; };
-
-            string verstring = EDDOptions.Instance.Version;
-            string[] options = new string[] { EDDDLLInterfaces.EDDDLLIF.FLAG_HOSTNAME + "EDDLITE",
-                                              EDDDLLInterfaces.EDDDLLIF.FLAG_JOURNALVERSION + EliteDangerousCore.DLL.EDDDLLCallerHE.JournalVersion.ToString(),
-                                              EDDDLLInterfaces.EDDDLLIF.FLAG_CALLBACKVERSION + DLLCallBacks.ver.ToString(),
-                                              EDDDLLInterfaces.EDDDLLIF.FLAG_CALLVERSION + EliteDangerousCore.DLL.EDDDLLCaller.DLLCallerVersion.ToStringInvariant(),
-                                            };
-
-            string alloweddlls = EDDConfig.Instance.DLLPermissions;
-
-            Tuple<string, string, string,string> res = DLLManager.Load(new string[] { EDDOptions.Instance.DLLAppDirectory() }, new bool[] {false},
-                                verstring,  options,
-                                DLLCallBacks, ref alloweddlls,
-                                 (name) => UserDatabase.Instance.GetSettingString("DLLConfig_" + name, ""), (name, set) => UserDatabase.Instance.PutSettingString("DLLConfig_" + name, set));
-
-            if (res.Item3.HasChars())       // new DLLs
-            {
-                string[] list = res.Item3.Split(',');
-                bool changed = false;
-                foreach (var dll in list)
-                {
-                    if (ExtendedControls.MessageBoxTheme.Show(this,
-                                    string.Format(("The following application extension DLL have been found" + Environment.NewLine +
-                                    "Do you wish to allow these to be used?" + Environment.NewLine +
-                                    "{0} " + Environment.NewLine
-                                    ).T(EDTx.EDDiscoveryForm_DLLW), dll),
-                                    "Warning".T(EDTx.Warning),
-                                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
-                    {
-                        alloweddlls = alloweddlls.AppendPrePad("+" + dll, ",");
-                        changed = true;
-                    }
-                    else
-                    {
-                        alloweddlls = alloweddlls.AppendPrePad("-" + dll, ",");
-                    }
-                }
-
-                EDDConfig.Instance.DLLPermissions = alloweddlls;
-
-                if ( changed )
-                {
-                    DLLManager.UnLoad();
-                    res = DLLManager.Load(new string[] { EDDOptions.Instance.DLLAppDirectory() }, new bool[] { false },
-                                            verstring, options,
-                                            DLLCallBacks, ref alloweddlls,
-                                            (name) => UserDatabase.Instance.GetSettingString("DLLConfig_" + name, ""), (name, set) => UserDatabase.Instance.PutSettingString("DLLConfig_" + name, set));
-                }
-            }
-
-            if (res.Item1.HasChars())
-                LogLine(string.Format("DLLs loaded: {0}".T(EDTx.EDDiscoveryForm_DLLL), res.Item1));
-            if (res.Item2.HasChars())
-                LogLine(string.Format("DLLs failed to load: {0}".T(EDTx.EDDiscoveryForm_DLLF), res.Item2));
-
-    //EDDOptions.Instance.CheckRelease = true; // use this to force check for debugging
-
             if (EDDOptions.Instance.CheckRelease)
             {
                 var curver = System.Reflection.Assembly.GetExecutingAssembly().GetAssemblyVersionString();
@@ -313,8 +249,6 @@ namespace EDDLite
 
             if (EDDConfig.Instance.StartMinimized)
                 WindowState = FormWindowState.Minimized;
-
-            DLLManager.Shown();
         }
 
         protected void ControllerClosed()
@@ -322,12 +256,11 @@ namespace EDDLite
             System.Diagnostics.Debug.Assert(System.Windows.Forms.Application.MessageLoop);
 
             EDSMJournalSync.StopSync();
-            UserDatabase.Instance.PutSettingDouble("DataLogSplitter", splitContainerDataLogs.GetSplitterDistance());
-            UserDatabase.Instance.PutSettingDouble("CmdrDataLogSplitter", splitContainerCmdrDataLogs.GetSplitterDistance());
-            UserDatabase.Instance.PutSettingDouble("NamesButtonsScreenshotSplitter", splitContainerNamesButtonsScreenshot.GetSplitterDistance());
+            UserDatabase.Instance.PutSetting("DataLogSplitter", splitContainerDataLogs.GetSplitterDistance());
+            UserDatabase.Instance.PutSetting("CmdrDataLogSplitter", splitContainerCmdrDataLogs.GetSplitterDistance());
+            UserDatabase.Instance.PutSetting("NamesButtonsScreenshotSplitter", splitContainerNamesButtonsScreenshot.GetSplitterDistance());
             screenshot.Stop();
             screenshot.SaveSettings();
-            DLLManager.UnLoad();
             notifyIconEDD.Visible = false;
             notifyIconEDD.Dispose();
             cancelclosing = false;
@@ -344,12 +277,6 @@ namespace EDDLite
             e.Cancel = cancelclosing;
         }
 
-        public bool DLLRequestHistory(long index, bool isjid, out EDDDLLInterfaces.EDDDLLIF.JournalEntry f)
-        {
-            f = new EDDDLLInterfaces.EDDDLLIF.JournalEntry();
-            return false;
-        }
-
         #endregion
 
         #region Controller feedback
@@ -363,7 +290,6 @@ namespace EDDLite
             {
                 var matlist = controller.GetMatList(currenthe);
                 var missionlist = controller.GetCurrentMissionList(currenthe);
-                DLLManager.Refresh(EDCommander.Current.Name, EDDDLLCallerHE.CreateFromHistoryEntry(currenthe, matlist, missionlist));
 
                 if (currenthe.Commander.SyncToInara)
                 {
@@ -555,28 +481,11 @@ namespace EDDLite
                 screenshot.NewJournalEntry(he.journalEntry);
             }
 
-            if (DLLManager.Count > 0)       // if worth calling..
-            {
-                var je = EDDDLLCallerHE.CreateFromHistoryEntry(he, matlist, missionlist, stored);
-                DLLManager.NewUnfilteredJournalEntry(je,stored);
-                DLLManager.NewJournalEntry(je, stored);
-            }
-
             lasthe = he;
         }
 
         public void UIEvent(UIEvent uievent)
         {
-            if (DLLManager.Count > 0)       // if worth calling..
-            {
-                string output = QuickJSON.JToken.FromObject(uievent, ignoreunserialisable: true,
-                                                                                    ignored: new Type[] { typeof(Bitmap), typeof(Image) },
-                                                                                    maxrecursiondepth: 3)?.ToString();
-                if (output != null)
-                    DLLManager.NewUIEvent(output);
-                else
-                    System.Diagnostics.Debug.WriteLine("**** ERROR Could not serialise " + uievent.EventTypeStr);
-            }
         }
 
         public void LogLine(string s)     
@@ -853,7 +762,7 @@ namespace EDDLite
         private void timeToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
         {
             labelGameDateTime.Visible = timeToolStripMenuItem.Checked;
-            UserDatabase.Instance.PutSettingBool("TimeDisplay", timeToolStripMenuItem.Checked);
+            UserDatabase.Instance.PutSetting("TimeDisplay", timeToolStripMenuItem.Checked);
         }
 
         private void screenShotCaptureToolStripMenuItem_Click(object sender, EventArgs e)
@@ -887,13 +796,13 @@ namespace EDDLite
             if ( !ThemeList.SetThemeByName(theme))      // theme failure, use a base theme
                 ThemeList.SetThemeByName("EDSM");
 
-            UserDatabase.Instance.PutSettingString("Theme", theme);
+            UserDatabase.Instance.PutSetting("Theme", theme);
             ApplyTheme();
         }
 
         private void highDPIToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
         {
-            SetTheme(UserDatabase.Instance.GetSettingString("Theme", "EDSM"));
+            SetTheme(UserDatabase.Instance.GetSetting("Theme", "EDSM"));
         }
 
         private void themeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -933,13 +842,6 @@ namespace EDDLite
             utcToolStripMenuItem.Checked = index == 1;
             localToolStripMenuItem.Checked = index == 0;
             ingtchange = false;
-        }
-        private void removeDLLPermissionsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ExtendedControls.MessageBoxTheme.Show(this, "Remove all DLL permissions, on next start, you will be asked per DLL if you wish to allow the DLL to run. Are you sure?".T(EDTx.EDDiscoveryForm_RemoveDLLPerms), "Warning".T(EDTx.Warning), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
-            {
-                EDDConfig.Instance.DLLPermissions = "";
-            }
         }
 
         #endregion

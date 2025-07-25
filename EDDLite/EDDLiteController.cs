@@ -52,7 +52,7 @@ namespace EDDLite
         private void ControllerThread()
         {
             journalmonitor = new EDJournalUIScanner(InvokeOnUiThread);
-            journalmonitor.OnNewFilteredJournalEntry += (je, sr) => { Entry(je, false, true); };
+            journalmonitor.OnNewJournalEntry += (je, sr) => { Entry(je, false, true); };
             journalmonitor.OnNewUIEvent += (ui, sr) => { InvokeOnUiThread(() => NewUI?.Invoke(ui)); };
 
             StartWatchersAndReplayLastStoredEntries();
@@ -151,7 +151,11 @@ namespace EDDLite
         {
             System.Diagnostics.Debug.Assert(System.Windows.Forms.Application.MessageLoop);
 
-            if (je.EventTimeUTC >= lastutc)     // in case we get them fed in the wrong order, or during stored reply we have two playing, only take the latest one
+            bool discard = je.EventTypeID == JournalTypeEnum.Music;
+
+            // in case we get them fed in the wrong order, or during stored reply we have two playing, only take the latest one
+            // or we want to discard
+            if ( !discard && je.EventTimeUTC >= lastutc)     
             {
                // System.Diagnostics.Debug.WriteLine("Controller Entry " + stored + ":" + recent + ":" + EDCommander.GetCommander(je.CommanderId).Name + ":" + je.EventTypeStr);
 

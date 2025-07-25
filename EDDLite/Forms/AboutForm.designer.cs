@@ -121,7 +121,6 @@ namespace EDDLite.Forms
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxLicense.BorderColor = System.Drawing.Color.Transparent;
-            this.textBoxLicense.BorderColorScaling = 0.5F;
             this.textBoxLicense.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxLicense.DetectUrls = true;
             this.textBoxLicense.HideScrollBar = true;
@@ -131,17 +130,6 @@ namespace EDDLite.Forms
             this.textBoxLicense.Rtf = "{\\rtf1\\ansi\\ansicpg1252\\deff0\\nouicompat\\deflang2057{\\fonttbl{\\f0\\fnil\\fcharset0 " +
     "Microsoft Sans Serif;}}\r\n{\\*\\generator Riched20 10.0.19041}\\viewkind4\\uc1 \r\n\\par" +
     "d\\f0\\fs17\\par\r\n}\r\n";
-            this.textBoxLicense.ScrollBarArrowBorderColor = System.Drawing.Color.LightBlue;
-            this.textBoxLicense.ScrollBarArrowButtonColor = System.Drawing.Color.LightGray;
-            this.textBoxLicense.ScrollBarBackColor = System.Drawing.SystemColors.Control;
-            this.textBoxLicense.ScrollBarBorderColor = System.Drawing.Color.White;
-            this.textBoxLicense.ScrollBarFlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.textBoxLicense.ScrollBarForeColor = System.Drawing.SystemColors.ControlText;
-            this.textBoxLicense.ScrollBarMouseOverButtonColor = System.Drawing.Color.Green;
-            this.textBoxLicense.ScrollBarMousePressedButtonColor = System.Drawing.Color.Red;
-            this.textBoxLicense.ScrollBarSliderColor = System.Drawing.Color.DarkGray;
-            this.textBoxLicense.ScrollBarThumbBorderColor = System.Drawing.Color.Yellow;
-            this.textBoxLicense.ScrollBarThumbButtonColor = System.Drawing.Color.DarkBlue;
             this.textBoxLicense.ShowLineCount = false;
             this.textBoxLicense.Size = new System.Drawing.Size(667, 369);
             this.textBoxLicense.TabIndex = 1;
@@ -306,7 +294,6 @@ namespace EDDLite.Forms
             this.panel_close.MouseSelectedColorEnable = true;
             this.panel_close.Name = "panel_close";
             this.panel_close.Padding = new System.Windows.Forms.Padding(6);
-            this.panel_close.PanelDisabledScaling = 0.25F;
             this.panel_close.Selectable = false;
             this.panel_close.Size = new System.Drawing.Size(24, 24);
             this.panel_close.TabIndex = 28;

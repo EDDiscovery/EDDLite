@@ -149,6 +149,10 @@ namespace EDDLite
 
         public bool SetEDDNforNewCommanders { get; set; } = true;       // we set EDDN on for new commanders
 
+        public bool DisableJournalMerge => false;
+
+        public bool DisableJournalRemoval => false;
+
         static public string ExeDirectory() { return System.AppDomain.CurrentDomain.BaseDirectory;  }
         public string[] TranslatorFolders() { return new string[] { TranslatorDirectory(), ExeDirectory() }; }
 

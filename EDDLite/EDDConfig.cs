@@ -48,7 +48,6 @@ namespace EDDLite
         private string language = "Auto";
         private string coriolisURL = "";
         private string eddshipyardURL = "";
-        private string dllpermissions = "";
 
         /// <summary>
         /// Controls whether or not a system notification area (systray) icon will be shown.
@@ -62,7 +61,7 @@ namespace EDDLite
             set
             {
                 useNotifyIcon = value;
-                EliteDangerousCore.DB.UserDatabase.Instance.PutSettingBool("UseNotifyIcon", value);
+                EliteDangerousCore.DB.UserDatabase.Instance.PutSetting("UseNotifyIcon", value);
             }
         }
 
@@ -75,7 +74,7 @@ namespace EDDLite
             set
             {
                 orderrowsinverted = value;
-                EliteDangerousCore.DB.UserDatabase.Instance.PutSettingBool("OrderRowsInverted", value);
+                EliteDangerousCore.DB.UserDatabase.Instance.PutSetting("OrderRowsInverted", value);
             }
         }
 
@@ -93,7 +92,7 @@ namespace EDDLite
             set
             {
                 minimizeToNotifyIcon = value;
-                EliteDangerousCore.DB.UserDatabase.Instance.PutSettingBool("MinimizeToNotifyIcon", value);
+                EliteDangerousCore.DB.UserDatabase.Instance.PutSetting("MinimizeToNotifyIcon", value);
             }
         }
         public bool StartMinimized
@@ -105,7 +104,7 @@ namespace EDDLite
             set
             {
                 startminimized = value;
-                EliteDangerousCore.DB.UserDatabase.Instance.PutSettingBool("StartMinimized", value);
+                EliteDangerousCore.DB.UserDatabase.Instance.PutSetting("StartMinimized", value);
             }
         }
 
@@ -118,7 +117,7 @@ namespace EDDLite
             set
             {
                 keepOnTop = value;
-                EliteDangerousCore.DB.UserDatabase.Instance.PutSettingBool("KeepOnTop", value);
+                EliteDangerousCore.DB.UserDatabase.Instance.PutSetting("KeepOnTop", value);
             }
         }
 
@@ -206,7 +205,7 @@ namespace EDDLite
             set
             {
                 displayTimeFormat = value;
-                EliteDangerousCore.DB.UserDatabase.Instance.PutSettingInt("DisplayUTC", value);
+                EliteDangerousCore.DB.UserDatabase.Instance.PutSetting("DisplayUTC", value);
             }
         }
 
@@ -219,7 +218,7 @@ namespace EDDLite
             set
             {
                 coriolisURL = value;
-                EliteDangerousCore.DB.UserDatabase.Instance.PutSettingString("CorolisURL", value);
+                EliteDangerousCore.DB.UserDatabase.Instance.PutSetting("CorolisURL", value);
             }
         }
 
@@ -232,20 +231,7 @@ namespace EDDLite
             set
             {
                 eddshipyardURL = value;
-                EliteDangerousCore.DB.UserDatabase.Instance.PutSettingString("EDDShipyardURL", value);
-            }
-        }
-
-        public string DLLPermissions
-        {
-            get
-            {
-                return dllpermissions;
-            }
-            set
-            {
-                dllpermissions = value;
-                EliteDangerousCore.DB.UserDatabase.Instance.PutSettingString("DLLAllowed", value);
+                EliteDangerousCore.DB.UserDatabase.Instance.PutSetting("EDDShipyardURL", value);
             }
         }
 
@@ -258,7 +244,7 @@ namespace EDDLite
             set
             {
                 language = value;
-                EliteDangerousCore.DB.UserDatabase.Instance.PutSettingString("DefaultLanguage", value);
+                EliteDangerousCore.DB.UserDatabase.Instance.PutSetting("DefaultLanguage", value);
             }
         }
 
@@ -288,16 +274,15 @@ namespace EDDLite
         {
             try
             {
-                useNotifyIcon = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("UseNotifyIcon", false);
-                orderrowsinverted = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("OrderRowsInverted", false);
-                minimizeToNotifyIcon = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("MinimizeToNotifyIcon", false);
-                startminimized = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("StartMinimized", false);
-                keepOnTop = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("KeepOnTop", false);
-                displayTimeFormat = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingInt("DisplayUTC", 2);
-                language = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString("DefaultLanguage", "Auto");
-                coriolisURL = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString("CorolisURL", EDDLite.Properties.Resources.URLCoriolis);
-                eddshipyardURL = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString("EDDShipyardURL", EDDLite.Properties.Resources.URLEDShipyard);
-                dllpermissions = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString("DLLAllowed", "");
+                useNotifyIcon = EliteDangerousCore.DB.UserDatabase.Instance.GetSetting("UseNotifyIcon", false);
+                orderrowsinverted = EliteDangerousCore.DB.UserDatabase.Instance.GetSetting("OrderRowsInverted", false);
+                minimizeToNotifyIcon = EliteDangerousCore.DB.UserDatabase.Instance.GetSetting("MinimizeToNotifyIcon", false);
+                startminimized = EliteDangerousCore.DB.UserDatabase.Instance.GetSetting("StartMinimized", false);
+                keepOnTop = EliteDangerousCore.DB.UserDatabase.Instance.GetSetting("KeepOnTop", false);
+                displayTimeFormat = EliteDangerousCore.DB.UserDatabase.Instance.GetSetting("DisplayUTC", 2);
+                language = EliteDangerousCore.DB.UserDatabase.Instance.GetSetting("DefaultLanguage", "Auto");
+                coriolisURL = EliteDangerousCore.DB.UserDatabase.Instance.GetSetting("CorolisURL", EDDLite.Properties.Resources.URLCoriolis);
+                eddshipyardURL = EliteDangerousCore.DB.UserDatabase.Instance.GetSetting("EDDShipyardURL", EDDLite.Properties.Resources.URLEDShipyard);
 
                 if (eddshipyardURL == "http://www.edshipyard.com/")     // 30/jul/19 changed address
                     EDDShipyardURL = "http://edsy.org/";
