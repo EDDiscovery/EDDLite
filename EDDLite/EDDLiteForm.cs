@@ -47,13 +47,6 @@ namespace EDDLite
             MaterialCommodityMicroResourceType.Initialise();     // lets statically fill the table way before anyone wants to access it
             ItemData.Initialise();                              // let the item data initialise
 
-            // we need to add this in, even though we do not translate, so the forms using translation won't barfe.
-
-            BaseUtils.Translator.Instance.AddExcludedControls(new Type[]
-               {   typeof(ExtendedControls.ExtComboBox), typeof(ExtendedControls.NumberBoxDouble),typeof(ExtendedControls.NumberBoxFloat),typeof(ExtendedControls.NumberBoxLong),
-                typeof(ExtendedControls.ExtScrollBar),typeof(ExtendedControls.ExtStatusStrip),typeof(ExtendedControls.ExtRichTextBox),typeof(ExtendedControls.ExtTextBox),
-                typeof(ExtendedControls.ExtTextBoxAutoComplete),typeof(ExtendedControls.ExtDateTimePicker),typeof(ExtendedControls.ExtNumericUpDown) });
-
             string logpath = EDDOptions.Instance.LogAppDirectory();
 
             BaseUtils.FileHelpers.DeleteFiles(logpath, "*.hlog", new TimeSpan(2, 0, 0, 0), 256);        // Remove hlogs faster
@@ -212,9 +205,9 @@ namespace EDDLite
                              (b) => LogLine(b),
                              () =>
                              {
-                                 if (lasthe != null)        // lasthe should have name and whereami, and an indication of commander
+                                 if (last_he != null)        // lasthe should have name and whereami, and an indication of commander
                                  {
-                                     return new Tuple<string, string, string>(lasthe.System.Name, lasthe.WhereAmI, lasthe.Commander?.Name ?? "Unknown");
+                                     return new Tuple<string, string, string>(last_he.System.Name, last_he.WhereAmI, last_he.Commander?.Name ?? "Unknown");
                                  }
                                  else
                                  {
@@ -235,9 +228,9 @@ namespace EDDLite
                 {
                     BeginInvoke((MethodInvoker)delegate
                     {
-                        LogLine(string.Format("New EDDLite installer available: {0}".T(EDTx.EDDiscoveryForm_NI), rel.ReleaseName));
-                        labelInfoBoxTop.Text = "New Release Available!".T(EDTx.EDDiscoveryForm_NRA);
-                        if (ExtendedControls.MessageBoxTheme.Show("New EDDLite Available, please upgrade!", "Warning".T(EDTx.Warning), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                        LogLine(string.Format("New EDDLite installer available: {0}".Tx(), rel.ReleaseName));
+                        labelInfoBoxTop.Text = "New Release Available!".Tx();
+                        if (ExtendedControls.MessageBoxTheme.Show("New EDDLite Available, please upgrade!", "Warning".Tx(), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
                         {
                             System.Diagnostics.Process.Start(Properties.Resources.URLProjectReleases);
                         }
@@ -298,7 +291,7 @@ namespace EDDLite
             }
         }
 
-        HistoryEntry lasthe = null;
+        HistoryEntry last_he = null;
         HistoryEntry lastuihe = null;       // last he that the ui was updated on.. used during store to try and prevent too much thrash
 
         public void HistoryEvent(HistoryEntry he, bool stored, bool recent)     // recent is true on stored for last few entries..
@@ -306,7 +299,7 @@ namespace EDDLite
             System.Diagnostics.Debug.Assert(System.Windows.Forms.Application.MessageLoop);
             // System.Diagnostics.Debug.WriteLine($"Form HistoryEvent {he.EventTimeUTC} {he.EntryType} st {stored} rc {recent}");
 
-            bool dontupdateui = (lasthe != null && stored && !recent);
+            bool dontupdateui = (last_he != null && stored && !recent);
 
             var matlist = controller.GetMatList(he);
             var missionlist = controller.GetCurrentMissionList(he);
@@ -340,8 +333,8 @@ namespace EDDLite
                     reposbut = true;
                 }
 
-                bool hasmarketid = he?.Status.MarketID.HasValue ?? false;
-                bool hasbodyormarketid = hasmarketid || he.FullBodyID.HasValue;
+                bool hasmarketid = he?.Status.MarketID?.HasValue ?? false;
+                bool hasbodyormarketid = hasmarketid || he.FullBodyID?.IsValid == true;
 
                 if (lastuihe == null || extButtonInaraStation.Enabled != hasmarketid)
                 {
@@ -481,7 +474,7 @@ namespace EDDLite
                 screenshot.NewJournalEntry(he.journalEntry);
             }
 
-            lasthe = he;
+            last_he = he;
         }
 
         public void UIEvent(UIEvent uievent)
@@ -588,7 +581,7 @@ namespace EDDLite
         {
             EDCommander cmdr = dataGridViewCommanders.Rows[row].DataBoundItem as EDCommander;
 
-            EliteDangerousCore.Forms.CommanderForm cf = new EliteDangerousCore.Forms.CommanderForm();
+            EliteDangerousCore.Forms.CommanderForm cf = new EliteDangerousCore.Forms.CommanderForm() { Icon = this.Icon };
             cf.Init(cmdr, false, true, true);
 
             if (cf.ShowDialog(FindForm()) == DialogResult.OK)
@@ -614,7 +607,7 @@ namespace EDDLite
                 int row = dataGridViewCommanders.RightClickRow;
                 EDCommander cmdr = dataGridViewCommanders.Rows[row].DataBoundItem as EDCommander;
 
-                var result = ExtendedControls.MessageBoxTheme.Show(FindForm(), "Do you wish to delete commander ".T(EDTx.UserControlSettings_DelCmdr) + cmdr.Name + "?", "Warning".T(EDTx.Warning), MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                var result = ExtendedControls.MessageBoxTheme.Show(FindForm(), "Do you wish to delete commander ".Tx() + cmdr.Name + "?", "Warning".Tx(), MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 
                 if (result == DialogResult.Yes)
                 {
@@ -640,7 +633,7 @@ namespace EDDLite
                     controller.RequestRescan = true;
                 }
                 else
-                    ExtendedControls.MessageBoxTheme.Show(FindForm(), "Commander name is not valid or duplicate".T(EDTx.UserControlSettings_AddC), "Cannot create Commander".T(EDTx.UserControlSettings_AddT), MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                    ExtendedControls.MessageBoxTheme.Show(FindForm(), "Commander name is not valid or duplicate".Tx(), "Cannot create Commander".Tx(), MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
             }
         }
 
@@ -659,48 +652,63 @@ namespace EDDLite
 
         #region Form Buttons
 
+
+
+        // same code as UserControlSysInfo.cs:
+
         private void extButtonEDSM_Click(object sender, EventArgs e)
         {
-            if (lasthe != null)
+            if (last_he != null)
             {
                 EDSMClass edsm = new EDSMClass();
-                string url = edsm.GetUrlToSystem(lasthe.System.Name);
 
-                if (url.Length > 0)         // may pass back empty string if not known, this solves another exception
-                    System.Diagnostics.Process.Start(url);
-                else
-                    ExtendedControls.MessageBoxTheme.Show(FindForm(), "System unknown to EDSM");
+                if (!edsm.ShowSystemInEDSM(last_he.System.Name))
+                    ExtendedControls.MessageBoxTheme.Show(FindForm(), "System unknown to EDSM".Tx());
+            }
+        }
+
+        private void extButtonInaraSystem_Click(object sender, EventArgs e)
+        {
+            if (last_he != null)
+            {
+                var ir = new EliteDangerousCore.Inara.InaraClass();
+                ir.LaunchBrowserForSystem(last_he.System.Name);
             }
 
         }
 
-        private void extButtonCoriolis_Click(object sender, EventArgs e)
+        private void extButtonSpanshSystem_Click(object sender, EventArgs e)
         {
-            if ( lasthe != null )
+            if (last_he != null && last_he.System.HasAddress)
+                EliteDangerousCore.Spansh.SpanshClass.LaunchBrowserForSystem(last_he.System.SystemAddress);
+        }
+
+        private void extButtonInaraStation_Click(object sender, EventArgs e)
+        {
+            if (last_he != null)
             {
-                string errstr;
-                string s = lasthe.ShipInformation.ToJSONCoriolis(out errstr);
+                var ir = new EliteDangerousCore.Inara.InaraClass();
+                ir.LaunchBrowserForStation(last_he.System.Name, last_he.WhereAmI);
+            }
+        }
 
-                if (errstr.Length > 0)
-                    ExtendedControls.MessageBoxTheme.Show(FindForm(), errstr + Environment.NewLine + "This is probably a new or powerplay module" + Environment.NewLine + "Report to EDD Team by Github giving the full text above", "Unknown Module Type");
 
-                string uri = EDDConfig.Instance.CoriolisURL + "data=" + s.URIGZipBase64Escape() + "&bn=" + Uri.EscapeDataString(lasthe.ShipInformation.Name);
-
-                if (!BaseUtils.BrowserInfo.LaunchBrowser(uri))
-                {
-                    ExtendedControls.InfoForm info = new ExtendedControls.InfoForm();
-                    info.Info("Cannot launch browser, use this JSON for manual Coriolis import", FindForm().Icon, s);
-                    info.ShowDialog(FindForm());
-                }
-
+        private void extButtonSpanshStation_Click(object sender, EventArgs e)
+        {
+            if (last_he != null)
+            {
+                if (last_he.Status.MarketID != null)
+                  System.Diagnostics.Process.Start(Properties.Resources.URLSpanshStationMarketId + last_he.Status.MarketID);
+                else if (last_he.FullBodyID?.IsValid == true)
+                    EliteDangerousCore.Spansh.SpanshClass.LaunchBrowserForStationByFullBodyID(last_he.FullBodyID);
             }
         }
 
         private void extButtonEDSY_Click(object sender, EventArgs e)
         {
-            if ( lasthe != null )
+            if (last_he != null)
             {
-                string loadoutjournalline = lasthe.ShipInformation.ToJSONLoadout();
+                string loadoutjournalline = last_he.ShipInformation.JSONLoadout(false).ToString();
 
                 //     File.WriteAllText(@"c:\code\loadoutout.txt", loadoutjournalline);
 
@@ -715,45 +723,27 @@ namespace EDDLite
             }
         }
 
-        private void extButtonInaraSystem_Click(object sender, EventArgs e)
+        private void extButtonCoriolis_Click(object sender, EventArgs e)
         {
-            if (lasthe != null)
+            if (last_he?.ShipInformation != null)
             {
-                string uri = Properties.Resources.URLInaraStarSystem + HttpUtility.UrlEncode(lasthe.System.Name);
-                BaseUtils.BrowserInfo.LaunchBrowser(uri);
-            }
+                string s = last_he.ShipInformation.JSONCoriolis(out string errstr).ToString();
 
-        }
+                if (errstr.Length > 0)
+                    ExtendedControls.MessageBoxTheme.Show(FindForm(), errstr + Environment.NewLine + "This is probably a new or powerplay module" + Environment.NewLine + "Report to EDD Team by Github giving the full text above", "Unknown Module Type");
 
-        private void extButtonInaraStation_Click(object sender, EventArgs e)
-        {
-            if (lasthe != null)
-            {
-                if (lasthe.Status.MarketID.HasValue)
+                string uri = EDDConfig.Instance.CoriolisURL + "data=" + s.URIGZipBase64Escape() + "&bn=" + Uri.EscapeDataString(last_he.ShipInformation.Name);
+
+                if (!BaseUtils.BrowserInfo.LaunchBrowser(uri))
                 {
-                    string uri = Properties.Resources.URLInaraStation + HttpUtility.UrlEncode(lasthe.System.Name + "[" + lasthe.WhereAmI +"]");
-                    BaseUtils.BrowserInfo.LaunchBrowser(uri);
+                    ExtendedControls.InfoForm info = new ExtendedControls.InfoForm();
+                    info.Info("Cannot launch browser, use this JSON for manual Coriolis import", FindForm().Icon, s);
+                    info.ShowDialog(FindForm());
                 }
             }
         }
 
-        private void extButtonSpanshSystem_Click(object sender, EventArgs e)
-        {
-            if (lasthe != null && lasthe.System.SystemAddress.HasValue)
-                System.Diagnostics.Process.Start(Properties.Resources.URLSpanshSystemSystemId + lasthe.System.SystemAddress.Value.ToStringInvariant());
-        }
-
-        private void extButtonSpanshStation_Click(object sender, EventArgs e)
-        {
-            if (lasthe != null)
-            {
-                if (lasthe.Status.MarketID != null)
-                  System.Diagnostics.Process.Start(Properties.Resources.URLSpanshStationMarketId + lasthe.Status.MarketID.ToStringInvariant());
-                else if (lasthe.FullBodyID.HasValue)
-                    System.Diagnostics.Process.Start(Properties.Resources.URLSpanshBodyId + lasthe.FullBodyID.ToStringInvariant());
-
-            }
-        }
+        // end same code as UserControlSysInfo.cs
 
         #endregion
 
@@ -767,7 +757,7 @@ namespace EDDLite
 
         private void screenShotCaptureToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            screenshot.Configure(this);
+            screenshot.Configure(this, this.Icon);
             extButtonScreenshotDisabled.Visible = !screenshot.AutoConvert;
         }
 

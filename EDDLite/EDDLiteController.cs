@@ -51,6 +51,9 @@ namespace EDDLite
 
         private void ControllerThread()
         {
+            // set up the TLU data, DB access here
+            EliteDangerousCore.DB.TravelLogUnit.Initialise();
+
             journalmonitor = new EDJournalUIScanner(InvokeOnUiThread);
             journalmonitor.OnNewJournalEntry += (je, sr) => { Entry(je, false, true); };
             journalmonitor.OnNewUIEvent += (ui, sr) => { InvokeOnUiThread(() => NewUI?.Invoke(ui)); };
@@ -278,7 +281,7 @@ namespace EDDLite
             return matlist.Get(he.MaterialCommodity);
         }
 
-        public Dictionary<string,MaterialCommodityMicroResource> GetMatDict(HistoryEntry he)
+        public Dictionary<MCFDName,MaterialCommodityMicroResource> GetMatDict(HistoryEntry he)
         {
             return matlist.GetDict(he.MaterialCommodity);
         }

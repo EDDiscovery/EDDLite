@@ -305,7 +305,7 @@
             this.extScrollBar1.MousePressedButtonColor2 = System.Drawing.Color.Red;
             this.extScrollBar1.Name = "extScrollBar1";
             this.extScrollBar1.Size = new System.Drawing.Size(24, 77);
-            this.extScrollBar1.SkinnyStyle = false;
+            this.extScrollBar1.SkinnyStyle = ExtendedControls.ExtScrollBar.ScrollStyle.SkinnyWithButtons;
             this.extScrollBar1.SliderColor = System.Drawing.Color.DarkGray;
             this.extScrollBar1.SliderColor2 = System.Drawing.Color.DarkGray;
             this.extScrollBar1.SliderDrawAngle = 90F;
@@ -424,7 +424,7 @@
             this.extScrollBarMainSection.MousePressedButtonColor2 = System.Drawing.Color.Red;
             this.extScrollBarMainSection.Name = "extScrollBarMainSection";
             this.extScrollBarMainSection.Size = new System.Drawing.Size(48, 293);
-            this.extScrollBarMainSection.SkinnyStyle = false;
+            this.extScrollBarMainSection.SkinnyStyle = ExtendedControls.ExtScrollBar.ScrollStyle.SkinnyWithButtons;
             this.extScrollBarMainSection.SliderColor = System.Drawing.Color.DarkGray;
             this.extScrollBarMainSection.SliderColor2 = System.Drawing.Color.DarkGray;
             this.extScrollBarMainSection.SliderDrawAngle = 90F;
@@ -900,7 +900,7 @@
             this.helpToolStripMenuItem});
             this.menuMain.Location = new System.Drawing.Point(0, 0);
             this.menuMain.Name = "menuMain";
-            this.menuMain.Size = new System.Drawing.Size(271, 24);
+            this.menuMain.Size = new System.Drawing.Size(151, 24);
             this.menuMain.TabIndex = 0;
             this.menuMain.Text = "menuStrip1";
             // 
@@ -1105,7 +1105,7 @@
             // 
             this.label_version.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label_version.AutoSize = true;
-            this.label_version.Location = new System.Drawing.Point(279, 6);
+            this.label_version.Location = new System.Drawing.Point(159, 6);
             this.label_version.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.label_version.Name = "label_version";
             this.label_version.Size = new System.Drawing.Size(43, 13);
@@ -1117,7 +1117,7 @@
             // 
             this.labelInfoBoxTop.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.labelInfoBoxTop.AutoSize = true;
-            this.labelInfoBoxTop.Location = new System.Drawing.Point(333, 6);
+            this.labelInfoBoxTop.Location = new System.Drawing.Point(213, 6);
             this.labelInfoBoxTop.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.labelInfoBoxTop.Name = "labelInfoBoxTop";
             this.labelInfoBoxTop.Size = new System.Drawing.Size(43, 13);
@@ -1128,7 +1128,7 @@
             // 
             this.labelGameDateTime.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.labelGameDateTime.AutoSize = true;
-            this.labelGameDateTime.Location = new System.Drawing.Point(387, 6);
+            this.labelGameDateTime.Location = new System.Drawing.Point(267, 6);
             this.labelGameDateTime.Margin = new System.Windows.Forms.Padding(8, 1, 3, 0);
             this.labelGameDateTime.Name = "labelGameDateTime";
             this.labelGameDateTime.Size = new System.Drawing.Size(43, 13);

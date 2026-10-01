@@ -36,11 +36,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>edlogo_3mo_icon.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="QuickJSON, Version=2.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RJKJSoft.QuickJSON.2.8.0\lib\net48\QuickJSON.dll</HintPath>
+    <Reference Include="QuickJSON, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RJKJSoft.QuickJSON.3.0.1\lib\net48\QuickJSON.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -58,7 +59,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EDDConfig.cs" />
-    <Compile Include="EDDiscoveryTranslations.cs" />
     <Compile Include="EDDLiteController.cs" />
     <Compile Include="EDDLiteForm.cs">
       <SubType>Form</SubType>
@@ -176,7 +176,6 @@
     <None Include="Resources\EDDB.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="edlogo_3mo_icon.ico" />
     <Content Include="Resources\spansh.png" />
   </ItemGroup>
   <UsingTask TaskName="Zip" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">

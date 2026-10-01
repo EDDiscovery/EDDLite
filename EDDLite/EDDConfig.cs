@@ -12,6 +12,7 @@
  * governing permissions and limitations under the License.
  */
 
+using EliteDangerousCore;
 using System;
 
 namespace EDDLite
@@ -124,11 +125,11 @@ namespace EDDLite
         public string GetTimeTitle()
         {
             if (displayTimeFormat == 2)
-                return "Game Time".T(EDTx.GameTime);
+                return "Game Time".Tx();
             else if (displayTimeFormat == 1)
                 return "UTC";
             else
-                return "Time".T(EDTx.Time);
+                return "Time".Tx();
         }
 
         public DateTime ConvertTimeToSelectedFromUTC(DateTime t)        // from UTC->Display format
@@ -264,12 +265,13 @@ namespace EDDLite
             }
         }
 
+        public WebExternalDataLookup WebLookup => WebExternalDataLookup.None;
 
         #endregion
 
         #region Update at start
 
-       
+
         public void Update(bool write = true)     // call at start to populate above
         {
             try
