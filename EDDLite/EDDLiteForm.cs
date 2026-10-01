@@ -36,7 +36,8 @@ namespace EDDLite
 
         private HistoryEntry queuedfsssd = null;
 
-        int prevencodedcount, prevrawcount, prevmanucount, prevdatacount, previtemcount, prevconsumecount, prevcomponentcount, prevcargocount;
+        int prevencodedcount = -999, prevrawcount = -999, prevmanucount = -999, prevdatacount = -999, previtemcount = -999; 
+        int prevconsumecount = -999, prevcomponentcount = -999, prevcargocount = -999;
 
         #region Init
 
